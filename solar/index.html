@@ -339,16 +339,22 @@
       left: -100%;
       width: 60%;
       height: 100%;
+      /* Darker wash than the hover shimmer — a distinct "press confirmed" sweep
+         that reads against the white selected-card background. */
       background: linear-gradient(
         105deg,
         transparent 20%,
-        rgba(255, 255, 255, 0.65) 50%,
+        rgba(0, 0, 0, 0.08) 50%,
         transparent 80%
       );
-      animation: shimmer-sweep 400ms ease-out forwards;
+      animation: shimmer-sweep-click 400ms ease-out forwards;
       pointer-events: none;
     }
     @keyframes shimmer-sweep {
+      0%   { left: -60%; }
+      100% { left: 130%; }
+    }
+    @keyframes shimmer-sweep-click {
       0%   { left: -60%; }
       100% { left: 130%; }
     }
