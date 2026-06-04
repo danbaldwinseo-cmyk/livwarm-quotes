@@ -273,18 +273,44 @@
       transform: translateY(3px);
       box-shadow: none;                           /* shadow collapses on press */
     }
-    /* SELECTED — springs back: red fill, solid red border, bold label, 1.02 pulse */
+    /* SELECTED — resting state: warm white card, soft red ambient glow, hairline
+       red border (via box-shadow). No hard red fill, no thick border.
+       Keeps the 1.02 scale pulse; the shimmer sweep is on ::after below. */
     .lw-card.is-selected {
-      background: var(--color-selected-fill);
-      border-color: var(--color-selected);
-      box-shadow: none;
-      transform: translateY(0);
-      animation: lwPulse 200ms ease;
+      background: #ffffff;
+      border-color: transparent;                 /* drop the grey border; red hairline comes from box-shadow */
+      box-shadow: 0 4px 24px rgba(232, 50, 58, 0.18),
+                  0 0 0 1px rgba(232, 50, 58, 0.12);
+      transform: translateY(0px);
+      overflow: hidden;
+      position: relative;
+      animation: lwPulse 200ms ease;             /* unchanged — scale pulse on selection */
     }
     @keyframes lwPulse {
       0%   { transform: scale(1); }
       50%  { transform: scale(1.02); }
       100% { transform: scale(1); }
+    }
+    /* SHIMMER — single diagonal light sweep, plays once on selection then settles */
+    .lw-card.is-selected::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.65) 50%,
+        transparent 80%
+      );
+      animation: shimmer-sweep 400ms ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes shimmer-sweep {
+      0%   { left: -60%; }
+      100% { left: 130%; }
     }
     .lw-card-icon {
       color: var(--color-primary);
@@ -404,7 +430,7 @@
   <div id="root"></div>
 
   <script type="text/babel" data-presets="react">
-    const { useState, useCallback } = React;
+    const { useState, useCallback, useRef, useLayoutEffect } = React;
 
     /* ============================================================
        CONFIG
@@ -549,12 +575,26 @@
       );
     }
 
-    function OptionCard({ option, selected, pressing, onSelect }) {
+    function OptionCard({ option, selected, pressing, selectionTick, onSelect }) {
+      const ref = useRef(null);
       const cls = 'lw-card'
         + (selected ? ' is-selected' : '')
         + (pressing ? ' is-pressing' : '');
+      // Re-trigger the shimmer every time this card (re)enters the selected state —
+      // including deselect/reselect of the same card. Exactly the requested trick:
+      // remove the class, force a reflow, re-add it. selectionTick bumps on each
+      // selection so this replays even when `selected` was already true.
+      useLayoutEffect(() => {
+        const el = ref.current;
+        if (selected && el) {
+          el.classList.remove('is-selected');
+          void el.offsetWidth;            // force reflow so the CSS animation restarts
+          el.classList.add('is-selected');
+        }
+      }, [selected, selectionTick]);
       return (
         <button
+          ref={ref}
           className={cls}
           onClick={() => onSelect(option)}
           aria-pressed={selected}
@@ -569,7 +609,7 @@
       );
     }
 
-    function Question({ q, currentValue, pressingValue, onSelect }) {
+    function Question({ q, currentValue, pressingValue, selectionTick, onSelect }) {
       return (
         <div className="lw-fade-in" key={q.key}>
           <h1 className="lw-question">{q.question}</h1>
@@ -581,6 +621,7 @@
                 option={opt}
                 selected={currentValue === opt.value}
                 pressing={pressingValue === opt.value}
+                selectionTick={selectionTick}
                 onSelect={onSelect}
               />
             ))}
@@ -666,6 +707,7 @@
       const [deadEnd, setDeadEnd] = useState(null);  // { reason }
       const [pressing, setPressing] = useState(null); // option.value currently pressed
       const [busy, setBusy] = useState(false);        // guards the press→select→advance sequence
+      const [selectionTick, setSelectionTick] = useState(0); // bumps on each selection to replay the shimmer
 
       // Card interaction timings (Section 7 #9): hold the press for a MINIMUM of
       // 80ms (via setTimeout) so touch users feel it before the selected state is
@@ -690,6 +732,7 @@
           // one render, so the card goes straight from pressed → selected + pulse.
           setPressing(null);
           setAnswers((prev) => ({ ...prev, [q.key]: option.value }));
+          setSelectionTick((t) => t + 1);           // replay shimmer even if reselecting the same card
           setTimeout(() => {                        // let the pulse play, then advance
             setCurrentIndex((i) => i + 1);
             setBusy(false);
@@ -752,6 +795,7 @@
                     q={currentQuestion}
                     currentValue={answers[currentQuestion.key]}
                     pressingValue={pressing}
+                    selectionTick={selectionTick}
                     onSelect={handleSelect}
                   />
                 )}
