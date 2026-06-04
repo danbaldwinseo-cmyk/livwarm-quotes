@@ -642,9 +642,21 @@
       font-size: 17px;
       font-weight: 800;
       cursor: pointer;
-      transition: background 150ms ease, transform 150ms ease, opacity 150ms ease;
+      box-shadow: 0 6px 16px rgba(232, 50, 58, 0.35),
+                  0 2px 6px rgba(232, 50, 58, 0.2);
+      transition: background 150ms ease, box-shadow 150ms ease, transform 150ms ease, opacity 150ms ease;
     }
-    .lw-cta:hover:not(:disabled) { background: var(--color-primary-light); transform: translateY(-1px); }
+    /* press-down on hover/active (matches the main LivWarm site) — no float/lighten */
+    .lw-cta:hover:not(:disabled) {
+      background: #C8232B;
+      box-shadow: 0 2px 8px rgba(232, 50, 58, 0.2);
+      transform: translateY(1px);
+    }
+    .lw-cta:active:not(:disabled) {
+      background: #B01E24;
+      box-shadow: none;
+      transform: translateY(2px);
+    }
     .lw-cta:disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* ---------- Help modal ---------- */
