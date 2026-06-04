@@ -196,12 +196,12 @@
     .lw-pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       background: #f5f5f5;
       border: none;
       border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 13px;
+      padding: 7px 14px;
+      font-size: 14px;
       font-weight: 600;
       color: #444;
       font-family: inherit;
@@ -223,6 +223,27 @@
       display: inline-flex;
     }
     .lw-pill .lw-pill-edit:hover { color: #E8323A; }
+
+    /* Summary-screen pills — the hero of the completion screen: larger + roomier */
+    .lw-summary-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .lw-summary-pills .lw-pill {
+      padding: 10px 18px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 10px;
+      background: #f5f5f5;
+    }
+    .lw-summary-pills .lw-pill .lw-pill-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #E8323A;
+    }
 
     /* ---------- Question + cards ---------- */
     .lw-question {
@@ -726,7 +747,7 @@
         <div className="lw-complete lw-fade-in">
           <h2>Great — that's the basics covered.</h2>
           <p>Here's what you've told us so far:</p>
-          <div className="lw-breadcrumbs" style={{ justifyContent: 'center' }}>
+          <div className="lw-summary-pills">
             {QUESTIONS.map((q) => (
               <span key={q.key} className="lw-pill" style={{ cursor: 'default' }}>
                 <span className="lw-pill-label">{shortLabel(q.key)}:</span>
@@ -879,7 +900,7 @@
               ) : (
                 <React.Fragment>
                   <ProgressBar percent={percent} />
-                  <Breadcrumbs answered={answered} onEdit={handleEdit} />
+                  {!isComplete && <Breadcrumbs answered={answered} onEdit={handleEdit} />}
                   {isComplete ? (
                     <StepComplete answers={answers} onRestart={handleRestart} />
                   ) : (
