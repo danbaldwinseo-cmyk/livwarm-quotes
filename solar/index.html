@@ -97,13 +97,21 @@
       align-items: center;
       justify-content: center;            /* lock the content block to the middle of the viewport */
       width: 100%;
-      padding: 40px 60px;                 /* symmetric → content truly centred in the viewport */
+      padding: 40px 80px;                 /* symmetric → content truly centred in the viewport */
     }
     .lw-content {
       width: 100%;
-      max-width: 960px;
+      max-width: 1100px;
       display: flex;
       flex-direction: column;
+    }
+    /* Ultra-wide monitors: cap so it stays readable */
+    @media (min-width: 1400px) {
+      .lw-content { max-width: 1200px; }
+    }
+    /* Smaller desktops/tablets: reduce side padding so it doesn't squeeze */
+    @media (max-width: 1024px) {
+      .lw-main { padding: 40px 40px; }
     }
 
     /* ---------- Header ---------- */
