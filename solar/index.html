@@ -807,6 +807,7 @@
     .lw-modal-close:hover { background: var(--color-primary-light); }
     .lw-modal-title { font-size: 22px; font-weight: 800; color: var(--color-dark); margin: 0 0 6px; padding-right: 36px; }
     .lw-modal-sub { font-size: 15px; color: var(--color-body); margin: 0 0 20px; line-height: 1.5; }
+    .lw-modal-caption { font-size: 14px; color: var(--color-body); margin: 16px 0 0; line-height: 1.5; }
     /* annotated example bill (placeholder) */
     .lw-bill { border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; }
     .lw-bill-head {
@@ -1153,7 +1154,7 @@
     }
 
     // Step 3 — Electricity tariff (rate only)
-    function TariffStep({ data, onChange, onUseAverages, onContinue }) {
+    function TariffStep({ data, onChange, onUseAverages, onContinue, onShowHelp }) {
       const patch = (p) => onChange({ ...data, ...p });
       const cleanDec = (v) => v.replace(/[^0-9.]/g, '');
       return (
@@ -1187,8 +1188,10 @@
                        onChange={(e) => patch({ dayRate: cleanDec(e.target.value) })} />
                 <span className="lw-input-unit">p/kWh</span>
               </div>
+              <button type="button" className="lw-link" onClick={onShowHelp}>Where do I find this?</button>
             </div>
           ) : (
+            <React.Fragment>
             <div className="lw-field-row">
               <div className="lw-field">
                 <label className="lw-field-label" htmlFor="eu-day">Day rate</label>
@@ -1209,6 +1212,8 @@
                 </div>
               </div>
             </div>
+            <button type="button" className="lw-link" onClick={onShowHelp}>Where do I find this?</button>
+            </React.Fragment>
           )}
 
           <button type="button" className="lw-link lw-link-center" onClick={onUseAverages}>
@@ -1222,7 +1227,7 @@
       );
     }
 
-    function HelpModal({ onClose }) {
+    function HelpModal({ onClose, caption }) {
       React.useEffect(() => {
         const onKey = (e) => { if (e.key === 'Escape') onClose(); };
         window.addEventListener('keydown', onKey);
@@ -1248,6 +1253,7 @@
                 <div className="lw-bill-callout">↑ This is your unit rate in p/kWh</div>
               </div>
             </div>
+            {caption && <p className="lw-modal-caption">{caption}</p>}
           </div>
         </div>
       );
@@ -1528,7 +1534,7 @@
       const [selectionTick, setSelectionTick] = useState(0); // bumps on each selection to replay the shimmer
       // Step 2 — electricity usage form state (kept in App so it persists across navigation)
       const [electricity, setElectricity] = useState({ usage: '', rateMode: 'same', dayRate: '', nightRate: '' });
-      const [showHelp, setShowHelp] = useState(false);
+      const [showHelp, setShowHelp] = useState(null); // null = closed; { caption? } = open
 
       const handleSelect = useCallback((option) => {
         if (busy) return;                          // ignore taps mid-animation
@@ -1585,7 +1591,7 @@
         setPressing(null);
         setBusy(false);
         setElectricity({ usage: '', rateMode: 'same', dayRate: '', nightRate: '' });
-        setShowHelp(false);
+        setShowHelp(null);
       }, []);
 
       // Step 2 (usage) — national average populates 4,100 kWh/yr.
@@ -1745,7 +1751,7 @@
                       onChange={setElectricity}
                       onUseAverages={handleUsageAverages}
                       onContinue={handleUsageContinue}
-                      onShowHelp={() => setShowHelp(true)}
+                      onShowHelp={() => setShowHelp({})}
                     />
                   )}
                   {onTariff && (
@@ -1754,6 +1760,7 @@
                       onChange={setElectricity}
                       onUseAverages={handleTariffAverages}
                       onContinue={handleTariffContinue}
+                      onShowHelp={() => setShowHelp({ caption: "Your unit rate is shown in pence per kWh - look for 'unit rate' or 'rate' in the charges section of your bill." })}
                     />
                   )}
                   {onBattery && (
@@ -1784,7 +1791,7 @@
             </div>
           </main>
           <Footer />
-          {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
+          {showHelp && <HelpModal caption={showHelp.caption} onClose={() => setShowHelp(null)} />}
         </div>
       );
     }
