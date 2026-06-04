@@ -609,24 +609,26 @@
     .lw-toggle { display: flex; gap: 12px; }
     .lw-toggle-opt {
       flex: 1;
-      padding: 14px 14px;
-      background: #fff;
-      border: 1.5px solid var(--color-border);
-      border-radius: 8px;
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      color: #444;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
-      color: var(--color-body);
+      padding: 14px 20px;
       cursor: pointer;
       line-height: 1.3;
-      transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+      transition: all 150ms ease;
     }
-    .lw-toggle-opt:hover { border-color: var(--color-primary-light); }
-    .lw-toggle-opt.active {
-      background: rgba(232, 50, 58, 0.06);
-      border-color: var(--color-primary);
-      color: var(--color-primary);
-      font-weight: 700;
+    .lw-toggle-opt.selected {
+      background: #1a1a1a;
+      border: 1px solid #1a1a1a;
+      color: #ffffff;
+    }
+    .lw-toggle-opt:hover:not(.selected) {
+      border-color: #aaa;
+      background: #f9f9f9;
     }
     /* full-width solid red pill CTA */
     .lw-cta {
@@ -642,14 +644,14 @@
       font-size: 17px;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 6px 16px rgba(232, 50, 58, 0.35),
-                  0 2px 6px rgba(232, 50, 58, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15),
+                  0 2px 4px rgba(0, 0, 0, 0.10);
       transition: background 150ms ease, box-shadow 150ms ease, transform 150ms ease, opacity 150ms ease;
     }
     /* press-down on hover/active (matches the main LivWarm site) — no float/lighten */
     .lw-cta:hover:not(:disabled) {
       background: #C8232B;
-      box-shadow: 0 2px 8px rgba(232, 50, 58, 0.2);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
       transform: translateY(1px);
     }
     .lw-cta:active:not(:disabled) {
@@ -778,7 +780,7 @@
     const DEAD_END_PATH = '/sorry-we-cannot-help';
     // Solar flow has 8 user-facing input steps (Steps 1-6, 8, 9 in the spec;
     // the upsell modal and post-payment confirmation are not progress steps).
-    const TOTAL_STEPS = 8;
+    const TOTAL_STEPS = 9;
 
     /* ============================================================
        ICONS — rounded line icons in brand red (Section 7 #10)
@@ -853,8 +855,9 @@
     ];
 
     // Step 1 (qualifier) occupies question indices 0..QUESTIONS.length-1.
-    // Step 2 (electricity usage) is the single screen at ELECTRICITY_INDEX.
-    const ELECTRICITY_INDEX = QUESTIONS.length;
+    // Step 2 = annual usage (kWh); Step 3 = electricity tariff (rate).
+    const USAGE_INDEX = QUESTIONS.length;        // 4
+    const TARIFF_INDEX = QUESTIONS.length + 1;   // 5
 
     /* ============================================================
        COMPONENTS
@@ -990,15 +993,15 @@
       );
     }
 
-    function ElectricityUsage({ data, onChange, onUseAverages, onContinue, onShowHelp }) {
+    // Step 2 — Annual electricity usage (kWh only)
+    function UsageStep({ data, onChange, onUseAverages, onContinue, onShowHelp }) {
       const patch = (p) => onChange({ ...data, ...p });
       const cleanInt = (v) => v.replace(/[^0-9,]/g, '');
-      const cleanDec = (v) => v.replace(/[^0-9.]/g, '');
       const canContinue = String(data.usage).trim() !== '';
       return (
         <div className="lw-fade-in lw-eu">
           <h1 className="lw-question">Your current electricity usage</h1>
-          <p className="lw-question-sub">This lets us size your system accurately. You'll find both figures on your latest electricity bill.</p>
+          <p className="lw-question-sub">You'll find this on your latest electricity bill.</p>
 
           <div className="lw-field">
             <label className="lw-field-label" htmlFor="eu-usage">Annual electricity usage</label>
@@ -1011,17 +1014,36 @@
             <button type="button" className="lw-link" onClick={onShowHelp}>Where do I find this?</button>
           </div>
 
+          <button type="button" className="lw-link lw-link-center" onClick={onUseAverages}>
+            I'm not sure — use national averages
+          </button>
+
+          <button type="button" className="lw-cta" disabled={!canContinue} onClick={onContinue}>
+            Continue
+          </button>
+        </div>
+      );
+    }
+
+    // Step 3 — Electricity tariff (rate only)
+    function TariffStep({ data, onChange, onUseAverages, onContinue }) {
+      const patch = (p) => onChange({ ...data, ...p });
+      const cleanDec = (v) => v.replace(/[^0-9.]/g, '');
+      return (
+        <div className="lw-fade-in lw-eu">
+          <h1 className="lw-question">How are you charged for electricity?</h1>
+          <p className="lw-question-sub">You'll find this on your latest electricity bill.</p>
+
           <div className="lw-field">
-            <span className="lw-field-label">How are you charged?</span>
             <div className="lw-toggle" role="group" aria-label="Unit rate type">
               <button type="button"
-                      className={'lw-toggle-opt' + (data.rateMode === 'same' ? ' active' : '')}
+                      className={'lw-toggle-opt' + (data.rateMode === 'same' ? ' selected' : '')}
                       aria-pressed={data.rateMode === 'same'}
                       onClick={() => patch({ rateMode: 'same' })}>
                 I pay the same rate day &amp; night
               </button>
               <button type="button"
-                      className={'lw-toggle-opt' + (data.rateMode === 'different' ? ' active' : '')}
+                      className={'lw-toggle-opt' + (data.rateMode === 'different' ? ' selected' : '')}
                       aria-pressed={data.rateMode === 'different'}
                       onClick={() => patch({ rateMode: 'different' })}>
                 I pay different day &amp; night rates
@@ -1031,7 +1053,7 @@
 
           {data.rateMode === 'same' ? (
             <div className="lw-field">
-              <label className="lw-field-label" htmlFor="eu-rate">Unit rate <span className="lw-field-opt">(optional)</span></label>
+              <label className="lw-field-label" htmlFor="eu-rate">Unit rate</label>
               <div className="lw-input-row">
                 <input id="eu-rate" type="text" inputMode="decimal" autoComplete="off"
                        placeholder="e.g. 26.35" value={data.dayRate}
@@ -1045,7 +1067,7 @@
                 <label className="lw-field-label" htmlFor="eu-day">Day rate</label>
                 <div className="lw-input-row">
                   <input id="eu-day" type="text" inputMode="decimal" autoComplete="off"
-                         placeholder="e.g. 30.0" value={data.dayRate}
+                         placeholder="e.g. 28" value={data.dayRate}
                          onChange={(e) => patch({ dayRate: cleanDec(e.target.value) })} />
                   <span className="lw-input-unit">p/kWh</span>
                 </div>
@@ -1054,7 +1076,7 @@
                 <label className="lw-field-label" htmlFor="eu-night">Night rate</label>
                 <div className="lw-input-row">
                   <input id="eu-night" type="text" inputMode="decimal" autoComplete="off"
-                         placeholder="e.g. 12.0" value={data.nightRate}
+                         placeholder="e.g. 15" value={data.nightRate}
                          onChange={(e) => patch({ nightRate: cleanDec(e.target.value) })} />
                   <span className="lw-input-unit">p/kWh</span>
                 </div>
@@ -1066,7 +1088,7 @@
             I'm not sure — use national averages
           </button>
 
-          <button type="button" className="lw-cta" disabled={!canContinue} onClick={onContinue}>
+          <button type="button" className="lw-cta" onClick={onContinue}>
             Continue
           </button>
         </div>
@@ -1122,8 +1144,14 @@
                 <span className="lw-pill-value">{formatKwh(answers.electricity_usage)} kWh</span>
               </span>
             )}
+            {answers.day_unit_rate && (
+              <span className="lw-pill" style={{ cursor: 'default' }}>
+                <span className="lw-pill-label">Rate:</span>
+                <span className="lw-pill-value">{formatRate(answers)}</span>
+              </span>
+            )}
           </div>
-          <p className="lw-next-note">Step 3 — Battery Details — is built in the next session.</p>
+          <p className="lw-next-note">Step 4 — Battery Details — is built in the next session.</p>
           <div style={{ marginTop: 8 }}>
             <button className="lw-btn lw-btn-ghost" onClick={onRestart}>Start over</button>
           </div>
@@ -1167,6 +1195,14 @@
       if (n === '') return '';
       const num = Number(n);
       return Number.isFinite(num) ? num.toLocaleString('en-GB') : n;
+    }
+
+    /* format the tariff for display: "27p/kWh" (single) or "28p/15p (E7)" (different) */
+    function formatRate(answers) {
+      const day = String(answers.day_unit_rate || '').replace(/[^0-9.]/g, '');
+      const night = String(answers.night_unit_rate || '').replace(/[^0-9.]/g, '');
+      if (!day) return '';
+      return night ? `${day}p/${night}p (E7)` : `${day}p/kWh`;
     }
 
     /* short labels for breadcrumb pills */
@@ -1263,52 +1299,77 @@
         setShowHelp(false);
       }, []);
 
-      // Step 2 — apply national averages (4,100 kWh/yr, 26.35p/kWh) so the user can proceed.
-      const handleUseAverages = useCallback(() => {
-        setElectricity({ usage: '4,100', rateMode: 'same', dayRate: '26.35', nightRate: '' });
+      // Step 2 (usage) — national average populates 4,100 kWh/yr.
+      const handleUsageAverages = useCallback(() => {
+        setElectricity((eu) => ({ ...eu, usage: '4,100' }));
       }, []);
 
-      // Step 2 — commit electricity values into shared answers (Payaca field names) and advance.
-      const handleElectricityContinue = useCallback(() => {
+      // Step 2 (usage) — commit kWh into shared answers and advance to the tariff step.
+      const handleUsageContinue = useCallback(() => {
         setAnswers((prev) => ({
           ...prev,
           electricity_usage: String(electricity.usage).replace(/[^0-9.]/g, ''),
+        }));
+        setCurrentIndex(TARIFF_INDEX);
+      }, [electricity]);
+
+      // Step 3 (tariff) — national averages: 26.35p single, or 28p day / 15p night for Economy 7.
+      const handleTariffAverages = useCallback(() => {
+        setElectricity((eu) => eu.rateMode === 'different'
+          ? { ...eu, dayRate: '28', nightRate: '15' }
+          : { ...eu, dayRate: '26.35' });
+      }, []);
+
+      // Step 3 (tariff) — commit rate(s) into shared answers (Payaca field names) and advance.
+      const handleTariffContinue = useCallback(() => {
+        setAnswers((prev) => ({
+          ...prev,
           day_unit_rate: String(electricity.dayRate).replace(/[^0-9.]/g, ''),
           night_unit_rate: electricity.rateMode === 'different'
             ? String(electricity.nightRate).replace(/[^0-9.]/g, '') : '',
         }));
-        setCurrentIndex(ELECTRICITY_INDEX + 1);
+        setCurrentIndex(TARIFF_INDEX + 1);
       }, [electricity]);
 
       // Screen routing across steps.
-      const inQualifier = currentIndex < ELECTRICITY_INDEX;       // Step 1 question screens
-      const onElectricity = currentIndex === ELECTRICITY_INDEX;   // Step 2 electricity usage
-      const isComplete = currentIndex > ELECTRICITY_INDEX;        // handover (placeholder for Step 3)
+      const inQualifier = currentIndex < USAGE_INDEX;     // Step 1 question screens
+      const onUsage = currentIndex === USAGE_INDEX;       // Step 2 annual usage (kWh)
+      const onTariff = currentIndex === TARIFF_INDEX;     // Step 3 electricity tariff (rate)
+      const isComplete = currentIndex > TARIFF_INDEX;     // handover (placeholder for Step 4)
       const currentQuestion = inQualifier ? QUESTIONS[currentIndex] : null;
-      const step = inQualifier ? { number: 1, name: 'Home Details' } : { number: 2, name: 'Electricity Usage' };
+      const step = inQualifier ? { number: 1, name: 'Home Details' }
+        : onUsage ? { number: 2, name: 'Electricity Usage' }
+        : { number: 3, name: 'Electricity Tariff' };
 
       // Breadcrumb pills: answers for screens *before* the current one (so the current
       // screen's value shows in-place rather than duplicated as a pill above).
       const breadcrumbItems = QUESTIONS
         .map((q, index) => ({ key: q.key, index, shortLabel: shortLabel(q.key), value: answers[q.key] }))
         .filter((a) => a.value != null && a.index < currentIndex);
-      if (answers.electricity_usage && ELECTRICITY_INDEX < currentIndex) {
+      if (answers.electricity_usage && USAGE_INDEX < currentIndex) {
         breadcrumbItems.push({
-          key: 'electricity_usage', index: ELECTRICITY_INDEX,
+          key: 'electricity_usage', index: USAGE_INDEX,
           shortLabel: 'Usage', value: formatKwh(answers.electricity_usage) + ' kWh',
+        });
+      }
+      if (answers.day_unit_rate && TARIFF_INDEX < currentIndex) {
+        breadcrumbItems.push({
+          key: 'rate', index: TARIFF_INDEX, shortLabel: 'Rate', value: formatRate(answers),
         });
       }
 
       // Progress: each step fills one segment (1/TOTAL_STEPS).
       const segment = 100 / TOTAL_STEPS;
-      const qualifierAnswered = breadcrumbItems.filter((a) => a.index < ELECTRICITY_INDEX).length;
+      const qualifierAnswered = breadcrumbItems.filter((a) => a.index < USAGE_INDEX).length;
       let percent;
       if (inQualifier) {
-        percent = (qualifierAnswered / ELECTRICITY_INDEX) * segment;   // Step 1 fills as qualifiers are answered
-      } else if (onElectricity) {
-        percent = segment;                                             // Step 1 done; Step 2 in progress
+        percent = (qualifierAnswered / USAGE_INDEX) * segment;   // Step 1 fills as qualifiers are answered
+      } else if (onUsage) {
+        percent = segment;                                       // Step 1 done
+      } else if (onTariff) {
+        percent = 2 * segment;                                   // Steps 1–2 done
       } else {
-        percent = 2 * segment;                                         // Step 2 complete
+        percent = 3 * segment;                                   // Steps 1–3 done
       }
 
       return (
@@ -1337,13 +1398,21 @@
                       onSelect={handleSelect}
                     />
                   )}
-                  {onElectricity && (
-                    <ElectricityUsage
+                  {onUsage && (
+                    <UsageStep
                       data={electricity}
                       onChange={setElectricity}
-                      onUseAverages={handleUseAverages}
-                      onContinue={handleElectricityContinue}
+                      onUseAverages={handleUsageAverages}
+                      onContinue={handleUsageContinue}
                       onShowHelp={() => setShowHelp(true)}
+                    />
+                  )}
+                  {onTariff && (
+                    <TariffStep
+                      data={electricity}
+                      onChange={setElectricity}
+                      onUseAverages={handleTariffAverages}
+                      onContinue={handleTariffContinue}
                     />
                   )}
                   {isComplete && <StepComplete answers={answers} onRestart={handleRestart} />}
