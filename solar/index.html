@@ -258,8 +258,9 @@
       min-height: 120px;
       justify-content: center;
     }
-    /* Non-selected cards dim/desaturate so the chosen one reads as illuminated */
-    .lw-card:not(.is-selected) {
+    /* Non-selected cards dim/desaturate only AFTER a selection is made in the group,
+       so cards start at full brightness on load (no dimming before any choice). */
+    .lw-card-grid.has-selection .lw-card:not(.is-selected) {
       opacity: 0.6;
       filter: saturate(0.4);
       transition: opacity 300ms ease, filter 300ms ease;
@@ -621,7 +622,9 @@
         <div className="lw-fade-in" key={q.key}>
           <h1 className="lw-question">{q.question}</h1>
           {q.sub && <p className="lw-question-sub">{q.sub}</p>}
-          <div className={'lw-card-grid' + (q.options.length === 2 ? ' cols-2' : '')}>
+          <div className={'lw-card-grid'
+            + (q.options.length === 2 ? ' cols-2' : '')
+            + (currentValue ? ' has-selection' : '')}>
             {q.options.map((opt) => (
               <OptionCard
                 key={opt.value}
