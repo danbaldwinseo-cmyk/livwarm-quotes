@@ -351,23 +351,27 @@
       justify-content: center;
     }
     /* Faint honeycomb texture fading in from the lower-right corner (default + hover);
-       fades out on the selected state to reinforce the depressed surface. */
+       darkens proportionally on the selected/depressed state. */
     .lw-card::before {
       content: '';
       position: absolute;
       bottom: 0;
       right: 0;
-      width: 55%;
-      height: 55%;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='24'%3E%3Cpath d='M14 0 L28 8 L28 16 L14 24 L0 16 L0 8 Z' fill='none' stroke='%23000000' stroke-width='0.5' opacity='0.12'/%3E%3C/svg%3E");
+      width: 70%;
+      height: 70%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='24'%3E%3Cpath d='M14 0 L28 8 L28 16 L14 24 L0 16 L0 8 Z' fill='none' stroke='%23000000' stroke-width='1' opacity='0.07'/%3E%3C/svg%3E");
       background-size: 28px 24px;
-      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.7) 0%, transparent 70%);
-      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.7) 0%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.75) 0%, transparent 72%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.75) 0%, transparent 72%);
       pointer-events: none;
       border-radius: inherit;
       transition: opacity 200ms ease;
+      opacity: 1;
     }
-    .lw-card.is-selected::before { opacity: 0; }
+    .lw-card.is-selected::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='24'%3E%3Cpath d='M14 0 L28 8 L28 16 L14 24 L0 16 L0 8 Z' fill='none' stroke='%23000000' stroke-width='1' opacity='0.16'/%3E%3C/svg%3E");
+      opacity: 1;
+    }
     /* Hover shimmer — a single diagonal light sweep that plays once when the cursor
        enters the card (does not loop). Reuses the shimmer-sweep keyframes defined
        further below for the selected state. Needs the base overflow/position above. */
