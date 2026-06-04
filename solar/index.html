@@ -838,14 +838,14 @@
       garage: <Svg><path d="M3 21V8l9-4 9 4v13" /><path d="M6 21v-8h12v8" /><path d="M6 16h12M6 18.5h12" /></Svg>,
       utility: <Svg><rect x="5" y="3" width="14" height="18" rx="2" /><circle cx="12" cy="13" r="3.5" /><path d="M8 6.5h.01M11 6.5h.01" /></Svg>,
       cupboard: <Svg><rect x="5" y="3" width="14" height="18" rx="1.5" /><path d="M12 3v18" /><path d="M10 10.5h.01M14 10.5h.01" /></Svg>,
-      other: <Svg><circle cx="5.5" cy="12" r="1.4" /><circle cx="12" cy="12" r="1.4" /><circle cx="18.5" cy="12" r="1.4" /></Svg>,
+      other: <Svg><circle cx="8" cy="12" r="1.2" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" /><circle cx="16" cy="12" r="1.2" fill="currentColor" stroke="none" /></Svg>,
       // Step 5 — EV
       evcharge: <Svg><path d="M13 2 4 14h6l-1 8 9-12h-6z" /></Svg>,
       car: <Svg><path d="M5 12l1.7-5A2 2 0 0 1 8.6 5.6h6.8a2 2 0 0 1 1.9 1.4L19 12" /><path d="M3 12h18v4a1 1 0 0 1-1 1h-1" /><path d="M5 17H4a1 1 0 0 1-1-1v-4" /><circle cx="7.5" cy="17" r="2" /><circle cx="16.5" cy="17" r="2" /><path d="M9.5 17h5" /></Svg>,
       calcheck: <Svg><rect x="3.5" y="5" width="17" height="16" rx="2" /><path d="M3.5 10h17" /><path d="M8 3v4M16 3v4" /><path d="M9 15.5l2 2 4-4" /></Svg>,
       clock: <Svg><circle cx="12" cy="12" r="9" /><path d="M12 7.5V12l3 2" /></Svg>,
       noplan: <Svg><rect x="3.5" y="5" width="17" height="16" rx="2" /><path d="M3.5 10h17" /><path d="M8 3v4M16 3v4" /><path d="M10 14l4 4M14 14l-4 4" /></Svg>,
-      tree: <Svg><circle cx="12" cy="9" r="5" /><path d="M12 14v7" /><path d="M9 21h6" /></Svg>,
+      backhouse: <Svg><path d="M11 10.5 16 6l5 4.5" /><path d="M12.5 10v8h7v-8" /><path d="M3 14h7" /><path d="M7.5 11.5 10 14l-2.5 2.5" /></Svg>,
     };
 
     /* ============================================================
@@ -1188,7 +1188,7 @@
     const BATTERY_OUTSIDE_OPTIONS = [
       { value: 'Side of the garage', label: 'Side of the garage', icon: 'garage' },
       { value: 'Side of the house', label: 'Side of the house', icon: 'inside' },
-      { value: 'Back of the house', label: 'Back of the house', icon: 'tree' },
+      { value: 'Back of the house', label: 'Back of the house', icon: 'backhouse' },
       { value: 'Other', label: 'Other', icon: 'other' },
     ];
     const EV_OPTIONS = [
@@ -1243,9 +1243,8 @@
     function BatteryStep({ location, inside, outside, onSelectLocation, onSelectInside, onSelectOutside, onContinue }) {
       const showInside = location === 'Inside';
       const showOutside = location === 'Outside';
-      // Continue only appears once the relevant sub-question is answered.
-      // "I'm not sure" has no sub-question and auto-advances (handled in onSettle).
-      const subAnswered = (showInside && !!inside) || (showOutside && !!outside);
+      // No Continue button: a no-sub option ("I'm not sure") auto-advances; Inside/Outside
+      // reveal a sub-question, and selecting a sub-card auto-advances.
       return (
         <div className="lw-fade-in">
           <h1 className="lw-question">Where would you like your battery installed?</h1>
@@ -1255,18 +1254,15 @@
           {showInside && (
             <div className="lw-subq">
               <h2 className="lw-subq-title">Where inside your home?</h2>
-              <CardChoice options={BATTERY_INSIDE_OPTIONS} value={inside} onSelect={onSelectInside} />
+              <CardChoice options={BATTERY_INSIDE_OPTIONS} value={inside}
+                onSelect={onSelectInside} onSettle={onContinue} />
             </div>
           )}
           {showOutside && (
             <div className="lw-subq">
               <h2 className="lw-subq-title">Where outside your home?</h2>
-              <CardChoice options={BATTERY_OUTSIDE_OPTIONS} value={outside} onSelect={onSelectOutside} />
-            </div>
-          )}
-          {subAnswered && (
-            <div className="lw-step-continue">
-              <button type="button" className="lw-cta" onClick={onContinue}>Continue</button>
+              <CardChoice options={BATTERY_OUTSIDE_OPTIONS} value={outside}
+                onSelect={onSelectOutside} onSettle={onContinue} />
             </div>
           )}
         </div>
@@ -1276,9 +1272,8 @@
     // Step 5 — EV ownership (+ conditional "planning to get one" sub-question)
     function EvStep({ hasEv, plans, onSelectHasEv, onSelectPlans, onContinue }) {
       const showPlans = hasEv === 'No';
-      // "Yes" has no sub-question and auto-advances (onSettle). Continue only appears
-      // once the "No" → planning sub-question is answered.
-      const subAnswered = showPlans && !!plans;
+      // No Continue button: "Yes" auto-advances; "No" reveals the planning sub-question,
+      // and selecting a planning card auto-advances.
       return (
         <div className="lw-fade-in">
           <h1 className="lw-question">Do you have an electric vehicle?</h1>
@@ -1288,12 +1283,8 @@
           {showPlans && (
             <div className="lw-subq">
               <h2 className="lw-subq-title">Are you planning to get one?</h2>
-              <CardChoice options={EV_PLANS_OPTIONS} value={plans} onSelect={onSelectPlans} />
-            </div>
-          )}
-          {subAnswered && (
-            <div className="lw-step-continue">
-              <button type="button" className="lw-cta" onClick={onContinue}>Continue</button>
+              <CardChoice options={EV_PLANS_OPTIONS} value={plans}
+                onSelect={onSelectPlans} onSettle={onContinue} />
             </div>
           )}
         </div>
