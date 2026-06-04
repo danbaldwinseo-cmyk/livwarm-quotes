@@ -96,11 +96,11 @@
       align-items: center;
       justify-content: center;            /* lock the content block to the middle of the viewport */
       width: 100%;
-      padding: 0 48px 10vh;               /* top 0 + larger bottom biases the block up to ~45% from top (just above centre) */
+      padding: 0 60px 10vh;               /* sides 60px; top 0 + larger bottom biases the block up to ~45% from top */
     }
     .lw-content {
       width: 100%;
-      max-width: 860px;
+      max-width: 960px;
       display: flex;
       flex-direction: column;
     }
@@ -245,6 +245,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       width: 100%;
+      max-width: 100%;
     }
     .lw-card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
     /* Exactly 5 options: 3 across the top row, the bottom 2 centred. A 6-column
@@ -417,6 +418,11 @@
       font-weight: 800;
       color: var(--color-primary);
       line-height: 1;
+    }
+    /* Bedroom cards (large number + label, no icon): squarer + more generous */
+    .lw-card:has(.lw-card-num) {
+      min-height: 140px;
+      padding: 32px 20px;
     }
 
     /* ---------- Buttons ---------- */
