@@ -359,10 +359,10 @@
       right: 0;
       width: 55%;
       height: 55%;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='24'%3E%3Cpath d='M14 0 L28 8 L28 16 L14 24 L0 16 L0 8 Z' fill='none' stroke='%23000000' stroke-width='0.5' opacity='0.08'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='24'%3E%3Cpath d='M14 0 L28 8 L28 16 L14 24 L0 16 L0 8 Z' fill='none' stroke='%23000000' stroke-width='0.5' opacity='0.12'/%3E%3C/svg%3E");
       background-size: 28px 24px;
-      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 70%);
-      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.7) 0%, transparent 70%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.7) 0%, transparent 70%);
       pointer-events: none;
       border-radius: inherit;
       transition: opacity 200ms ease;
@@ -423,21 +423,41 @@
        red border (via box-shadow). No hard red fill, no thick border.
        Keeps the 1.02 scale pulse; the shimmer sweep is on ::after below. */
     .lw-card.is-selected {
-      background: #f0f0f0;
+      background: #ebebeb;
       border: 1px solid rgba(0, 0, 0, 0.12);
-      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.12),
-                  inset 0 1px 4px rgba(0, 0, 0, 0.08);   /* pressed-into-the-page depression */
-      transform: translateY(2px);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.10),
+                  inset 0 1px 3px rgba(0, 0, 0, 0.06);
+      transform: translateY(1px);
+      animation: card-press 350ms ease-out forwards;
+    }
+    /* Two-beat press: punch deep into the page, then rise and settle just below the surface */
+    @keyframes card-press {
+      0% {
+        transform: translateY(0px);
+        background: #ffffff;
+        box-shadow: inset 0 0 0 rgba(0, 0, 0, 0);
+      }
+      35% {
+        transform: translateY(4px);
+        background: #e0e0e0;
+        box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.18),
+                    inset 0 2px 6px rgba(0, 0, 0, 0.12);
+      }
+      100% {
+        transform: translateY(1px);
+        background: #ebebeb;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.10),
+                    inset 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
     }
     .lw-card.is-selected .lw-card-icon,
     .lw-card.is-selected .lw-card-label {
-      transform: translateY(1px);
-      transition: transform 150ms ease;
+      animation: content-press 350ms ease-out forwards;
     }
-    @keyframes lwPulse {
-      0%   { transform: scale(1); }
-      50%  { transform: scale(1.02); }
-      100% { transform: scale(1); }
+    @keyframes content-press {
+      0%   { transform: translateY(0px); }
+      35%  { transform: translateY(2px); }
+      100% { transform: translateY(1px); }
     }
     /* SHIMMER — single diagonal light sweep, plays once on selection then settles */
     .lw-card.is-selected::after {
