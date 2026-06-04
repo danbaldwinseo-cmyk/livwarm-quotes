@@ -306,6 +306,11 @@
       padding: 48px 32px;
       min-height: 220px;
     }
+    /* Exactly two cards: constrain + centre so they don't span the full column */
+    .lw-card-grid:has(.lw-card:nth-child(2):last-child) {
+      max-width: 700px;
+      margin: 0 auto;
+    }
     @media (max-width: 560px) {
       .lw-card-grid,
       .lw-card-grid.cols-2,
