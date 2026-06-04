@@ -258,19 +258,33 @@
       min-height: 120px;
       justify-content: center;
     }
-    .lw-card:hover {                              /* HOVER — lift 2px, deepen shadow */
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-card-hover);
-    }
     .lw-card:focus-visible {
       outline: 3px solid var(--color-primary-light);
       outline-offset: 2px;
     }
-    .lw-card.is-selected {                        /* SELECTED — pressed, red wash, solid border, bold */
+    /* HOVER — sinks slightly, shadow reduces (cards start raised, not a tooltip lift) */
+    .lw-card:not(.is-selected):not(.is-pressing):hover {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    /* PRESS — :active (mouse held) and .is-pressing (JS-held min 80ms for touch) */
+    .lw-card:not(.is-selected):active,
+    .lw-card.is-pressing {
+      transform: translateY(3px);
+      box-shadow: none;                           /* shadow collapses on press */
+    }
+    /* SELECTED — springs back: red fill, solid red border, bold label, 1.02 pulse */
+    .lw-card.is-selected {
       background: var(--color-selected-fill);
       border-color: var(--color-selected);
-      box-shadow: none;                           /* shadow collapses → pressed feel */
+      box-shadow: none;
       transform: translateY(0);
+      animation: lwPulse 200ms ease;
+    }
+    @keyframes lwPulse {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.02); }
+      100% { transform: scale(1); }
     }
     .lw-card-icon {
       color: var(--color-primary);
@@ -535,10 +549,13 @@
       );
     }
 
-    function OptionCard({ option, selected, onSelect }) {
+    function OptionCard({ option, selected, pressing, onSelect }) {
+      const cls = 'lw-card'
+        + (selected ? ' is-selected' : '')
+        + (pressing ? ' is-pressing' : '');
       return (
         <button
-          className={'lw-card' + (selected ? ' is-selected' : '')}
+          className={cls}
           onClick={() => onSelect(option)}
           aria-pressed={selected}
         >
@@ -552,7 +569,7 @@
       );
     }
 
-    function Question({ q, currentValue, onSelect }) {
+    function Question({ q, currentValue, pressingValue, onSelect }) {
       return (
         <div className="lw-fade-in" key={q.key}>
           <h1 className="lw-question">{q.question}</h1>
@@ -563,6 +580,7 @@
                 key={opt.value}
                 option={opt}
                 selected={currentValue === opt.value}
+                pressing={pressingValue === opt.value}
                 onSelect={onSelect}
               />
             ))}
@@ -646,17 +664,38 @@
       const [answers, setAnswers] = useState({});   // { house_owner_type: 'Homeowner', ... }
       const [currentIndex, setCurrentIndex] = useState(0);
       const [deadEnd, setDeadEnd] = useState(null);  // { reason }
+      const [pressing, setPressing] = useState(null); // option.value currently pressed
+      const [busy, setBusy] = useState(false);        // guards the press→select→advance sequence
+
+      // Card interaction timings (Section 7 #9): hold the press for a MINIMUM of
+      // 80ms (via setTimeout) so touch users feel it before the selected state is
+      // applied, then let the 1.02 selected pulse play before advancing.
+      const PRESS_MS = 80;
+      const SELECT_HOLD_MS = 220;
 
       const handleSelect = useCallback((option) => {
+        if (busy) return;                          // ignore taps mid-animation
         const q = QUESTIONS[currentIndex];
-        if (option.deadEnd) {
-          const label = q.key === 'roof_type' && option.value === 'Flat' ? 'Flat roof' : option.value;
-          setDeadEnd({ reason: DEAD_END_REASONS[label] || "Based on your answer, we're unable to proceed." });
-          return;
-        }
-        setAnswers((prev) => ({ ...prev, [q.key]: option.value }));
-        setCurrentIndex((i) => i + 1);
-      }, [currentIndex]);
+        setBusy(true);
+        setPressing(option.value);                 // → .is-pressing (translateY(3px), shadow collapses)
+        setTimeout(() => {
+          if (option.deadEnd) {
+            setPressing(null);
+            const label = q.key === 'roof_type' && option.value === 'Flat' ? 'Flat roof' : option.value;
+            setDeadEnd({ reason: DEAD_END_REASONS[label] || "Based on your answer, we're unable to proceed." });
+            setBusy(false);
+            return;
+          }
+          // Spring to selected: clearing pressing + setting the answer batches into
+          // one render, so the card goes straight from pressed → selected + pulse.
+          setPressing(null);
+          setAnswers((prev) => ({ ...prev, [q.key]: option.value }));
+          setTimeout(() => {                        // let the pulse play, then advance
+            setCurrentIndex((i) => i + 1);
+            setBusy(false);
+          }, SELECT_HOLD_MS);
+        }, PRESS_MS);
+      }, [currentIndex, busy]);
 
       const handleEdit = useCallback((index) => {
         // Jump back to an answered question. Keep its own answer so the chosen
@@ -668,14 +707,18 @@
           return next;
         });
         setCurrentIndex(index);
+        setPressing(null);
+        setBusy(false);
       }, []);
 
-      const handleBackFromDeadEnd = useCallback(() => setDeadEnd(null), []);
+      const handleBackFromDeadEnd = useCallback(() => { setDeadEnd(null); setBusy(false); }, []);
 
       const handleRestart = useCallback(() => {
         setAnswers({});
         setCurrentIndex(0);
         setDeadEnd(null);
+        setPressing(null);
+        setBusy(false);
       }, []);
 
       // Breadcrumb pills: answered questions that sit *before* the active one.
@@ -708,6 +751,7 @@
                   <Question
                     q={currentQuestion}
                     currentValue={answers[currentQuestion.key]}
+                    pressingValue={pressing}
                     onSelect={handleSelect}
                   />
                 )}
