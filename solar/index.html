@@ -301,6 +301,8 @@
     .lw-card-grid.grid-5 .lw-card { grid-column: span 2; }
     .lw-card-grid.grid-5 .lw-card:nth-child(4) { grid-column: 2 / span 2; }
     .lw-card-grid.grid-5 .lw-card:nth-child(5) { grid-column: 4 / span 2; }
+    /* 4 options in a single row (battery inside locations) */
+    .lw-card-grid.grid-4 { grid-template-columns: repeat(4, 1fr); }
     /* Exactly two cards: more generous padding so they don't read as thin strips */
     .lw-card-grid:has(.lw-card:nth-child(2):last-child) .lw-card {
       padding: 48px 32px;
@@ -314,6 +316,7 @@
     @media (max-width: 560px) {
       .lw-card-grid,
       .lw-card-grid.cols-2,
+      .lw-card-grid.grid-4,
       .lw-card-grid.grid-5 { grid-template-columns: repeat(2, 1fr); }
       .lw-card-grid.grid-5 .lw-card,
       .lw-card-grid.grid-5 .lw-card:nth-child(4),
@@ -667,6 +670,21 @@
     }
     .lw-cta:disabled { opacity: 0.4; cursor: not-allowed; }
 
+    /* ---------- Steps 4 & 5 — card question + same-screen sub-question ---------- */
+    .lw-subq { animation: lwSubIn 200ms ease both; }
+    @keyframes lwSubIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .lw-subq-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--color-dark);
+      text-align: center;
+      margin: 36px 0 18px;
+    }
+    .lw-step-continue { max-width: 420px; margin: 36px auto 0; }
+
     /* ---------- Help modal ---------- */
     .lw-modal-overlay {
       position: fixed;
@@ -813,6 +831,20 @@
       check: <Svg size={18}><path d="m20 6-11 11-5-5" /></Svg>,
       star: <Svg size={16}><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.2l1-5.8L3.5 9.2l5.9-.9z" /></Svg>,
       shield: <Svg size={16}><path d="M12 3l7 3v6c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6z" /><path d="m9 12 2 2 4-4" /></Svg>,
+      // Step 4 — battery location
+      inside: <Svg><path d="M3 11l9-7 9 7" /><path d="M5 10v10h14V10" /><path d="M9 20v-6h6v6" /></Svg>,
+      outside: <Svg><circle cx="12" cy="12" r="4" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" /></Svg>,
+      unsure: <Svg><circle cx="12" cy="12" r="9" /><path d="M9.2 9.3a3 3 0 0 1 5.6 1.2c0 2-2.8 2.5-2.8 4" /><path d="M12 17.5h.01" /></Svg>,
+      garage: <Svg><path d="M3 21V8l9-4 9 4v13" /><path d="M6 21v-8h12v8" /><path d="M6 16h12M6 18.5h12" /></Svg>,
+      utility: <Svg><rect x="5" y="3" width="14" height="18" rx="2" /><circle cx="12" cy="13" r="3.5" /><path d="M8 6.5h.01M11 6.5h.01" /></Svg>,
+      cupboard: <Svg><rect x="5" y="3" width="14" height="18" rx="1.5" /><path d="M12 3v18" /><path d="M10 10.5h.01M14 10.5h.01" /></Svg>,
+      other: <Svg><circle cx="5.5" cy="12" r="1.4" /><circle cx="12" cy="12" r="1.4" /><circle cx="18.5" cy="12" r="1.4" /></Svg>,
+      // Step 5 — EV
+      evcharge: <Svg><path d="M13 2 4 14h6l-1 8 9-12h-6z" /></Svg>,
+      car: <Svg><path d="M5 12l1.7-5A2 2 0 0 1 8.6 5.6h6.8a2 2 0 0 1 1.9 1.4L19 12" /><path d="M3 12h18v4a1 1 0 0 1-1 1h-1" /><path d="M5 17H4a1 1 0 0 1-1-1v-4" /><circle cx="7.5" cy="17" r="2" /><circle cx="16.5" cy="17" r="2" /><path d="M9.5 17h5" /></Svg>,
+      calcheck: <Svg><rect x="3.5" y="5" width="17" height="16" rx="2" /><path d="M3.5 10h17" /><path d="M8 3v4M16 3v4" /><path d="M9 15.5l2 2 4-4" /></Svg>,
+      clock: <Svg><circle cx="12" cy="12" r="9" /><path d="M12 7.5V12l3 2" /></Svg>,
+      noplan: <Svg><rect x="3.5" y="5" width="17" height="16" rx="2" /><path d="M3.5 10h17" /><path d="M8 3v4M16 3v4" /><path d="M10 14l4 4M14 14l-4 4" /></Svg>,
     };
 
     /* ============================================================
@@ -864,6 +896,12 @@
     // Step 2 = annual usage (kWh); Step 3 = electricity tariff (rate).
     const USAGE_INDEX = QUESTIONS.length;        // 4
     const TARIFF_INDEX = QUESTIONS.length + 1;   // 5
+    const BATTERY_INDEX = QUESTIONS.length + 2;  // 6
+    const EV_INDEX = QUESTIONS.length + 3;       // 7
+
+    // Card interaction timings (Section 7 #9): minimum press hold, then settle.
+    const PRESS_MS = 80;
+    const SELECT_HOLD_MS = 500;
 
     /* ============================================================
        COMPONENTS
@@ -1132,6 +1170,111 @@
       );
     }
 
+    /* ============================================================
+       STEP 4 / 5 — card-question options
+       ============================================================ */
+    const BATTERY_OPTIONS = [
+      { value: 'Inside', label: 'Inside', icon: 'inside' },
+      { value: 'Outside', label: 'Outside', icon: 'outside' },
+      { value: "I'm not sure", label: "I'm not sure", icon: 'unsure' },
+    ];
+    const BATTERY_INSIDE_OPTIONS = [
+      { value: 'Garage', label: 'Garage', icon: 'garage' },
+      { value: 'Utility room', label: 'Utility room', icon: 'utility' },
+      { value: 'Cupboard', label: 'Cupboard', icon: 'cupboard' },
+      { value: 'Other', label: 'Other', icon: 'other' },
+    ];
+    const EV_OPTIONS = [
+      { value: 'Yes', label: 'Yes, I have an EV', icon: 'evcharge' },
+      { value: 'No', label: "No, I don't", icon: 'car' },
+    ];
+    const EV_PLANS_OPTIONS = [
+      { value: 'within_2_years', label: 'Yes — within 2 years', icon: 'calcheck' },
+      { value: 'maybe_2_5_years', label: 'Maybe — 2 to 5 years', icon: 'clock' },
+      { value: 'no_plans', label: 'No plans', icon: 'noplan' },
+    ];
+
+    // A group of answer cards with the full LivWarm interaction (press → glow →
+    // shimmer → dim others) but NO auto-advance — the value is committed via onSelect.
+    function CardChoice({ options, value, onSelect }) {
+      const [pressing, setPressing] = useState(null);
+      const [tick, setTick] = useState(0);
+      const [busy, setBusy] = useState(false);
+      const choose = (option) => {
+        if (busy) return;
+        setBusy(true);
+        setPressing(option.value);
+        setTimeout(() => {
+          setPressing(null);
+          onSelect(option.value);
+          setTick((t) => t + 1);
+          setTimeout(() => setBusy(false), SELECT_HOLD_MS);
+        }, PRESS_MS);
+      };
+      const cls = 'lw-card-grid'
+        + (options.length === 2 ? ' cols-2' : '')
+        + (options.length === 4 ? ' grid-4' : '')
+        + (options.length === 5 ? ' grid-5' : '')
+        + (value ? ' has-selection' : '');
+      return (
+        <div className={cls}>
+          {options.map((opt) => (
+            <OptionCard key={opt.value} option={opt}
+              selected={value === opt.value}
+              pressing={pressing === opt.value}
+              selectionTick={tick}
+              onSelect={choose} />
+          ))}
+        </div>
+      );
+    }
+
+    // Step 4 — Battery installation location (+ conditional "where inside" sub-question)
+    function BatteryStep({ location, inside, onSelectLocation, onSelectInside, onContinue }) {
+      const showInside = location === 'Inside';
+      const canContinue = !!location && (location !== 'Inside' || !!inside);
+      return (
+        <div className="lw-fade-in">
+          <h1 className="lw-question">Where would you like your battery installed?</h1>
+          <CardChoice options={BATTERY_OPTIONS} value={location} onSelect={onSelectLocation} />
+          {showInside && (
+            <div className="lw-subq">
+              <h2 className="lw-subq-title">Where inside your home?</h2>
+              <CardChoice options={BATTERY_INSIDE_OPTIONS} value={inside} onSelect={onSelectInside} />
+            </div>
+          )}
+          {location && (
+            <div className="lw-step-continue">
+              <button type="button" className="lw-cta" disabled={!canContinue} onClick={onContinue}>Continue</button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Step 5 — EV ownership (+ conditional "planning to get one" sub-question)
+    function EvStep({ hasEv, plans, onSelectHasEv, onSelectPlans, onContinue }) {
+      const showPlans = hasEv === 'No';
+      const canContinue = hasEv === 'Yes' || (hasEv === 'No' && !!plans);
+      return (
+        <div className="lw-fade-in">
+          <h1 className="lw-question">Do you have an electric vehicle?</h1>
+          <CardChoice options={EV_OPTIONS} value={hasEv} onSelect={onSelectHasEv} />
+          {showPlans && (
+            <div className="lw-subq">
+              <h2 className="lw-subq-title">Are you planning to get one?</h2>
+              <CardChoice options={EV_PLANS_OPTIONS} value={plans} onSelect={onSelectPlans} />
+            </div>
+          )}
+          {hasEv && (
+            <div className="lw-step-continue">
+              <button type="button" className="lw-cta" disabled={!canContinue} onClick={onContinue}>Continue</button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     function StepComplete({ answers, onRestart }) {
       return (
         <div className="lw-complete lw-fade-in">
@@ -1156,8 +1299,20 @@
                 <span className="lw-pill-value">{formatRate(answers)}</span>
               </span>
             )}
+            {answers.battery_location && (
+              <span className="lw-pill" style={{ cursor: 'default' }}>
+                <span className="lw-pill-label">Battery:</span>
+                <span className="lw-pill-value">{formatBattery(answers)}</span>
+              </span>
+            )}
+            {answers.has_ev && (
+              <span className="lw-pill" style={{ cursor: 'default' }}>
+                <span className="lw-pill-label">EV:</span>
+                <span className="lw-pill-value">{formatEv(answers)}</span>
+              </span>
+            )}
           </div>
-          <p className="lw-next-note">Step 4 — Battery Details — is built in the next session.</p>
+          <p className="lw-next-note">Step 6 — Address &amp; Roof Confirmation — is built in the next session.</p>
           <div style={{ marginTop: 8 }}>
             <button className="lw-btn lw-btn-ghost" onClick={onRestart}>Start over</button>
           </div>
@@ -1211,6 +1366,24 @@
       return night ? `${day}p/${night}p (E7)` : `${day}p/kWh`;
     }
 
+    /* tariff/battery/EV breadcrumb value formatters */
+    function formatBattery(a) {
+      if (a.battery_location === 'Inside') return 'Inside - ' + (a.battery_location_inside || '');
+      if (a.battery_location === 'Outside') return 'Outside';
+      if (a.battery_location) return 'Not sure';
+      return '';
+    }
+    function formatEv(a) {
+      if (a.has_ev === 'Yes') return 'Yes';
+      if (a.has_ev === 'No') {
+        if (a.ev_plans === 'within_2_years') return 'No - within 2 years';
+        if (a.ev_plans === 'maybe_2_5_years') return 'No - 2 to 5 years';
+        if (a.ev_plans === 'no_plans') return 'No plans';
+        return 'No';
+      }
+      return '';
+    }
+
     /* short labels for breadcrumb pills */
     function shortLabel(key) {
       switch (key) {
@@ -1240,12 +1413,6 @@
       // Step 2 — electricity usage form state (kept in App so it persists across navigation)
       const [electricity, setElectricity] = useState({ usage: '', rateMode: 'same', dayRate: '', nightRate: '' });
       const [showHelp, setShowHelp] = useState(false);
-
-      // Card interaction timings (Section 7 #9): hold the press for a MINIMUM of
-      // 80ms (via setTimeout) so touch users feel it before the selected state is
-      // applied, then let the 1.02 selected pulse play before advancing.
-      const PRESS_MS = 80;
-      const SELECT_HOLD_MS = 500;  // wait after selection so the illuminated/dimmed state registers before advancing
 
       const handleSelect = useCallback((option) => {
         if (busy) return;                          // ignore taps mid-animation
@@ -1337,15 +1504,45 @@
         setCurrentIndex(TARIFF_INDEX + 1);
       }, [electricity]);
 
+      // Step 4 (battery) — select location; clear the sub-answer when not "Inside".
+      const handleBatteryLocation = useCallback((val) => {
+        setAnswers((prev) => {
+          const next = { ...prev, battery_location: val };
+          if (val !== 'Inside') delete next.battery_location_inside;
+          return next;
+        });
+      }, []);
+      const handleBatteryInside = useCallback((val) => {
+        setAnswers((prev) => ({ ...prev, battery_location_inside: val }));
+      }, []);
+      const handleBatteryContinue = useCallback(() => setCurrentIndex(EV_INDEX), []);
+
+      // Step 5 (EV) — select ownership; clear plans when they DO have an EV.
+      const handleHasEv = useCallback((val) => {
+        setAnswers((prev) => {
+          const next = { ...prev, has_ev: val };
+          if (val !== 'No') delete next.ev_plans;
+          return next;
+        });
+      }, []);
+      const handleEvPlans = useCallback((val) => {
+        setAnswers((prev) => ({ ...prev, ev_plans: val }));
+      }, []);
+      const handleEvContinue = useCallback(() => setCurrentIndex(EV_INDEX + 1), []);
+
       // Screen routing across steps.
       const inQualifier = currentIndex < USAGE_INDEX;     // Step 1 question screens
       const onUsage = currentIndex === USAGE_INDEX;       // Step 2 annual usage (kWh)
       const onTariff = currentIndex === TARIFF_INDEX;     // Step 3 electricity tariff (rate)
-      const isComplete = currentIndex > TARIFF_INDEX;     // handover (placeholder for Step 4)
+      const onBattery = currentIndex === BATTERY_INDEX;   // Step 4 battery location
+      const onEv = currentIndex === EV_INDEX;             // Step 5 EV details
+      const isComplete = currentIndex > EV_INDEX;         // handover (placeholder for Step 6)
       const currentQuestion = inQualifier ? QUESTIONS[currentIndex] : null;
       const step = inQualifier ? { number: 1, name: 'Home Details' }
         : onUsage ? { number: 2, name: 'Electricity Usage' }
-        : { number: 3, name: 'Electricity Tariff' };
+        : onTariff ? { number: 3, name: 'Electricity Tariff' }
+        : onBattery ? { number: 4, name: 'Battery Details' }
+        : { number: 5, name: 'EV Details' };
 
       // Breadcrumb pills: answers for screens *before* the current one (so the current
       // screen's value shows in-place rather than duplicated as a pill above).
@@ -1363,6 +1560,16 @@
           key: 'rate', index: TARIFF_INDEX, shortLabel: 'Rate', value: formatRate(answers),
         });
       }
+      if (answers.battery_location && BATTERY_INDEX < currentIndex) {
+        breadcrumbItems.push({
+          key: 'battery', index: BATTERY_INDEX, shortLabel: 'Battery', value: formatBattery(answers),
+        });
+      }
+      if (answers.has_ev && EV_INDEX < currentIndex) {
+        breadcrumbItems.push({
+          key: 'ev', index: EV_INDEX, shortLabel: 'EV', value: formatEv(answers),
+        });
+      }
 
       // Progress: each step fills one segment (1/TOTAL_STEPS).
       const segment = 100 / TOTAL_STEPS;
@@ -1374,8 +1581,12 @@
         percent = segment;                                       // Step 1 done
       } else if (onTariff) {
         percent = 2 * segment;                                   // Steps 1–2 done
-      } else {
+      } else if (onBattery) {
         percent = 3 * segment;                                   // Steps 1–3 done
+      } else if (onEv) {
+        percent = 4 * segment;                                   // Steps 1–4 done
+      } else {
+        percent = 5 * segment;                                   // Steps 1–5 done
       }
 
       return (
@@ -1419,6 +1630,24 @@
                       onChange={setElectricity}
                       onUseAverages={handleTariffAverages}
                       onContinue={handleTariffContinue}
+                    />
+                  )}
+                  {onBattery && (
+                    <BatteryStep
+                      location={answers.battery_location}
+                      inside={answers.battery_location_inside}
+                      onSelectLocation={handleBatteryLocation}
+                      onSelectInside={handleBatteryInside}
+                      onContinue={handleBatteryContinue}
+                    />
+                  )}
+                  {onEv && (
+                    <EvStep
+                      hasEv={answers.has_ev}
+                      plans={answers.ev_plans}
+                      onSelectHasEv={handleHasEv}
+                      onSelectPlans={handleEvPlans}
+                      onContinue={handleEvContinue}
                     />
                   )}
                   {isComplete && <StepComplete answers={answers} onRestart={handleRestart} />}
