@@ -846,6 +846,11 @@
       clock: <Svg><circle cx="12" cy="12" r="9" /><path d="M12 7.5V12l3 2" /></Svg>,
       noplan: <Svg><rect x="3.5" y="5" width="17" height="16" rx="2" /><path d="M3.5 10h17" /><path d="M8 3v4M16 3v4" /><path d="M10 14l4 4M14 14l-4 4" /></Svg>,
       backhouse: <Svg><path d="M11 10.5 16 6l5 4.5" /><path d="M12.5 10v8h7v-8" /><path d="M3 14h7" /><path d="M7.5 11.5 10 14l-2.5 2.5" /></Svg>,
+      // Step 5 — EV charging method
+      homecharge: <Svg><path d="M4 11l8-6 8 6" /><path d="M6 10.5V19h12v-8.5" /><path d="M10.5 12.4v1.6M13.5 12.4v1.6" /><path d="M9.5 14h5v1.4a2.5 2.5 0 0 1-5 0z" /><path d="M12 18.4v-1" /></Svg>,
+      homebolt: <Svg><path d="M4 11l8-6 8 6" /><path d="M6 10.5V19h12v-8.5" /><path d="M12.7 11l-2.2 3.4h2.4L12.3 18" /></Svg>,
+      chargerarrow: <Svg><rect x="3.5" y="3.5" width="9" height="17" rx="2" /><path d="M3.5 8.5h9" /><path d="M8.3 11l-1.6 3h2l-1.4 3" /><path d="M15 12h5" /><path d="M17.5 9.5 20 12l-2.5 2.5" /></Svg>,
+      charger: <Svg><rect x="7" y="3.5" width="10" height="17" rx="2" /><path d="M7 8.5h10" /><path d="M12.8 11l-2.2 3.4h2.4L12.4 18" /></Svg>,
     };
 
     /* ============================================================
@@ -1200,6 +1205,12 @@
       { value: 'maybe_2_5_years', label: 'Maybe — 2 to 5 years', icon: 'clock' },
       { value: 'no_plans', label: 'No plans', icon: 'noplan' },
     ];
+    const EV_CHARGING_OPTIONS = [
+      { value: 'home_established', label: 'At home — over a year now', icon: 'homecharge' },
+      { value: 'home_recent', label: 'At home — got my EV recently', icon: 'homebolt' },
+      { value: 'elsewhere_wants_charger', label: 'Elsewhere — but I want a home charger', icon: 'chargerarrow' },
+      { value: 'elsewhere_staying', label: 'Elsewhere — keeping it that way', icon: 'charger' },
+    ];
 
     // A group of answer cards with the full LivWarm interaction (press → glow →
     // shimmer → dim others) but NO auto-advance — the value is committed via onSelect.
@@ -1270,16 +1281,22 @@
     }
 
     // Step 5 — EV ownership (+ conditional "planning to get one" sub-question)
-    function EvStep({ hasEv, plans, onSelectHasEv, onSelectPlans, onContinue }) {
+    function EvStep({ hasEv, plans, charging, onSelectHasEv, onSelectPlans, onSelectCharging, onContinue }) {
+      const showCharging = hasEv === 'Yes';
       const showPlans = hasEv === 'No';
-      // No Continue button: "Yes" auto-advances; "No" reveals the planning sub-question,
-      // and selecting a planning card auto-advances.
+      // No Continue button. Both primary options reveal a sub-question; selecting a
+      // sub-card auto-advances. (Yes → charging method, No → planning to get one.)
       return (
         <div className="lw-fade-in">
           <h1 className="lw-question">Do you have an electric vehicle?</h1>
-          <CardChoice options={EV_OPTIONS} value={hasEv}
-            onSelect={onSelectHasEv}
-            onSettle={(v) => { if (v === 'Yes') onContinue(); }} />
+          <CardChoice options={EV_OPTIONS} value={hasEv} onSelect={onSelectHasEv} />
+          {showCharging && (
+            <div className="lw-subq">
+              <h2 className="lw-subq-title">How do you currently charge your EV?</h2>
+              <CardChoice options={EV_CHARGING_OPTIONS} value={charging}
+                onSelect={onSelectCharging} onSettle={onContinue} />
+            </div>
+          )}
           {showPlans && (
             <div className="lw-subq">
               <h2 className="lw-subq-title">Are you planning to get one?</h2>
@@ -1390,7 +1407,13 @@
       return '';
     }
     function formatEv(a) {
-      if (a.has_ev === 'Yes') return 'Yes';
+      if (a.has_ev === 'Yes') {
+        if (a.ev_charging === 'home_established') return 'Yes - at home (1yr+)';
+        if (a.ev_charging === 'home_recent') return 'Yes - at home (new)';
+        if (a.ev_charging === 'elsewhere_wants_charger') return 'Yes - wants charger';
+        if (a.ev_charging === 'elsewhere_staying') return 'Yes - charges elsewhere';
+        return 'Yes';
+      }
       if (a.has_ev === 'No') {
         if (a.ev_plans === 'within_2_years') return 'No - within 2 years';
         if (a.ev_plans === 'maybe_2_5_years') return 'No - 2 to 5 years';
@@ -1541,12 +1564,16 @@
       const handleHasEv = useCallback((val) => {
         setAnswers((prev) => {
           const next = { ...prev, has_ev: val };
-          if (val !== 'No') delete next.ev_plans;
+          if (val !== 'No') delete next.ev_plans;       // No → planning sub-question
+          if (val !== 'Yes') delete next.ev_charging;   // Yes → charging sub-question
           return next;
         });
       }, []);
       const handleEvPlans = useCallback((val) => {
         setAnswers((prev) => ({ ...prev, ev_plans: val }));
+      }, []);
+      const handleEvCharging = useCallback((val) => {
+        setAnswers((prev) => ({ ...prev, ev_charging: val }));
       }, []);
       const handleEvContinue = useCallback(() => setCurrentIndex(EV_INDEX + 1), []);
 
@@ -1667,8 +1694,10 @@
                     <EvStep
                       hasEv={answers.has_ev}
                       plans={answers.ev_plans}
+                      charging={answers.ev_charging}
                       onSelectHasEv={handleHasEv}
                       onSelectPlans={handleEvPlans}
+                      onSelectCharging={handleEvCharging}
                       onContinue={handleEvContinue}
                     />
                   )}
