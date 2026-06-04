@@ -258,6 +258,12 @@
       min-height: 120px;
       justify-content: center;
     }
+    /* Non-selected cards dim/desaturate so the chosen one reads as illuminated */
+    .lw-card:not(.is-selected) {
+      opacity: 0.6;
+      filter: saturate(0.4);
+      transition: opacity 300ms ease, filter 300ms ease;
+    }
     .lw-card:focus-visible {
       outline: 3px solid var(--color-primary-light);
       outline-offset: 2px;
@@ -280,7 +286,8 @@
       background: #ffffff;
       border-color: transparent;                 /* drop the grey border; red hairline comes from box-shadow */
       box-shadow: 0 4px 24px rgba(232, 50, 58, 0.18),
-                  0 0 0 1px rgba(232, 50, 58, 0.12);
+                  0 0 0 1px rgba(232, 50, 58, 0.12),
+                  inset 0 0 40px rgba(232, 50, 58, 0.06);  /* illuminated — warmth pushed inward */
       transform: translateY(0px);
       overflow: hidden;
       position: relative;
@@ -713,7 +720,7 @@
       // 80ms (via setTimeout) so touch users feel it before the selected state is
       // applied, then let the 1.02 selected pulse play before advancing.
       const PRESS_MS = 80;
-      const SELECT_HOLD_MS = 220;
+      const SELECT_HOLD_MS = 500;  // wait after selection so the illuminated/dimmed state registers before advancing
 
       const handleSelect = useCallback((option) => {
         if (busy) return;                          // ignore taps mid-animation
