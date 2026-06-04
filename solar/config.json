@@ -1,0 +1,9 @@
+{
+  "_comment": "API key references only. Actual secret keys are stored server-side in WordPress. These public/reference values are wired up in later sessions.",
+  "googleMapsApiKey": "",
+  "googlePlacesApiKey": "",
+  "googleSolarApiKey": "",
+  "stripePublishableKey": "",
+  "wpAjaxEndpoint": "",
+  "deadEndUrl": "/sorry-we-cannot-help"
+}

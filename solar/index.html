@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LivWarm Solar Quote</title>
+
+  <!-- Nunito as the fallback stack member; loads instantly while IBrand resolves -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- React 18 + Babel standalone: self-contained single-file SPA, deployable via Code Snippets -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* ============================================================
+       BRAND FONT — IBrand (Section 3)
+       woff2/woff supplied in /fonts/. Path is relative to /solar/.
+       When deployed to WordPress, update the url() paths to the
+       theme/uploads location where the fonts are hosted.
+       Falls back to Nunito, then system sans-serif.
+       ============================================================ */
+    @font-face {
+      font-family: 'IBrand';
+      src: url('../fonts/Ibrand.woff2') format('woff2'),
+           url('../fonts/Ibrand.woff') format('woff'),
+           url('../fonts/Ibrand.ttf') format('truetype');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* ============================================================
+       BRAND TOKENS (Section 3)
+       ============================================================ */
+    :root {
+      /* Colours */
+      --color-primary: #E8323A;        /* LivWarm red - dominant brand colour */
+      --color-primary-light: #F05A5F;  /* Lighter red - buttons, step numbers */
+      --color-cta-green: #4CAF50;      /* CTA buttons on red backgrounds */
+      --color-dark: #2D2D2D;           /* Headings on white */
+      --color-body: #4A4A4A;           /* Body text */
+      --color-grey-bg: #3D3D3D;        /* Dark section backgrounds */
+      --color-white: #FFFFFF;
+      --color-card-bg: #F8F8F8;        /* Light card backgrounds in form */
+      --color-border: #E5E5E5;         /* Subtle borders */
+      --color-selected: #E8323A;       /* Selected card state */
+
+      /* Red wash for the selected card fill (low-opacity primary) */
+      --color-selected-fill: rgba(232, 50, 58, 0.08);
+
+      /* Typography */
+      --font-brand: 'IBrand', 'Nunito', sans-serif;
+      --text-display: 2.5rem;   /* Quote results headline */
+      --text-h1: 2rem;          /* Step question */
+      --text-h2: 1.5rem;        /* Section headers */
+      --text-body: 1rem;        /* Body copy - minimum 16px always */
+      --text-small: 0.875rem;   /* Labels, captions */
+
+      /* UI language */
+      --radius-card: 12px;
+      --radius-btn: 8px;
+      --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.10);
+      --shadow-card-hover: 0 10px 24px rgba(0, 0, 0, 0.16);
+      --transition: 150ms ease;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--color-white);
+      color: var(--color-body);
+      font-family: var(--font-brand);
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============================================================
+       APP SHELL
+       ============================================================ */
+    .lw-app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .lw-main {
+      flex: 1;
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+
+    /* ---------- Header ---------- */
+    .lw-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-border);
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .lw-logo {
+      display: inline-flex;
+      align-items: baseline;
+      font-weight: 800;
+      font-size: 1.6rem;
+      letter-spacing: -0.5px;
+      color: var(--color-dark);
+      text-decoration: none;
+      line-height: 1;
+    }
+    .lw-logo .liv { color: var(--color-dark); }
+    .lw-logo .warm { color: var(--color-primary); }
+    .lw-logo .dot { color: var(--color-primary); }
+
+    /* Header trust strip (improvement #2 — trust signals from Step 1 onward) */
+    .lw-trust-mini {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: var(--text-small);
+      color: var(--color-body);
+      font-weight: 600;
+    }
+    .lw-trust-mini span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .lw-trust-mini svg { color: var(--color-primary); }
+    @media (max-width: 640px) {
+      .lw-trust-mini { display: none; }
+    }
+
+    /* ---------- Progress bar (improvement #3 — bold red, % + step name) ---------- */
+    .lw-progress-wrap {
+      max-width: 760px;
+      margin: 24px auto 0;
+      padding: 0 20px;
+      width: 100%;
+    }
+    .lw-progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .lw-progress-step {
+      font-weight: 800;
+      font-size: var(--text-small);
+      color: var(--color-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .lw-progress-step .lw-step-count { color: var(--color-primary); }
+    .lw-progress-pct {
+      font-weight: 800;
+      font-size: var(--text-small);
+      color: var(--color-primary);
+    }
+    .lw-progress-track {
+      height: 10px;
+      background: var(--color-border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .lw-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+      border-radius: 999px;
+      transition: width 300ms ease;
+      min-width: 0;
+    }
+
+    /* ---------- Answer breadcrumb pills (improvement, Section 7) ---------- */
+    .lw-breadcrumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .lw-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--color-selected-fill);
+      border: 1.5px solid var(--color-primary);
+      color: var(--color-dark);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: var(--text-small);
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+      line-height: 1.2;
+    }
+    .lw-pill:hover { background: rgba(232, 50, 58, 0.14); }
+    .lw-pill .lw-pill-label {
+      color: var(--color-body);
+      font-weight: 600;
+      opacity: 0.85;
+    }
+    .lw-pill .lw-pill-value { color: var(--color-primary); }
+    .lw-pill .lw-pill-edit { color: var(--color-primary); display: inline-flex; }
+
+    /* ---------- Question + cards ---------- */
+    .lw-question {
+      font-size: var(--text-h1);
+      font-weight: 800;
+      color: var(--color-dark);
+      margin: 0 0 6px;
+      line-height: 1.2;
+    }
+    .lw-question-sub {
+      font-size: var(--text-body);
+      color: var(--color-body);
+      margin: 0 0 24px;
+    }
+
+    .lw-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+    }
+    .lw-card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 480px) {
+      .lw-card-grid, .lw-card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* 3-state card interaction (Section 7 #9) */
+    .lw-card {
+      position: relative;
+      background: var(--color-card-bg);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 22px 16px;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: var(--shadow-card);            /* DEFAULT */
+      transition: transform var(--transition),
+                  box-shadow var(--transition),
+                  background var(--transition),
+                  border-color var(--transition);
+      font-family: inherit;
+      color: var(--color-body);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      min-height: 120px;
+      justify-content: center;
+    }
+    .lw-card:hover {                              /* HOVER — lift 2px, deepen shadow */
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-card-hover);
+    }
+    .lw-card:focus-visible {
+      outline: 3px solid var(--color-primary-light);
+      outline-offset: 2px;
+    }
+    .lw-card.is-selected {                        /* SELECTED — pressed, red wash, solid border, bold */
+      background: var(--color-selected-fill);
+      border-color: var(--color-selected);
+      box-shadow: none;                           /* shadow collapses → pressed feel */
+      transform: translateY(0);
+    }
+    .lw-card-icon {
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+    }
+    .lw-card-label {
+      font-size: var(--text-body);
+      font-weight: 600;
+      color: var(--color-dark);
+      transition: font-weight var(--transition);
+    }
+    .lw-card.is-selected .lw-card-label { font-weight: 800; }   /* label goes bold */
+    .lw-card-num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      line-height: 1;
+    }
+
+    /* ---------- Buttons ---------- */
+    .lw-btn {
+      font-family: inherit;
+      font-weight: 800;
+      font-size: var(--text-body);
+      border-radius: var(--radius-btn);
+      padding: 14px 26px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lw-btn-primary {
+      background: var(--color-primary);
+      color: var(--color-white);
+    }
+    .lw-btn-primary:hover { background: var(--color-primary-light); }
+    .lw-btn-ghost {
+      background: transparent;
+      color: var(--color-primary);
+      border: 1.5px solid var(--color-primary);
+    }
+    .lw-btn-ghost:hover { background: var(--color-selected-fill); }
+
+    /* ---------- Step-complete (end of Step 1) ---------- */
+    .lw-complete {
+      text-align: center;
+      padding: 16px 0;
+    }
+    .lw-complete h2 {
+      font-size: var(--text-h2);
+      color: var(--color-dark);
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+    .lw-complete p { color: var(--color-body); margin: 0 0 24px; }
+    .lw-next-note {
+      margin-top: 18px;
+      font-size: var(--text-small);
+      color: var(--color-body);
+      opacity: 0.8;
+    }
+
+    /* ---------- Dead-end screen ---------- */
+    .lw-deadend {
+      max-width: 560px;
+      margin: 24px auto;
+      text-align: center;
+      background: var(--color-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 48px 32px;
+    }
+    .lw-deadend-icon {
+      color: var(--color-primary);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .lw-deadend h1 {
+      font-size: var(--text-h1);
+      color: var(--color-dark);
+      font-weight: 800;
+      margin: 0 0 12px;
+    }
+    .lw-deadend p { color: var(--color-body); margin: 0 0 28px; }
+
+    /* ---------- Footer trust strip ---------- */
+    .lw-footer {
+      border-top: 1px solid var(--color-border);
+      padding: 18px 20px;
+    }
+    .lw-trust-row {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      font-size: var(--text-small);
+      font-weight: 700;
+      color: var(--color-body);
+    }
+    .lw-trust-row span { display: inline-flex; align-items: center; gap: 8px; }
+    .lw-trust-row svg { color: var(--color-primary); }
+
+    .lw-fade-in { animation: lwFade 250ms ease both; }
+    @keyframes lwFade {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react">
+    const { useState, useCallback } = React;
+
+    /* ============================================================
+       CONFIG
+       ============================================================ */
+    const DEAD_END_PATH = '/sorry-we-cannot-help';
+    // Solar flow has 8 user-facing input steps (Steps 1-6, 8, 9 in the spec;
+    // the upsell modal and post-payment confirmation are not progress steps).
+    const TOTAL_STEPS = 8;
+    const STEP_NUMBER = 1;
+    const STEP_NAME = 'Home Details';
+
+    /* ============================================================
+       ICONS — rounded line icons in brand red (Section 7 #10)
+       stroke: currentColor so they inherit the brand colour.
+       ============================================================ */
+    const Svg = (props) => (
+      <svg width={props.size || 32} height={props.size || 32} viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" strokeWidth="1.8"
+           strokeLinecap="round" strokeLinejoin="round">{props.children}</svg>
+    );
+
+    const ICONS = {
+      homeowner: <Svg><path d="M3 11.5 12 4l9 7.5" /><path d="M5 10v10h14V10" /><path d="M10 20v-5h4v5" /></Svg>,
+      landlord: <Svg><path d="M4 21V5l8-2v18" /><path d="M12 21V9l8 2v10" /><path d="M8 8h0M8 12h0M8 16h0M16 13h0M16 17h0" /></Svg>,
+      detached: <Svg><path d="M4 11 12 5l8 6" /><path d="M6 10v10h12V10" /><path d="M10 20v-4h4v4" /></Svg>,
+      semi: <Svg><path d="M2 11 7 7l5 4" /><path d="M3 10v10h8V10" /><path d="M12 11l5-4 5 4" /><path d="M13 10v10h8V10" /></Svg>,
+      terrace: <Svg><path d="M3 9v11h18V9" /><path d="M3 9l3-3 3 3 3-3 3 3 3-3 3 3" /><path d="M8 20v-4h3v4M13 20v-4h3v4" /></Svg>,
+      bungalow: <Svg><path d="M3 13 12 7l9 6" /><path d="M5 12v8h14v-8" /><path d="M10 20v-4h4v4" /></Svg>,
+      flat: <Svg><rect x="6" y="3" width="12" height="18" rx="1" /><path d="M9 7h0M12 7h0M15 7h0M9 11h0M12 11h0M15 11h0M9 15h0M15 15h0" /><path d="M11 21v-3h2v3" /></Svg>,
+      pitched: <Svg><path d="M3 13 12 5l9 8" /><path d="M5 13v6h14v-6" /></Svg>,
+      flatroof: <Svg><path d="M4 8h16v3H4z" /><path d="M6 11v8h12v-8" /><path d="M10 19v-4h4v4" /></Svg>,
+      bed: <Svg size={28}><path d="M3 17v-5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2" /><path d="M3 17h18v3" /><path d="M21 20v-7a2 2 0 0 0-2-2" /><path d="M7 10V8a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2" /></Svg>,
+      sad: <Svg size={56}><circle cx="12" cy="12" r="9" /><path d="M8 15s1.5-2 4-2 4 2 4 2" /><path d="M9 9h.01M15 9h.01" /></Svg>,
+      check: <Svg size={18}><path d="m20 6-11 11-5-5" /></Svg>,
+      star: <Svg size={16}><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.2l1-5.8L3.5 9.2l5.9-.9z" /></Svg>,
+      shield: <Svg size={16}><path d="M12 3l7 3v6c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6z" /><path d="m9 12 2 2 4-4" /></Svg>,
+    };
+
+    /* ============================================================
+       STEP 1 QUESTIONS (Section 6 — Step 1 Qualifier)
+       deadEnd options redirect to /sorry-we-cannot-help (Section 8)
+       ============================================================ */
+    const QUESTIONS = [
+      {
+        key: 'house_owner_type',
+        question: 'Are you a homeowner or a landlord?',
+        sub: "We can only install solar for owner-occupied homes.",
+        options: [
+          { value: 'Homeowner', label: 'Homeowner', icon: 'homeowner' },
+          { value: 'Landlord', label: 'Landlord', icon: 'landlord', deadEnd: true },
+        ],
+      },
+      {
+        key: 'house_type',
+        question: 'What type of home do you live in?',
+        options: [
+          { value: 'Detached', label: 'Detached', icon: 'detached' },
+          { value: 'Semi-Detached', label: 'Semi-Detached', icon: 'semi' },
+          { value: 'Terrace', label: 'Terrace', icon: 'terrace' },
+          { value: 'Bungalow', label: 'Bungalow', icon: 'bungalow' },
+          { value: 'Flat', label: 'Flat', icon: 'flat', deadEnd: true },
+        ],
+      },
+      {
+        key: 'roof_type',
+        question: 'What type of roof do you have?',
+        options: [
+          { value: 'Pitched', label: 'Pitched', icon: 'pitched' },
+          { value: 'Flat', label: 'Flat', icon: 'flatroof', deadEnd: true },
+        ],
+      },
+      {
+        key: 'house_bedrooms',
+        question: 'How many bedrooms?',
+        options: [
+          { value: '1', label: '1', num: true },
+          { value: '2', label: '2', num: true },
+          { value: '3', label: '3', num: true },
+          { value: '4', label: '4', num: true },
+          { value: '5+', label: '5+', num: true },
+        ],
+      },
+    ];
+
+    /* ============================================================
+       COMPONENTS
+       ============================================================ */
+
+    function Header() {
+      return (
+        <header className="lw-header">
+          <a className="lw-logo" href="/" aria-label="LivWarm home">
+            {/* Placeholder wordmark — swap for the official LivWarm SVG/PNG when supplied (Section 3) */}
+            <span className="liv">Liv</span><span className="warm">Warm</span><span className="dot">.</span>
+          </a>
+          <div className="lw-trust-mini" aria-hidden="true">
+            <span>{ICONS.shield} MCS Certified</span>
+            <span>{ICONS.star} 4.9 Trustpilot</span>
+            <span>{ICONS.check} 2yr Warranty</span>
+          </div>
+        </header>
+      );
+    }
+
+    function ProgressBar({ percent }) {
+      const pct = Math.max(0, Math.min(100, Math.round(percent)));
+      return (
+        <div className="lw-progress-wrap">
+          <div className="lw-progress-meta">
+            <span className="lw-progress-step">
+              <span className="lw-step-count">Step {STEP_NUMBER} of {TOTAL_STEPS}</span> · {STEP_NAME}
+            </span>
+            <span className="lw-progress-pct">{pct}%</span>
+          </div>
+          <div className="lw-progress-track" role="progressbar"
+               aria-valuenow={pct} aria-valuemin="0" aria-valuemax="100"
+               aria-label={`Step ${STEP_NUMBER} of ${TOTAL_STEPS}: ${STEP_NAME}`}>
+            <div className="lw-progress-fill" style={{ width: pct + '%' }} />
+          </div>
+        </div>
+      );
+    }
+
+    function Breadcrumbs({ answered, onEdit }) {
+      if (answered.length === 0) return null;
+      return (
+        <div className="lw-breadcrumbs">
+          {answered.map((a) => (
+            <button key={a.key} className="lw-pill" onClick={() => onEdit(a.index)}
+                    title="Click to change this answer">
+              <span className="lw-pill-label">{a.shortLabel}:</span>
+              <span className="lw-pill-value">{a.value}</span>
+              <span className="lw-pill-edit" aria-hidden="true">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                </svg>
+              </span>
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    function OptionCard({ option, selected, onSelect }) {
+      return (
+        <button
+          className={'lw-card' + (selected ? ' is-selected' : '')}
+          onClick={() => onSelect(option)}
+          aria-pressed={selected}
+        >
+          <span className="lw-card-icon">
+            {option.num ? <span className="lw-card-num">{option.label}</span> : ICONS[option.icon]}
+          </span>
+          {option.num
+            ? <span className="lw-card-label">{option.value === '1' ? 'bedroom' : 'bedrooms'}</span>
+            : <span className="lw-card-label">{option.label}</span>}
+        </button>
+      );
+    }
+
+    function Question({ q, currentValue, onSelect }) {
+      return (
+        <div className="lw-fade-in" key={q.key}>
+          <h1 className="lw-question">{q.question}</h1>
+          {q.sub && <p className="lw-question-sub">{q.sub}</p>}
+          <div className={'lw-card-grid' + (q.options.length === 2 ? ' cols-2' : '')}>
+            {q.options.map((opt) => (
+              <OptionCard
+                key={opt.value}
+                option={opt}
+                selected={currentValue === opt.value}
+                onSelect={onSelect}
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function StepComplete({ answers, onRestart }) {
+      return (
+        <div className="lw-complete lw-fade-in">
+          <h2>Great — that's the basics covered.</h2>
+          <p>Here's what you've told us so far:</p>
+          <div className="lw-breadcrumbs" style={{ justifyContent: 'center' }}>
+            {QUESTIONS.map((q) => (
+              <span key={q.key} className="lw-pill" style={{ cursor: 'default' }}>
+                <span className="lw-pill-label">{shortLabel(q.key)}:</span>
+                <span className="lw-pill-value">{answers[q.key]}</span>
+              </span>
+            ))}
+          </div>
+          <p className="lw-next-note">Step 2 — Electricity Usage — is built in the next session.</p>
+          <div style={{ marginTop: 8 }}>
+            <button className="lw-btn lw-btn-ghost" onClick={onRestart}>Start over</button>
+          </div>
+        </div>
+      );
+    }
+
+    function DeadEnd({ reason, onBack }) {
+      // On the live site this is a real WordPress page; redirect there in production.
+      // Locally that path 404s, so we render the in-app dead-end screen for testing.
+      React.useEffect(() => {
+        const host = window.location.hostname;
+        const isProd = /livwarm/i.test(host);
+        if (isProd) window.location.assign(DEAD_END_PATH);
+      }, []);
+      return (
+        <div className="lw-deadend lw-fade-in">
+          <div className="lw-deadend-icon">{ICONS.sad}</div>
+          <h1>Sorry, we can't help with this one</h1>
+          <p>{reason}</p>
+          <button className="lw-btn lw-btn-primary" onClick={onBack}>Go back</button>
+        </div>
+      );
+    }
+
+    function Footer() {
+      return (
+        <footer className="lw-footer">
+          <div className="lw-trust-row">
+            <span>{ICONS.shield} MCS Certified</span>
+            <span>{ICONS.star} Rated 4.9 on Trustpilot</span>
+            <span>{ICONS.check} 2-Year Workmanship Warranty</span>
+          </div>
+        </footer>
+      );
+    }
+
+    /* short labels for breadcrumb pills */
+    function shortLabel(key) {
+      switch (key) {
+        case 'house_owner_type': return 'You are';
+        case 'house_type': return 'Home';
+        case 'roof_type': return 'Roof';
+        case 'house_bedrooms': return 'Bedrooms';
+        default: return key;
+      }
+    }
+
+    const DEAD_END_REASONS = {
+      Landlord: "Our solar offer is for owner-occupied homes only. As a landlord, you'd need the property owner to apply.",
+      Flat: "Flats and apartments aren't suitable for our solar installations, as you'd typically need shared roof access and freeholder permission.",
+      'Flat roof': "Our solar panels are designed for pitched roofs. Flat roofs need a different mounting system we don't currently install.",
+    };
+
+    /* ============================================================
+       APP
+       ============================================================ */
+    function App() {
+      const [answers, setAnswers] = useState({});   // { house_owner_type: 'Homeowner', ... }
+      const [currentIndex, setCurrentIndex] = useState(0);
+      const [deadEnd, setDeadEnd] = useState(null);  // { reason }
+
+      const handleSelect = useCallback((option) => {
+        const q = QUESTIONS[currentIndex];
+        if (option.deadEnd) {
+          const label = q.key === 'roof_type' && option.value === 'Flat' ? 'Flat roof' : option.value;
+          setDeadEnd({ reason: DEAD_END_REASONS[label] || "Based on your answer, we're unable to proceed." });
+          return;
+        }
+        setAnswers((prev) => ({ ...prev, [q.key]: option.value }));
+        setCurrentIndex((i) => i + 1);
+      }, [currentIndex]);
+
+      const handleEdit = useCallback((index) => {
+        // Jump back to an answered question. Keep its own answer so the chosen
+        // card shows its selected (pressed) state; clear everything after it,
+        // since changing an earlier answer can invalidate later ones.
+        setAnswers((prev) => {
+          const next = { ...prev };
+          QUESTIONS.slice(index + 1).forEach((q) => { delete next[q.key]; });
+          return next;
+        });
+        setCurrentIndex(index);
+      }, []);
+
+      const handleBackFromDeadEnd = useCallback(() => setDeadEnd(null), []);
+
+      const handleRestart = useCallback(() => {
+        setAnswers({});
+        setCurrentIndex(0);
+        setDeadEnd(null);
+      }, []);
+
+      // Breadcrumb pills: answered questions that sit *before* the active one.
+      // The question currently being answered/edited is excluded so its answer
+      // shows as a selected card below rather than duplicated as a pill above.
+      const answered = QUESTIONS
+        .map((q, index) => ({ key: q.key, index, shortLabel: shortLabel(q.key), value: answers[q.key] }))
+        .filter((a) => a.value != null && a.index < currentIndex);
+
+      // Progress: fills the Step-1 segment (1/TOTAL_STEPS) as the 4 qualifiers are answered.
+      const segment = 100 / TOTAL_STEPS;
+      const percent = (answered.length / QUESTIONS.length) * segment;
+
+      const isComplete = currentIndex >= QUESTIONS.length;
+      const currentQuestion = isComplete ? null : QUESTIONS[currentIndex];
+
+      return (
+        <div className="lw-app">
+          <Header />
+          {!deadEnd && <ProgressBar percent={percent} />}
+          <main className="lw-main">
+            {deadEnd ? (
+              <DeadEnd reason={deadEnd.reason} onBack={handleBackFromDeadEnd} />
+            ) : (
+              <React.Fragment>
+                <Breadcrumbs answered={answered} onEdit={handleEdit} />
+                {isComplete ? (
+                  <StepComplete answers={answers} onRestart={handleRestart} />
+                ) : (
+                  <Question
+                    q={currentQuestion}
+                    currentValue={answers[currentQuestion.key]}
+                    onSelect={handleSelect}
+                  />
+                )}
+              </React.Fragment>
+            )}
+          </main>
+          <Footer />
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

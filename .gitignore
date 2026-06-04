@@ -1,0 +1,17 @@
+# --- Secrets — NEVER commit (repo is public) ---
+payaca_webhook.txt
+**/secrets*
+*.env
+.env*
+
+# --- Internal business data ---
+Livwarm Price Matrix.xlsx
+*.xlsx
+
+# --- OS / editor junk ---
+.DS_Store
+**/.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
