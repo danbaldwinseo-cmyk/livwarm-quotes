@@ -238,6 +238,7 @@
     /* 3-state card interaction (Section 7 #9) */
     .lw-card {
       position: relative;
+      overflow: hidden;                          /* clip the shimmer pseudo-element to the card edges */
       background: var(--color-card-bg);
       border: 1.5px solid var(--color-border);
       border-radius: var(--radius-card);
@@ -257,6 +258,28 @@
       gap: 12px;
       min-height: 120px;
       justify-content: center;
+    }
+    /* Hover shimmer — a single diagonal light sweep that plays once when the cursor
+       enters the card (does not loop). Reuses the shimmer-sweep keyframes defined
+       further below for the selected state. Needs the base overflow/position above. */
+    .lw-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.55) 50%,
+        transparent 80%
+      );
+      pointer-events: none;
+      transition: none;
+    }
+    .lw-card:hover::after {
+      animation: shimmer-sweep 500ms ease-out forwards;
     }
     /* Non-selected cards dim/desaturate only AFTER a selection is made in the group,
        so cards start at full brightness on load (no dimming before any choice). */
