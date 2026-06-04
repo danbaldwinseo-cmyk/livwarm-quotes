@@ -96,7 +96,7 @@
       align-items: center;
       justify-content: center;            /* lock the content block to the middle of the viewport */
       width: 100%;
-      padding: 40px 48px;
+      padding: 0 48px 10vh;               /* top 0 + larger bottom biases the block up to ~45% from top (just above centre) */
     }
     .lw-content {
       width: 100%;
@@ -388,10 +388,17 @@
       justify-content: center;
       font-size: 52px;
       line-height: 1;
+      transition: filter 200ms ease;
     }
     .lw-card-icon svg {
       width: 52px;
       height: 52px;
+    }
+    /* On hover the icon glows softly from within — drop-shadow hugs the icon
+       outline (and the numeral on bedroom cards), not a rectangular bounding box. */
+    .lw-card:hover .lw-card-icon {
+      filter: drop-shadow(0 0 8px rgba(232, 50, 58, 0.55))
+              drop-shadow(0 0 3px rgba(232, 50, 58, 0.35));
     }
     .lw-card-label {
       font-size: 20px;
