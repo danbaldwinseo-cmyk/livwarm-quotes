@@ -663,16 +663,38 @@
     .lw-toggle-opt {
       flex: 1;
       background: #ffffff;
-      border: 1px solid #e0e0e0;
-      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 16px;
       color: #444;
       font-family: inherit;
       font-size: 15px;
       font-weight: 600;
-      padding: 14px 20px;
+      padding: 24px 20px;
       cursor: pointer;
       line-height: 1.3;
       transition: all 150ms ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+    .lw-toggle-opt::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 65%;
+      height: 65%;
+      background-image: radial-gradient(circle, #d8d8d8 1px, transparent 1px);
+      background-size: 10px 10px;
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      pointer-events: none;
+      border-radius: inherit;
+      z-index: 0;
+    }
+    .lw-toggle-opt span {
+      position: relative;
+      z-index: 1;
     }
     .lw-toggle-opt.selected {
       background: rgba(232, 50, 58, 0.04);
@@ -684,10 +706,15 @@
         0 0 16px rgba(232, 50, 58, 0.12),
         inset 0 0 20px rgba(232, 50, 58, 0.04);
     }
+    .lw-toggle-opt.selected::before {
+      background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
+      background-size: 10px 10px;
+    }
     .lw-toggle-opt:hover:not(.selected) {
       border-color: #bbb;
       background: #f9f9f9;
       color: #222;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
     }
     /* full-width solid red pill CTA */
     .lw-cta {
@@ -1140,13 +1167,13 @@
                       className={'lw-toggle-opt' + (data.rateMode === 'same' ? ' selected' : '')}
                       aria-pressed={data.rateMode === 'same'}
                       onClick={() => patch({ rateMode: 'same' })}>
-                I pay the same rate day &amp; night
+                <span>I pay the same rate day &amp; night</span>
               </button>
               <button type="button"
                       className={'lw-toggle-opt' + (data.rateMode === 'different' ? ' selected' : '')}
                       aria-pressed={data.rateMode === 'different'}
                       onClick={() => patch({ rateMode: 'different' })}>
-                I pay different day &amp; night rates
+                <span>I pay different day &amp; night rates</span>
               </button>
             </div>
           </div>
