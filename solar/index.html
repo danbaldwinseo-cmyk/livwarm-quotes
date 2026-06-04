@@ -249,7 +249,9 @@
       transition: transform var(--transition),
                   box-shadow var(--transition),
                   background var(--transition),
-                  border-color var(--transition);
+                  border-color var(--transition),
+                  opacity 200ms ease,
+                  filter 200ms ease;     /* smooth fade for the hover/selection dimming */
       font-family: inherit;
       color: var(--color-body);
       display: flex;
@@ -287,6 +289,13 @@
       opacity: 0.6;
       filter: saturate(0.4);
       transition: opacity 300ms ease, filter 300ms ease;
+    }
+    /* Hovering a card subtly darkens its siblings — a lighter "being considered"
+       cue than the post-selection dimming above. :has() does all the work. */
+    .lw-card-grid:has(.lw-card:hover) .lw-card:not(:hover) {
+      opacity: 0.75;
+      filter: saturate(0.7);
+      transition: opacity 200ms ease, filter 200ms ease;
     }
     .lw-card:focus-visible {
       outline: 3px solid var(--color-primary-light);
