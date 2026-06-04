@@ -93,12 +93,16 @@
     .lw-main {
       flex: 1;
       display: flex;
-      flex-direction: column;
-      justify-content: center;            /* centre the question/cards vertically in the viewport */
+      align-items: center;
+      justify-content: center;            /* lock the content block to the middle of the viewport */
       width: 100%;
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 40px 24px;
+      padding: 40px 48px;
+    }
+    .lw-content {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ---------- Header ---------- */
@@ -144,9 +148,6 @@
 
     /* ---------- Progress bar (improvement #3 — bold red, % + step name) ---------- */
     .lw-progress-wrap {
-      max-width: 680px;
-      margin: 24px auto 0;
-      padding: 0 24px;
       width: 100%;
     }
     .lw-progress-meta {
@@ -174,7 +175,7 @@
       background: #f0f0f0;
       border-radius: 99px;
       overflow: hidden;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
     .lw-progress-fill {
       height: 100%;
@@ -188,8 +189,9 @@
     .lw-breadcrumbs {
       display: flex;
       flex-wrap: wrap;
+      justify-content: center;
       gap: 10px;
-      margin-bottom: 28px;
+      margin-bottom: 16px;
     }
     .lw-pill {
       display: inline-flex;
@@ -223,23 +225,37 @@
       line-height: 1.2;
       margin: 0 0 8px;
       color: #1a1a1a;
+      text-align: center;
     }
     .lw-question-sub {
       font-size: 16px;
       color: #666;
       margin: 0 0 32px;
       line-height: 1.5;
+      text-align: center;
     }
 
     .lw-card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       width: 100%;
     }
     .lw-card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
-    @media (max-width: 480px) {
-      .lw-card-grid, .lw-card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    /* Exactly 5 options: 3 across the top row, the bottom 2 centred. A 6-column
+       grid (each card spans 2) lets cards 4 & 5 sit in the middle four columns. */
+    .lw-card-grid.grid-5 { grid-template-columns: repeat(6, 1fr); }
+    .lw-card-grid.grid-5 .lw-card { grid-column: span 2; }
+    .lw-card-grid.grid-5 .lw-card:nth-child(4) { grid-column: 2 / span 2; }
+    .lw-card-grid.grid-5 .lw-card:nth-child(5) { grid-column: 4 / span 2; }
+    @media (max-width: 560px) {
+      .lw-card-grid,
+      .lw-card-grid.cols-2,
+      .lw-card-grid.grid-5 { grid-template-columns: repeat(2, 1fr); }
+      .lw-card-grid.grid-5 .lw-card,
+      .lw-card-grid.grid-5 .lw-card:nth-child(4),
+      .lw-card-grid.grid-5 .lw-card:nth-child(5) { grid-column: auto; }
+      .lw-main { padding: 32px 20px; }
     }
 
     /* 3-state card interaction (Section 7 #9) */
@@ -249,7 +265,7 @@
       background: var(--color-card-bg);
       border: 1.5px solid var(--color-border);
       border-radius: 16px;
-      padding: 36px 24px;
+      padding: 40px 24px;
       cursor: pointer;
       text-align: center;
       box-shadow: var(--shadow-card);            /* DEFAULT */
@@ -265,7 +281,7 @@
       flex-direction: column;
       align-items: center;
       gap: 14px;
-      min-height: 160px;
+      min-height: 180px;
       justify-content: center;
     }
     /* Hover shimmer — a single diagonal light sweep that plays once when the cursor
@@ -378,7 +394,7 @@
       height: 52px;
     }
     .lw-card-label {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
       color: #1a1a1a;
       transition: font-weight var(--transition);
@@ -674,6 +690,7 @@
           {q.sub && <p className="lw-question-sub">{q.sub}</p>}
           <div className={'lw-card-grid'
             + (q.options.length === 2 ? ' cols-2' : '')
+            + (q.options.length === 5 ? ' grid-5' : '')
             + (currentValue ? ' has-selection' : '')}>
             {q.options.map((opt) => (
               <OptionCard
@@ -841,26 +858,28 @@
       return (
         <div className="lw-app">
           <Header />
-          {!deadEnd && <ProgressBar percent={percent} />}
           <main className="lw-main">
-            {deadEnd ? (
-              <DeadEnd reason={deadEnd.reason} onBack={handleBackFromDeadEnd} />
-            ) : (
-              <React.Fragment>
-                <Breadcrumbs answered={answered} onEdit={handleEdit} />
-                {isComplete ? (
-                  <StepComplete answers={answers} onRestart={handleRestart} />
-                ) : (
-                  <Question
-                    q={currentQuestion}
-                    currentValue={answers[currentQuestion.key]}
-                    pressingValue={pressing}
-                    selectionTick={selectionTick}
-                    onSelect={handleSelect}
-                  />
-                )}
-              </React.Fragment>
-            )}
+            <div className="lw-content">
+              {deadEnd ? (
+                <DeadEnd reason={deadEnd.reason} onBack={handleBackFromDeadEnd} />
+              ) : (
+                <React.Fragment>
+                  <ProgressBar percent={percent} />
+                  <Breadcrumbs answered={answered} onEdit={handleEdit} />
+                  {isComplete ? (
+                    <StepComplete answers={answers} onRestart={handleRestart} />
+                  ) : (
+                    <Question
+                      q={currentQuestion}
+                      currentValue={answers[currentQuestion.key]}
+                      pressingValue={pressing}
+                      selectionTick={selectionTick}
+                      onSelect={handleSelect}
+                    />
+                  )}
+                </React.Fragment>
+              )}
+            </div>
           </main>
           <Footer />
         </div>
