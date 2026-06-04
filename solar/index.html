@@ -73,6 +73,7 @@
     html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
       background: var(--color-white);
       color: var(--color-body);
       font-family: var(--font-brand);
@@ -96,7 +97,7 @@
       align-items: center;
       justify-content: center;            /* lock the content block to the middle of the viewport */
       width: 100%;
-      padding: 0 60px 10vh;               /* sides 60px; top 0 + larger bottom biases the block up to ~45% from top */
+      padding: 40px 60px;                 /* symmetric → content truly centred in the viewport */
     }
     .lw-content {
       width: 100%;
@@ -271,7 +272,7 @@
       background: var(--color-card-bg);
       border: 1.5px solid var(--color-border);
       border-radius: 16px;
-      padding: 40px 24px;
+      padding: 40px 32px;
       cursor: pointer;
       text-align: center;
       box-shadow: var(--shadow-card);            /* DEFAULT */
@@ -286,8 +287,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 14px;
-      min-height: 180px;
+      gap: 16px;
+      min-height: 200px;
       justify-content: center;
     }
     /* Hover shimmer — a single diagonal light sweep that plays once when the cursor
@@ -397,8 +398,8 @@
       transition: filter 200ms ease;
     }
     .lw-card-icon svg {
-      width: 52px;
-      height: 52px;
+      width: 64px;
+      height: 64px;
     }
     /* On hover the icon brightens/saturates with a very tight glow that hugs the
        outline (and the numeral on bedroom cards). Transition is on .lw-card-icon above. */
@@ -418,11 +419,6 @@
       font-weight: 800;
       color: var(--color-primary);
       line-height: 1;
-    }
-    /* Bedroom cards (large number + label, no icon): squarer + more generous */
-    .lw-card:has(.lw-card-num) {
-      min-height: 140px;
-      padding: 32px 20px;
     }
 
     /* ---------- Buttons ---------- */
