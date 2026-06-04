@@ -347,10 +347,10 @@
        Keeps the 1.02 scale pulse; the shimmer sweep is on ::after below. */
     .lw-card.is-selected {
       background: #ffffff;
-      border-color: transparent;                 /* drop the grey border; red hairline comes from box-shadow */
+      border: 1px solid rgba(0, 0, 0, 0.08);     /* keep a constant thin grey border on selection */
       box-shadow: 0 4px 24px rgba(232, 50, 58, 0.18),
-                  0 0 0 1px rgba(232, 50, 58, 0.12),
-                  inset 0 0 40px rgba(232, 50, 58, 0.06);  /* illuminated — warmth pushed inward */
+                  0 0 0 1px rgba(232, 50, 58, 0.10),
+                  inset 0 0 32px rgba(232, 50, 58, 0.05);  /* red glow layered over the border */
       transform: translateY(0px);
       overflow: hidden;
       position: relative;
