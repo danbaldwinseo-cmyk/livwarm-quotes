@@ -886,7 +886,8 @@
     .lw-find-btn:active:not(:disabled) { transform: translateY(1px); }
     .lw-find-btn:disabled { opacity: 0.45; cursor: not-allowed; }
     .lw-input-error { color: var(--color-primary); font-size: 14px; font-weight: 600; margin: 10px 0 0; }
-    .lw-input-readonly input { color: #888; }
+    /* Auto-populated postcode is read-only but must match the other fields' text colour */
+    .lw-input-readonly input { color: var(--color-dark); }
 
     /* Satellite map */
     .lw-map-wrap {
@@ -922,61 +923,78 @@
       line-height: 1.5;
     }
 
-    /* Compass rose overlay (top-right of the compass map, always rotates to true north) */
-    .lw-compass-rose {
-      position: absolute;
-      top: 14px; right: 14px;
-      width: 56px; height: 56px;
-      background: rgba(255, 255, 255, 0.92);
+    /* Orientation screen — two columns (map left, compass rose right) */
+    .lw-orient-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: center;
+      margin: 0 0 4px;
+    }
+    .lw-orient-map-wrap {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      height: 360px;
+    }
+    .lw-orient-map { width: 100%; height: 100%; background: #e9e9e9; }
+    .lw-orient-rose-col { display: flex; align-items: center; justify-content: center; }
+
+    /* Compass rose — white circular backing + soft shadow so it reads on any surface */
+    .lw-rose {
+      width: 264px;
+      height: 264px;
       border-radius: 50%;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+      background: #fff;
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.14);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 200ms ease;
-      z-index: 2;
     }
-
-    /* Eight-point interactive compass */
-    .lw-compass { position: relative; margin: 12px auto 4px; }
-    .lw-compass-ring {
-      position: absolute;
-      inset: 32px;
-      border-radius: 50%;
-      border: 2px dashed #e0e0e0;
+    .lw-rose svg { width: 244px; height: 244px; display: block; }
+    .lw-rose-pt { cursor: pointer; }
+    .lw-rose-pt:focus { outline: none; }
+    .lw-rose-pt:focus-visible .gem { stroke: var(--color-primary-light); stroke-width: 2.5; }
+    .lw-rose-pt .hit { fill: transparent; }                 /* 48px touch target */
+    .lw-rose-pt .gem {
+      fill: #ececec;
+      stroke: #dcdcdc;
+      stroke-width: 1;
+      transition: fill 150ms ease, stroke 150ms ease;
+    }
+    .lw-rose-pt .lbl {
+      fill: #4a4a4a;
+      font-weight: 800;
+      transition: fill 150ms ease;
       pointer-events: none;
     }
-    .lw-compass-center {
-      position: absolute;
-      left: 50%; top: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 30px;
+    .lw-rose-pt:hover .gem { fill: rgba(232, 50, 58, 0.16); stroke: rgba(232, 50, 58, 0.4); }
+    .lw-rose-pt.selected .gem { fill: var(--color-primary); stroke: var(--color-primary); }
+    .lw-rose-pt.selected .lbl { fill: #fff; }
+
+    /* Prompt + confirmation + Continue, centred below both columns */
+    .lw-orient-q {
+      font-size: clamp(20px, 2.4vw, 26px);
+      font-weight: 800;
+      line-height: 1.3;
+      color: #1a1a1a;
+      text-align: center;
+      margin: 20px 0 0;
+    }
+    .lw-orient-facing {
+      text-align: center;
+      font-size: 18px;
       font-weight: 800;
       color: var(--color-primary);
-      pointer-events: none;
+      margin: 14px 0 0;
     }
-    .lw-compass-pt {
-      position: absolute;
-      border-radius: 50%;
-      background: #fff;
-      border: 1.5px solid var(--color-border);
-      font-family: inherit;
-      font-size: 15px;
-      font-weight: 800;
-      color: #555;
-      cursor: pointer;
-      box-shadow: var(--shadow-card);
-      transition: background 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+    .lw-orient-actions { max-width: 560px; margin: 20px auto 0; }
+
+    /* Mobile: stack map over compass, prompt + actions below */
+    @media (max-width: 768px) {
+      .lw-orient-grid { grid-template-columns: 1fr; gap: 20px; }
+      .lw-orient-map-wrap { height: 300px; }
     }
-    .lw-compass-pt:hover { border-color: #bbb; color: #222; }
-    .lw-compass-pt.selected {
-      background: var(--color-primary);
-      color: #fff;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 4px rgba(232, 50, 58, 0.15), 0 4px 12px rgba(232, 50, 58, 0.30);
-    }
-    .lw-orient-selected { text-align: center; font-size: 17px; font-weight: 700; color: #1a1a1a; margin: 18px 0 0; }
-    .lw-orient-selected b { color: var(--color-primary); }
 
     /* ---------- Footer trust strip ---------- */
     .lw-footer {
@@ -1792,7 +1810,7 @@
         loadGoogleMaps().then((maps) => {
           if (cancelled || !ref.current) return;
           map = new maps.Map(ref.current, {
-            center: { lat, lng }, zoom: 20, mapTypeId: 'satellite', tilt: 0,
+            center: { lat, lng }, zoom: 18, mapTypeId: 'satellite', tilt: 0,
             disableDefaultUI: true, zoomControl: true, gestureHandling: 'greedy',
           });
           marker = new maps.Marker({
@@ -1815,7 +1833,7 @@
       return (
         <div className="lw-fade-in lw-step6">
           <h1 className="lw-question">Is this your roof?</h1>
-          <p className="lw-question-sub">Drag or tap to move the pin onto the roof where you'd like the panels.</p>
+          <p className="lw-question-sub">Maps don't always pin the exact property. Drag the pin onto your roof to confirm the right one.</p>
           <div className="lw-map-wrap">
             <div className="lw-map-tip">
               Is this the roof where you want the panels installed? Confirm below, or reposition the pin by tapping your roof.
@@ -1832,53 +1850,53 @@
       );
     }
 
-    /* ---- Part C: north-up compass rose overlay (rotates to true north) ---- */
-    function CompassRose() {
-      return (
-        <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
-          <polygon points="22,5 27,22 22,18 17,22" fill="#E8323A" />
-          <polygon points="22,39 27,22 22,26 17,22" fill="#aaa" />
-          <circle cx="22" cy="22" r="2.2" fill="#fff" stroke="#888" strokeWidth="1" />
-          <text x="22" y="13" textAnchor="middle" fontSize="7" fontWeight="800"
-                fill="#fff" fontFamily="sans-serif">N</text>
-        </svg>
-      );
-    }
-
-    /* ---- Part C: eight-point interactive compass selector ---- */
-    function CompassSelect({ value, onChange }) {
-      const dirs = [
-        { k: 'N', deg: 0 }, { k: 'NE', deg: 45 }, { k: 'E', deg: 90 }, { k: 'SE', deg: 135 },
-        { k: 'S', deg: 180 }, { k: 'SW', deg: 225 }, { k: 'W', deg: 270 }, { k: 'NW', deg: 315 },
+    /* ---- Part C: SVG compass rose — eight tappable diamond points ----
+       Cardinal points (N/E/S/W) are larger diamonds; intercardinal (NE/SE/SW/NW)
+       smaller. Each point has a 48px transparent hit circle for mobile. Single-select. */
+    function CompassDial({ value, onChange }) {
+      // All eight points sit on a ~90-unit radius around the 120,120 centre.
+      const pts = [
+        { k: 'N',  x: 120, y: 30,  card: true },
+        { k: 'NE', x: 184, y: 56,  card: false },
+        { k: 'E',  x: 210, y: 120, card: true },
+        { k: 'SE', x: 184, y: 184, card: false },
+        { k: 'S',  x: 120, y: 210, card: true },
+        { k: 'SW', x: 56,  y: 184, card: false },
+        { k: 'W',  x: 30,  y: 120, card: true },
+        { k: 'NW', x: 56,  y: 56,  card: false },
       ];
-      const size = 280, radius = 110, centre = size / 2, btn = 58;
+      const diamond = (x, y, h) => `${x},${y - h} ${x + h},${y} ${x},${y + h} ${x - h},${y}`;
       return (
-        <div className="lw-compass" style={{ width: size, height: size }}>
-          <div className="lw-compass-ring" />
-          <div className="lw-compass-center">{value || '·'}</div>
-          {dirs.map((d) => {
-            const rad = (d.deg * Math.PI) / 180;
-            const x = centre + radius * Math.sin(rad);
-            const y = centre - radius * Math.cos(rad);
-            return (
-              <button key={d.k} type="button"
-                className={'lw-compass-pt' + (value === d.k ? ' selected' : '')}
-                style={{ left: x, top: y, width: btn, height: btn,
-                         transform: 'translate(-50%, -50%)' }}
-                onClick={() => onChange(d.k)}
-                aria-pressed={value === d.k}>
-                {d.k}
-              </button>
-            );
-          })}
+        <div className="lw-rose">
+          <svg viewBox="0 0 240 240" role="group" aria-label="Choose the direction your front door faces">
+            {/* faint guide ring + centre hub */}
+            <circle cx="120" cy="120" r="92" fill="none" stroke="#f1f1f1" strokeWidth="2" />
+            <circle cx="120" cy="120" r="5" fill="#e0e0e0" />
+            {pts.map((p) => {
+              const h = p.card ? 25 : 17;          // cardinal diamonds larger
+              const fs = p.card ? 15 : 12;
+              return (
+                <g key={p.k}
+                   className={'lw-rose-pt' + (value === p.k ? ' selected' : '') + (p.card ? ' card' : ' inter')}
+                   role="button" aria-label={DIR_WORDS[p.k]} aria-pressed={value === p.k}
+                   tabIndex={0}
+                   onClick={() => onChange(p.k)}
+                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChange(p.k); } }}>
+                  <circle className="hit" cx={p.x} cy={p.y} r="24" />
+                  <polygon className="gem" points={diamond(p.x, p.y, h)} />
+                  <text className="lbl" x={p.x} y={p.y} textAnchor="middle"
+                        dominantBaseline="central" fontSize={fs}>{p.k}</text>
+                </g>
+              );
+            })}
+          </svg>
         </div>
       );
     }
 
-    /* ---- Part C: compass screen — tight satellite map + compass UI ---- */
+    /* ---- Part C: orientation compass screen — map left, rose right ---- */
     function CompassScreen({ lat, lng, value, onChange, onContinue }) {
       const ref = useRef(null);
-      const [heading, setHeading] = React.useState(0);
       const [status, setStatus] = React.useState('loading');
       React.useEffect(() => {
         let cancelled = false, map;
@@ -1887,13 +1905,11 @@
         const unsub = onGmapsAuthFailure(() => { if (!cancelled) setStatus('error'); });
         loadGoogleMaps().then((maps) => {
           if (cancelled || !ref.current) return;
+          // Static close-up — visual reference only: no pin, no controls, no gestures.
           map = new maps.Map(ref.current, {
-            center: { lat, lng }, zoom: 21, mapTypeId: 'satellite', tilt: 0,
-            disableDefaultUI: true, gestureHandling: 'greedy', rotateControl: true,
-          });
-          // Keep the compass rose pointing to true north as the map is rotated
-          map.addListener('heading_changed', () => {
-            if (!cancelled) setHeading(map.getHeading() || 0);
+            center: { lat, lng }, zoom: 20, mapTypeId: 'satellite', tilt: 0,
+            disableDefaultUI: true, gestureHandling: 'none', draggable: false,
+            keyboardShortcuts: false, clickableIcons: false,
           });
           setStatus('ready');
         }).catch(() => { if (!cancelled) setStatus('error'); });
@@ -1901,24 +1917,24 @@
       }, []);
 
       return (
-        <div className="lw-fade-in lw-step6">
-          <h1 className="lw-question">Which way does your home face?</h1>
-          <p className="lw-question-sub">If you look out of your front door, which direction are you facing?</p>
-          <div className="lw-map-wrap">
-            <div className="lw-compass-rose" style={{ transform: 'rotate(' + (-heading) + 'deg)' }}>
-              <CompassRose />
+        <div className="lw-fade-in">
+          <div className="lw-orient-grid">
+            <div className="lw-orient-map-wrap">
+              {status === 'error'
+                ? <div className="lw-orient-map lw-map-fallback">Map preview isn't available here — it will load on the live site.</div>
+                : <div className="lw-orient-map" ref={ref} />}
             </div>
-            {status === 'error'
-              ? <div className="lw-map lw-map-fallback">Map preview isn't available here — pick your direction on the compass below.</div>
-              : <div className="lw-map" ref={ref} />}
+            <div className="lw-orient-rose-col">
+              <CompassDial value={value} onChange={onChange} />
+            </div>
           </div>
-          <CompassSelect value={value} onChange={onChange} />
-          {value && <p className="lw-orient-selected">You're facing <b>{DIR_WORDS[value]}</b></p>}
-          <button type="button" className="lw-cta"
-            style={{ maxWidth: 420, margin: '20px auto 0' }}
-            disabled={!value} onClick={onContinue}>
-            Continue
-          </button>
+          <p className="lw-orient-q">If you look out of your front door, which direction are you facing?</p>
+          {value && <p className="lw-orient-facing">Facing: {DIR_WORDS[value]}</p>}
+          <div className="lw-orient-actions">
+            <button type="button" className="lw-cta" disabled={!value} onClick={onContinue}>
+              Continue
+            </button>
+          </div>
         </div>
       );
     }
