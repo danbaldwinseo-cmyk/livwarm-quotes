@@ -920,8 +920,8 @@
       top: 50%;
       right: 6%;
       transform: translateY(-50%);
-      width: 220px;
-      height: 220px;
+      width: 290px;
+      height: 290px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.92);
       box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18);
@@ -930,7 +930,7 @@
       justify-content: center;
       z-index: 2;
     }
-    .lw-rose svg { width: 220px; height: 220px; display: block; }
+    .lw-rose svg { width: 290px; height: 290px; display: block; }
     .lw-rose-pt { cursor: pointer; }
     .lw-rose-pt:focus { outline: none; }
     .lw-rose-pt:focus-visible .gem { stroke: var(--color-primary-light); stroke-width: 2.5; }
@@ -965,8 +965,8 @@
 
     /* Mobile: map stays full width, compass stays overlaid on the right half */
     @media (max-width: 768px) {
-      .lw-rose { width: 190px; height: 190px; right: 4%; }
-      .lw-rose svg { width: 190px; height: 190px; }
+      .lw-rose { width: 240px; height: 240px; right: 4%; }
+      .lw-rose svg { width: 240px; height: 240px; }
     }
 
     /* ---------- Footer trust strip ---------- */
@@ -1713,7 +1713,8 @@
               {found && (
                 <div className="lw-subq">
                   <div className="lw-field">
-                    <label className="lw-field-label" htmlFor="s6-a1">Now enter your house number and street:</label>
+                    <label className="lw-question-sub" htmlFor="s6-a1"
+                           style={{ textAlign: 'left', margin: '0 0 10px', display: 'block' }}>Now enter your house number and street:</label>
                     <div className="lw-input-row">
                       <input id="s6-a1" type="text" autoComplete="address-line1"
                         placeholder="e.g. 5 Almond Way" value={s.address_line1}
@@ -1901,8 +1902,9 @@
         loadGoogleMaps().then((maps) => {
           if (cancelled || !ref.current) return;
           // Static close-up — visual reference only: no pin, no controls, no gestures.
+          // Tight zoom so the target property dominates the (clear) left half.
           map = new maps.Map(ref.current, {
-            center: { lat, lng }, zoom: 19, mapTypeId: 'satellite', tilt: 0,
+            center: { lat, lng }, zoom: 21, mapTypeId: 'satellite', tilt: 0,
             disableDefaultUI: true, gestureHandling: 'none', draggable: false,
             keyboardShortcuts: false, clickableIcons: false,
           });
