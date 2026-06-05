@@ -862,6 +862,122 @@
       margin: 0 0 8px 6px;
     }
 
+    /* ---------- Step 6 — Address, Map, Orientation, Occupancy ---------- */
+    /* Wider container than the kWh/tariff forms so the map has room to breathe */
+    .lw-step6 { width: 100%; max-width: 760px; margin: 0 auto; }
+
+    /* Postcode + Find button row */
+    .lw-find-row { display: flex; gap: 12px; align-items: stretch; }
+    .lw-find-row .lw-input-row { flex: 1; }
+    .lw-find-btn {
+      flex: 0 0 auto;
+      padding: 0 28px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 150ms ease, transform 150ms ease;
+    }
+    .lw-find-btn:hover:not(:disabled) { background: #C8232B; }
+    .lw-find-btn:active:not(:disabled) { transform: translateY(1px); }
+    .lw-find-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .lw-input-error { color: var(--color-primary); font-size: 14px; font-weight: 600; margin: 10px 0 0; }
+    .lw-input-readonly input { color: #888; }
+
+    /* Satellite map */
+    .lw-map-wrap {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+    .lw-map { width: 100%; height: 440px; background: #e9e9e9; }
+    @media (max-width: 560px) { .lw-map { height: 340px; } }
+    .lw-map-tip {
+      position: absolute;
+      left: 16px; right: 16px; top: 16px;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1.4;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+      z-index: 2;
+    }
+    .lw-map-fallback {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      color: #777;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    /* Compass rose overlay (top-right of the compass map, always rotates to true north) */
+    .lw-compass-rose {
+      position: absolute;
+      top: 14px; right: 14px;
+      width: 56px; height: 56px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 50%;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 200ms ease;
+      z-index: 2;
+    }
+
+    /* Eight-point interactive compass */
+    .lw-compass { position: relative; margin: 12px auto 4px; }
+    .lw-compass-ring {
+      position: absolute;
+      inset: 32px;
+      border-radius: 50%;
+      border: 2px dashed #e0e0e0;
+      pointer-events: none;
+    }
+    .lw-compass-center {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--color-primary);
+      pointer-events: none;
+    }
+    .lw-compass-pt {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      border: 1.5px solid var(--color-border);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      color: #555;
+      cursor: pointer;
+      box-shadow: var(--shadow-card);
+      transition: background 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .lw-compass-pt:hover { border-color: #bbb; color: #222; }
+    .lw-compass-pt.selected {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px rgba(232, 50, 58, 0.15), 0 4px 12px rgba(232, 50, 58, 0.30);
+    }
+    .lw-orient-selected { text-align: center; font-size: 17px; font-weight: 700; color: #1a1a1a; margin: 18px 0 0; }
+    .lw-orient-selected b { color: var(--color-primary); }
+
     /* ---------- Footer trust strip ---------- */
     .lw-footer {
       border-top: 1px solid var(--color-border);
@@ -948,6 +1064,9 @@
       homebolt: <Svg><path d="M4 11l8-6 8 6" /><path d="M6 10.5V19h12v-8.5" /><path d="M12.7 11l-2.2 3.4h2.4L12.3 18" /></Svg>,
       chargerarrow: <Svg><rect x="3.5" y="3.5" width="9" height="17" rx="2" /><path d="M3.5 8.5h9" /><path d="M8.3 11l-1.6 3h2l-1.4 3" /><path d="M15 12h5" /><path d="M17.5 9.5 20 12l-2.5 2.5" /></Svg>,
       charger: <Svg><rect x="7" y="3.5" width="10" height="17" rx="2" /><path d="M7 8.5h10" /><path d="M12.8 11l-2.2 3.4h2.4L12.4 18" /></Svg>,
+      // Step 6 — orientation confirm
+      yescheck: <Svg><circle cx="12" cy="12" r="9" /><path d="m8.3 12 2.6 2.6L15.7 9" /></Svg>,
+      compass: <Svg><circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2.2 5.3-5.3 2.2 2.2-5.3z" /></Svg>,
     };
 
     /* ============================================================
@@ -1002,10 +1121,97 @@
     const TARIFF_INDEX = QUESTIONS.length + 1;   // 5
     const BATTERY_INDEX = QUESTIONS.length + 2;  // 6
     const EV_INDEX = QUESTIONS.length + 3;       // 7
+    const STEP6_INDEX = QUESTIONS.length + 4;    // 8 — Address & Roof Confirmation (4 internal phases)
 
     // Card interaction timings (Section 7 #9): minimum press hold, then settle.
     const PRESS_MS = 80;
     const SELECT_HOLD_MS = 500;
+
+    /* ============================================================
+       STEP 6 — geo helpers, maps loader, direction labels
+       ============================================================ */
+    // Google Maps JS key (Section 5). Domain-restricted to *.deals.livwarm.co.uk
+    // and *.vercel.app. On localhost/file:// it may be blocked — components fall
+    // back to a "map unavailable" panel and the flow still works.
+    const GMAPS_KEY = 'AIzaSyBNkXCoi3mCSo8qSXj-S47cQKDZjzzEP54';
+
+    const DIR_WORDS = {
+      N: 'North', NE: 'North-East', E: 'East', SE: 'South-East',
+      S: 'South', SW: 'South-West', W: 'West', NW: 'North-West',
+    };
+
+    // Initial bearing (degrees, 0=N clockwise) from point 1 to point 2.
+    function bearingDeg(lat1, lon1, lat2, lon2) {
+      const toRad = (d) => (d * Math.PI) / 180;
+      const toDeg = (r) => (r * 180) / Math.PI;
+      const dLon = toRad(lon2 - lon1);
+      const y = Math.sin(dLon) * Math.cos(toRad(lat2));
+      const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2))
+              - Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
+      return (toDeg(Math.atan2(y, x)) + 360) % 360;
+    }
+
+    // Snap a bearing to the nearest 8-point compass direction.
+    function degToCompass(deg) {
+      const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+      return dirs[Math.round((deg % 360) / 45) % 8];
+    }
+
+    // Best-effort front-door direction from the property point (Part C auto-suggestion).
+    // Snaps the property to the nearest road via the Google Roads API; the property→road
+    // vector approximates which way the front of the house faces. Returns an 8-point
+    // direction, or null if it can't be determined — the caller then shows the compass UI.
+    //
+    // NOTE (technical limitation): the Roads API does NOT support browser CORS, so this
+    // fetch will usually fail client-side and return null (→ compass UI shown). To make the
+    // auto-suggestion work in production, proxy this lookup through the WordPress AJAX
+    // handler (server-side) and return the snapped point to the form.
+    async function suggestFrontDoorDir(lat, lng) {
+      try {
+        const url = 'https://roads.googleapis.com/v1/nearestRoads?points='
+          + lat + ',' + lng + '&key=' + GMAPS_KEY;
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const data = await res.json();
+        const sp = data.snappedPoints && data.snappedPoints[0];
+        if (!sp || !sp.location) return null;
+        const rlat = sp.location.latitude, rlng = sp.location.longitude;
+        if (rlat === lat && rlng === lng) return null;
+        return degToCompass(bearingDeg(lat, lng, rlat, rlng));
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Google Maps calls window.gm_authFailure when the key is rejected (e.g. the
+    // domain isn't on the key's allow-list — the case on localhost/file://). We use
+    // it to show our own "map unavailable" panel instead of Google's grey error card.
+    let _gmapsAuthFailed = false;
+    const _gmapsAuthSubs = new Set();
+    window.gm_authFailure = function () {
+      _gmapsAuthFailed = true;
+      _gmapsAuthSubs.forEach((fn) => { try { fn(); } catch (e) {} });
+    };
+    function onGmapsAuthFailure(cb) { _gmapsAuthSubs.add(cb); return () => _gmapsAuthSubs.delete(cb); }
+
+    // Singleton loader for the Google Maps JS API. Resolves with google.maps.
+    let _gmapsPromise = null;
+    function loadGoogleMaps() {
+      if (window.google && window.google.maps) return Promise.resolve(window.google.maps);
+      if (_gmapsPromise) return _gmapsPromise;
+      _gmapsPromise = new Promise((resolve, reject) => {
+        const cbName = '__lwGmapsReady';
+        window[cbName] = () => resolve(window.google.maps);
+        const s = document.createElement('script');
+        s.src = 'https://maps.googleapis.com/maps/api/js?key=' + GMAPS_KEY
+          + '&callback=' + cbName + '&v=weekly';
+        s.async = true;
+        s.defer = true;
+        s.onerror = () => reject(new Error('Google Maps failed to load'));
+        document.head.appendChild(s);
+      });
+      return _gmapsPromise;
+    }
 
     /* ============================================================
        COMPONENTS
@@ -1111,7 +1317,9 @@
             {option.num ? <span className="lw-card-num">{option.label}</span> : ICONS[option.icon]}
           </span>
           {option.num
-            ? <span className="lw-card-label">{option.value === '1' ? 'bedroom' : 'bedrooms'}</span>
+            ? <span className="lw-card-label">{option.value === '1'
+                ? (option.unit || 'bedroom')
+                : (option.unitPlural || 'bedrooms')}</span>
             : <span className="lw-card-label">{option.label}</span>}
         </button>
       );
@@ -1419,6 +1627,351 @@
       );
     }
 
+    /* ============================================================
+       STEP 6 — Address & Roof Confirmation (Parts A–D)
+       One step (6 of 9) with four internal phases:
+       address → map → orientation → occupancy
+       ============================================================ */
+
+    const ORIENT_CONFIRM = [
+      { value: 'yes', label: "Yes, that's right", icon: 'yescheck' },
+      { value: 'no', label: 'No, let me check', icon: 'compass' },
+    ];
+    const OCCUPANCY_OPTIONS = [
+      { value: '1', label: '1', num: true, unit: 'person', unitPlural: 'people' },
+      { value: '2', label: '2', num: true, unit: 'person', unitPlural: 'people' },
+      { value: '3', label: '3', num: true, unit: 'person', unitPlural: 'people' },
+      { value: '4', label: '4', num: true, unit: 'person', unitPlural: 'people' },
+      { value: '5+', label: '5+', num: true, unit: 'person', unitPlural: 'people' },
+    ];
+
+    /* ---- Part A: postcode lookup + address entry (postcodes.io) ---- */
+    function AddressStep({ state, setState, onContinue }) {
+      const s = state;
+      const patch = (p) => setState({ ...s, ...p });
+      const found = s.lat != null;
+
+      const doLookup = async () => {
+        const pc = s.postcode.trim();
+        if (!pc) return;
+        patch({ looking: true, lookupError: '' });
+        try {
+          const res = await fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(pc));
+          const data = await res.json();
+          if (data.status !== 200 || !data.result) {
+            setState({ ...s, looking: false, lat: null, lng: null,
+              lookupError: "We couldn't find that postcode. Check it, or enter your address manually." });
+            return;
+          }
+          const r = data.result;
+          // postcodes.io has no street-level "post town"; parish (if any) is the most
+          // local label, falling back to admin_district then region.
+          const town = r.parish || r.admin_district || r.region || '';
+          setState({ ...s, looking: false, lookupError: '',
+            postcode: r.postcode, town, lat: r.latitude, lng: r.longitude });
+        } catch (e) {
+          setState({ ...s, looking: false,
+            lookupError: 'Lookup failed — check your connection or enter your address manually.' });
+        }
+      };
+
+      const lookupCanContinue = !!s.address_line1.trim() && s.lat != null;
+      const manualCanContinue = !!s.address_line1.trim() && !!s.postcode.trim();
+
+      return (
+        <div className="lw-fade-in lw-eu">
+          <h1 className="lw-question">Let's identify your roof</h1>
+          <p className="lw-question-sub">Enter your postcode and we'll pinpoint your home on the map.</p>
+
+          {!s.manual ? (
+            <React.Fragment>
+              <div className="lw-field">
+                <label className="lw-field-label" htmlFor="s6-pc">Postcode</label>
+                <div className="lw-find-row">
+                  <div className="lw-input-row">
+                    <input id="s6-pc" type="text" autoComplete="postal-code"
+                      placeholder="e.g. DY13 8UA" value={s.postcode}
+                      onChange={(e) => patch({ postcode: e.target.value.toUpperCase(), lat: null, lng: null, lookupError: '' })}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); doLookup(); } }} />
+                  </div>
+                  <button type="button" className="lw-find-btn"
+                    disabled={s.looking || !s.postcode.trim()} onClick={doLookup}>
+                    {s.looking ? 'Finding…' : 'Find'}
+                  </button>
+                </div>
+                {s.lookupError && <p className="lw-input-error">{s.lookupError}</p>}
+                <button type="button" className="lw-link"
+                  onClick={() => patch({ manual: true, lookupError: '' })}>
+                  Can't find your postcode?
+                </button>
+              </div>
+
+              {found && (
+                <div className="lw-subq">
+                  <div className="lw-field">
+                    <label className="lw-field-label" htmlFor="s6-a1">Address line 1</label>
+                    <div className="lw-input-row">
+                      <input id="s6-a1" type="text" autoComplete="address-line1"
+                        placeholder="e.g. 5 Almond Way" value={s.address_line1}
+                        onChange={(e) => patch({ address_line1: e.target.value })} autoFocus />
+                    </div>
+                  </div>
+                  <div className="lw-field-row">
+                    <div className="lw-field">
+                      <label className="lw-field-label" htmlFor="s6-town">Town / City</label>
+                      <div className="lw-input-row">
+                        <input id="s6-town" type="text" value={s.town}
+                          onChange={(e) => patch({ town: e.target.value })} />
+                      </div>
+                    </div>
+                    <div className="lw-field">
+                      <label className="lw-field-label" htmlFor="s6-pc2">Postcode</label>
+                      <div className="lw-input-row lw-input-readonly">
+                        <input id="s6-pc2" type="text" value={s.postcode} readOnly />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              {/* Manual fallback — every field typed by hand. The postcode is geocoded
+                  on Continue so the satellite map still has a centre point. */}
+              <div className="lw-field">
+                <label className="lw-field-label" htmlFor="s6-ma1">Address line 1</label>
+                <div className="lw-input-row">
+                  <input id="s6-ma1" type="text" autoComplete="address-line1"
+                    placeholder="e.g. 5 Almond Way" value={s.address_line1}
+                    onChange={(e) => patch({ address_line1: e.target.value })} />
+                </div>
+              </div>
+              <div className="lw-field-row">
+                <div className="lw-field">
+                  <label className="lw-field-label" htmlFor="s6-mtown">Town / City</label>
+                  <div className="lw-input-row">
+                    <input id="s6-mtown" type="text" value={s.town}
+                      onChange={(e) => patch({ town: e.target.value })} />
+                  </div>
+                </div>
+                <div className="lw-field">
+                  <label className="lw-field-label" htmlFor="s6-mpc">Postcode</label>
+                  <div className="lw-input-row">
+                    <input id="s6-mpc" type="text" autoComplete="postal-code"
+                      placeholder="e.g. DY13 8UA" value={s.postcode}
+                      onChange={(e) => patch({ postcode: e.target.value.toUpperCase() })} />
+                  </div>
+                </div>
+              </div>
+              {s.lookupError && <p className="lw-input-error">{s.lookupError}</p>}
+              <button type="button" className="lw-link"
+                onClick={() => patch({ manual: false, lookupError: '' })}>
+                Use postcode lookup instead
+              </button>
+            </React.Fragment>
+          )}
+
+          <button type="button" className="lw-cta" style={{ marginTop: 24 }}
+            disabled={s.manual ? !manualCanContinue : !lookupCanContinue}
+            onClick={onContinue}>
+            Continue
+          </button>
+        </div>
+      );
+    }
+
+    /* ---- Part B: satellite map confirmation (Google Maps, draggable pin) ---- */
+    function MapConfirm({ lat, lng, onPinMove, onConfirm }) {
+      const ref = useRef(null);
+      const [status, setStatus] = React.useState('loading');  // loading | ready | error
+      React.useEffect(() => {
+        let cancelled = false, map, marker;
+        if (lat == null) { setStatus('error'); return; }
+        if (_gmapsAuthFailed) { setStatus('error'); return; }
+        const unsub = onGmapsAuthFailure(() => { if (!cancelled) setStatus('error'); });
+        loadGoogleMaps().then((maps) => {
+          if (cancelled || !ref.current) return;
+          map = new maps.Map(ref.current, {
+            center: { lat, lng }, zoom: 20, mapTypeId: 'satellite', tilt: 0,
+            disableDefaultUI: true, zoomControl: true, gestureHandling: 'greedy',
+          });
+          marker = new maps.Marker({
+            position: { lat, lng }, map, draggable: true, animation: maps.Animation.DROP,
+          });
+          marker.addListener('dragend', () => {
+            const p = marker.getPosition();
+            onPinMove(p.lat(), p.lng());
+          });
+          // Tapping the roof also moves the pin (matches the tooltip copy)
+          map.addListener('click', (e) => {
+            marker.setPosition(e.latLng);
+            onPinMove(e.latLng.lat(), e.latLng.lng());
+          });
+          setStatus('ready');
+        }).catch(() => { if (!cancelled) setStatus('error'); });
+        return () => { cancelled = true; unsub(); };
+      }, []);
+
+      return (
+        <div className="lw-fade-in lw-step6">
+          <h1 className="lw-question">Is this your roof?</h1>
+          <p className="lw-question-sub">Drag or tap to move the pin onto the roof where you'd like the panels.</p>
+          <div className="lw-map-wrap">
+            <div className="lw-map-tip">
+              Is this the roof where you want the panels installed? Confirm below, or reposition the pin by tapping your roof.
+            </div>
+            {status === 'error'
+              ? <div className="lw-map lw-map-fallback">Map preview isn't available here — it will load on the live site. You can still continue.</div>
+              : <div className="lw-map" ref={ref} />}
+          </div>
+          <button type="button" className="lw-cta"
+            style={{ maxWidth: 420, margin: '24px auto 0' }} onClick={onConfirm}>
+            Confirm location
+          </button>
+        </div>
+      );
+    }
+
+    /* ---- Part C: north-up compass rose overlay (rotates to true north) ---- */
+    function CompassRose() {
+      return (
+        <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
+          <polygon points="22,5 27,22 22,18 17,22" fill="#E8323A" />
+          <polygon points="22,39 27,22 22,26 17,22" fill="#aaa" />
+          <circle cx="22" cy="22" r="2.2" fill="#fff" stroke="#888" strokeWidth="1" />
+          <text x="22" y="13" textAnchor="middle" fontSize="7" fontWeight="800"
+                fill="#fff" fontFamily="sans-serif">N</text>
+        </svg>
+      );
+    }
+
+    /* ---- Part C: eight-point interactive compass selector ---- */
+    function CompassSelect({ value, onChange }) {
+      const dirs = [
+        { k: 'N', deg: 0 }, { k: 'NE', deg: 45 }, { k: 'E', deg: 90 }, { k: 'SE', deg: 135 },
+        { k: 'S', deg: 180 }, { k: 'SW', deg: 225 }, { k: 'W', deg: 270 }, { k: 'NW', deg: 315 },
+      ];
+      const size = 280, radius = 110, centre = size / 2, btn = 58;
+      return (
+        <div className="lw-compass" style={{ width: size, height: size }}>
+          <div className="lw-compass-ring" />
+          <div className="lw-compass-center">{value || '·'}</div>
+          {dirs.map((d) => {
+            const rad = (d.deg * Math.PI) / 180;
+            const x = centre + radius * Math.sin(rad);
+            const y = centre - radius * Math.cos(rad);
+            return (
+              <button key={d.k} type="button"
+                className={'lw-compass-pt' + (value === d.k ? ' selected' : '')}
+                style={{ left: x, top: y, width: btn, height: btn,
+                         transform: 'translate(-50%, -50%)' }}
+                onClick={() => onChange(d.k)}
+                aria-pressed={value === d.k}>
+                {d.k}
+              </button>
+            );
+          })}
+        </div>
+      );
+    }
+
+    /* ---- Part C: compass screen — tight satellite map + compass UI ---- */
+    function CompassScreen({ lat, lng, value, onChange, onContinue }) {
+      const ref = useRef(null);
+      const [heading, setHeading] = React.useState(0);
+      const [status, setStatus] = React.useState('loading');
+      React.useEffect(() => {
+        let cancelled = false, map;
+        if (lat == null) { setStatus('error'); return; }
+        if (_gmapsAuthFailed) { setStatus('error'); return; }
+        const unsub = onGmapsAuthFailure(() => { if (!cancelled) setStatus('error'); });
+        loadGoogleMaps().then((maps) => {
+          if (cancelled || !ref.current) return;
+          map = new maps.Map(ref.current, {
+            center: { lat, lng }, zoom: 21, mapTypeId: 'satellite', tilt: 0,
+            disableDefaultUI: true, gestureHandling: 'greedy', rotateControl: true,
+          });
+          // Keep the compass rose pointing to true north as the map is rotated
+          map.addListener('heading_changed', () => {
+            if (!cancelled) setHeading(map.getHeading() || 0);
+          });
+          setStatus('ready');
+        }).catch(() => { if (!cancelled) setStatus('error'); });
+        return () => { cancelled = true; unsub(); };
+      }, []);
+
+      return (
+        <div className="lw-fade-in lw-step6">
+          <h1 className="lw-question">Which way does your home face?</h1>
+          <p className="lw-question-sub">If you look out of your front door, which direction are you facing?</p>
+          <div className="lw-map-wrap">
+            <div className="lw-compass-rose" style={{ transform: 'rotate(' + (-heading) + 'deg)' }}>
+              <CompassRose />
+            </div>
+            {status === 'error'
+              ? <div className="lw-map lw-map-fallback">Map preview isn't available here — pick your direction on the compass below.</div>
+              : <div className="lw-map" ref={ref} />}
+          </div>
+          <CompassSelect value={value} onChange={onChange} />
+          {value && <p className="lw-orient-selected">You're facing <b>{DIR_WORDS[value]}</b></p>}
+          <button type="button" className="lw-cta"
+            style={{ maxWidth: 420, margin: '20px auto 0' }}
+            disabled={!value} onClick={onContinue}>
+            Continue
+          </button>
+        </div>
+      );
+    }
+
+    /* ---- Part C: orientation — auto-suggestion (if any) then compass ---- */
+    function OrientationStep({ lat, lng, suggestedDir, value, onChange, onContinue }) {
+      // Show the Yes/No confirmation only when a bearing was derived; otherwise
+      // (the usual case in-browser — see suggestFrontDoorDir) go straight to the compass.
+      const [mode, setMode] = React.useState(suggestedDir ? 'confirm' : 'compass');
+      if (mode === 'confirm') {
+        return (
+          <div className="lw-fade-in">
+            <h1 className="lw-question">Based on your address, your front door appears to face {DIR_WORDS[suggestedDir]}.</h1>
+            <p className="lw-question-sub">Does that sound right?</p>
+            <CardChoice options={ORIENT_CONFIRM} value={null}
+              onSelect={(v) => { if (v === 'yes') onChange(suggestedDir); else setMode('compass'); }}
+              onSettle={(v) => { if (v === 'yes') onContinue(); }} />
+          </div>
+        );
+      }
+      return <CompassScreen lat={lat} lng={lng} value={value} onChange={onChange} onContinue={onContinue} />;
+    }
+
+    /* ---- Part D: occupancy ---- */
+    function OccupancyStep({ value, onSelect, onContinue }) {
+      return (
+        <div className="lw-fade-in">
+          <h1 className="lw-question">How many people live in your home?</h1>
+          <p className="lw-question-sub">This helps us size your system to match your day-to-day energy use.</p>
+          <CardChoice options={OCCUPANCY_OPTIONS} value={value}
+            onSelect={onSelect} onSettle={onContinue} />
+        </div>
+      );
+    }
+
+    /* ---- Step 6 orchestrator — routes the four phases ---- */
+    function Step6({ state, setState, onAddressContinue, onPinMove, onConfirmPin,
+                     onSetOrientation, onSetOccupants, onComplete }) {
+      const s = state;
+      if (s.phase === 'address') {
+        return <AddressStep state={s} setState={setState} onContinue={onAddressContinue} />;
+      }
+      if (s.phase === 'map') {
+        return <MapConfirm lat={s.lat} lng={s.lng} onPinMove={onPinMove} onConfirm={onConfirmPin} />;
+      }
+      if (s.phase === 'orientation') {
+        return <OrientationStep lat={s.lat} lng={s.lng} suggestedDir={s.suggestedDir}
+                 value={s.roof_orientation} onChange={onSetOrientation}
+                 onContinue={() => setState({ ...s, phase: 'occupancy' })} />;
+      }
+      return <OccupancyStep value={s.occupants} onSelect={onSetOccupants} onContinue={onComplete} />;
+    }
+
     function StepComplete({ answers, onRestart }) {
       return (
         <div className="lw-complete lw-fade-in">
@@ -1455,8 +2008,26 @@
                 <span className="lw-pill-value">{formatEv(answers)}</span>
               </span>
             )}
+            {answers.address_full && (
+              <span className="lw-pill" style={{ cursor: 'default' }}>
+                <span className="lw-pill-label">Address:</span>
+                <span className="lw-pill-value">{answers.address_line1 || answers.postcode}</span>
+              </span>
+            )}
+            {answers.roof_orientation && (
+              <span className="lw-pill" style={{ cursor: 'default' }}>
+                <span className="lw-pill-label">Faces:</span>
+                <span className="lw-pill-value">{DIR_WORDS[answers.roof_orientation]}</span>
+              </span>
+            )}
+            {answers.occupants && (
+              <span className="lw-pill" style={{ cursor: 'default' }}>
+                <span className="lw-pill-label">Household:</span>
+                <span className="lw-pill-value">{formatOccupants(answers.occupants)}</span>
+              </span>
+            )}
           </div>
-          <p className="lw-next-note">Step 6 — Address &amp; Roof Confirmation — is built in the next session.</p>
+          <p className="lw-next-note">Step 7 — Your Solar Potential (the quote screen) — is built in the next session.</p>
           <div style={{ marginTop: 8 }}>
             <button className="lw-btn lw-btn-ghost" onClick={onRestart}>Start over</button>
           </div>
@@ -1534,6 +2105,12 @@
       return '';
     }
 
+    /* occupancy breadcrumb value: "3 people" / "1 person" */
+    function formatOccupants(v) {
+      if (!v) return '';
+      return v + (v === '1' ? ' person' : ' people');
+    }
+
     /* short labels for breadcrumb pills */
     function shortLabel(key) {
       switch (key) {
@@ -1563,6 +2140,14 @@
       // Step 2 — electricity usage form state (kept in App so it persists across navigation)
       const [electricity, setElectricity] = useState({ usage: '', rateMode: 'same', dayRate: '', nightRate: '', used_national_average_kwh: false, used_national_average_rate: false });
       const [showHelp, setShowHelp] = useState(null); // null = closed; { caption? } = open
+      // Step 6 — address/map/orientation/occupancy working state (lifted so it persists across navigation)
+      const [step6, setStep6] = useState({
+        phase: 'address',                 // address | map | orientation | occupancy
+        postcode: '', address_line1: '', town: '',
+        lat: null, lng: null,
+        manual: false, looking: false, lookupError: '',
+        suggestedDir: null, roof_orientation: '', occupants: '',
+      });
 
       const handleSelect = useCallback((option) => {
         if (busy) return;                          // ignore taps mid-animation
@@ -1590,6 +2175,14 @@
       }, [currentIndex, busy]);
 
       const handleEdit = useCallback((index) => {
+        // Step 6 pills jump back into the address phase of Step 6.
+        if (index === STEP6_INDEX) {
+          setCurrentIndex(STEP6_INDEX);
+          setStep6((s) => ({ ...s, phase: 'address' }));
+          setPressing(null);
+          setBusy(false);
+          return;
+        }
         // Jump back to an answered question. Keep its own answer so the chosen
         // card shows its selected (pressed) state; clear everything after it,
         // since changing an earlier answer can invalidate later ones.
@@ -1605,12 +2198,18 @@
 
       const handleBackFromDeadEnd = useCallback(() => { setDeadEnd(null); setBusy(false); }, []);
 
-      // Back button on question screens — step to the previous question (answers persist).
+      // Back button — within Step 6 step back through its phases; otherwise to the
+      // previous question/step (answers persist).
+      const PREV_PHASE = { occupancy: 'orientation', orientation: 'map', map: 'address' };
       const handleBack = useCallback(() => {
+        if (currentIndex === STEP6_INDEX && step6.phase !== 'address') {
+          setStep6((s) => ({ ...s, phase: PREV_PHASE[s.phase] || 'address' }));
+          return;
+        }
         setCurrentIndex((i) => Math.max(0, i - 1));
         setPressing(null);
         setBusy(false);
-      }, []);
+      }, [currentIndex, step6.phase]);
 
       const handleRestart = useCallback(() => {
         setAnswers({});
@@ -1620,6 +2219,7 @@
         setBusy(false);
         setElectricity({ usage: '', rateMode: 'same', dayRate: '', nightRate: '', used_national_average_kwh: false, used_national_average_rate: false });
         setShowHelp(null);
+        setStep6({ phase: 'address', postcode: '', address_line1: '', town: '', lat: null, lng: null, manual: false, looking: false, lookupError: '', suggestedDir: null, roof_orientation: '', occupants: '' });
       }, []);
 
       // Step 2 (usage) — national average populates 4,100 kWh/yr and flags it.
@@ -1690,19 +2290,74 @@
       }, []);
       const handleEvContinue = useCallback(() => setCurrentIndex(EV_INDEX + 1), []);
 
+      // Step 6 Part A — commit address into shared answers, then go to the map.
+      // In manual mode (or if lookup was skipped) geocode the postcode here so the
+      // map still has a centre; if that fails we skip the map and go to orientation.
+      const handleAddressContinue = useCallback(async () => {
+        let { lat, lng, postcode, town, address_line1 } = step6;
+        if (lat == null && postcode.trim()) {
+          try {
+            const res = await fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(postcode.trim()));
+            const data = await res.json();
+            if (data.status === 200 && data.result) {
+              lat = data.result.latitude; lng = data.result.longitude;
+              if (!town) town = data.result.parish || data.result.admin_district || '';
+            }
+          } catch (e) { /* geocode failed — fall through with lat null */ }
+        }
+        const latlong = (lat != null && lng != null) ? lat.toFixed(6) + ',' + lng.toFixed(6) : '';
+        const address_full = [address_line1, town, postcode].filter(Boolean).join(', ');
+        setAnswers((prev) => ({ ...prev, postcode, address_line1, town, address_full, latlong }));
+        setStep6((s) => ({ ...s, lat, lng, town, phase: lat != null ? 'map' : 'orientation' }));
+      }, [step6]);
+
+      // Step 6 Part B — pin drag/tap updates the stored lat/long live.
+      const handlePinMove = useCallback((lat, lng) => {
+        setStep6((s) => ({ ...s, lat, lng }));
+        setAnswers((prev) => ({ ...prev, latlong: lat.toFixed(6) + ',' + lng.toFixed(6) }));
+      }, []);
+
+      // Step 6 Part B → C — confirm the pin, derive a suggested front-door direction
+      // (null in-browser → compass UI shown), advance to orientation.
+      const handleConfirmPin = useCallback(async () => {
+        const { lat, lng } = step6;
+        let dir = null;
+        if (lat != null) {
+          setAnswers((prev) => ({ ...prev, latlong: lat.toFixed(6) + ',' + lng.toFixed(6) }));
+          dir = await suggestFrontDoorDir(lat, lng);
+        }
+        setStep6((s) => ({ ...s, suggestedDir: dir, phase: 'orientation' }));
+      }, [step6]);
+
+      // Step 6 Part C — store the front-door direction (front door faces the street;
+      // Step 7 derives the rear/best-facing slope for panel placement).
+      const handleSetOrientation = useCallback((dir) => {
+        setStep6((s) => ({ ...s, roof_orientation: dir }));
+        setAnswers((prev) => ({ ...prev, roof_orientation: dir }));
+      }, []);
+
+      // Step 6 Part D — store occupancy.
+      const handleSetOccupants = useCallback((val) => {
+        setStep6((s) => ({ ...s, occupants: val }));
+        setAnswers((prev) => ({ ...prev, occupants: val }));
+      }, []);
+      const handleStep6Complete = useCallback(() => setCurrentIndex(STEP6_INDEX + 1), []);
+
       // Screen routing across steps.
       const inQualifier = currentIndex < USAGE_INDEX;     // Step 1 question screens
       const onUsage = currentIndex === USAGE_INDEX;       // Step 2 annual usage (kWh)
       const onTariff = currentIndex === TARIFF_INDEX;     // Step 3 electricity tariff (rate)
       const onBattery = currentIndex === BATTERY_INDEX;   // Step 4 battery location
       const onEv = currentIndex === EV_INDEX;             // Step 5 EV details
-      const isComplete = currentIndex > EV_INDEX;         // handover (placeholder for Step 6)
+      const onStep6 = currentIndex === STEP6_INDEX;       // Step 6 address & roof confirmation
+      const isComplete = currentIndex > STEP6_INDEX;      // handover (placeholder for Step 7)
       const currentQuestion = inQualifier ? QUESTIONS[currentIndex] : null;
       const step = inQualifier ? { number: 1, name: 'Home Details' }
         : onUsage ? { number: 2, name: 'Electricity Usage' }
         : onTariff ? { number: 3, name: 'Electricity Tariff' }
         : onBattery ? { number: 4, name: 'Battery Details' }
-        : { number: 5, name: 'EV Details' };
+        : onEv ? { number: 5, name: 'EV Details' }
+        : { number: 6, name: 'Address & Roof' };
 
       // Breadcrumb pills: answers for screens *before* the current one (so the current
       // screen's value shows in-place rather than duplicated as a pill above).
@@ -1730,6 +2385,27 @@
           key: 'ev', index: EV_INDEX, shortLabel: 'EV', value: formatEv(answers),
         });
       }
+      // Step 6 pills accumulate as its phases complete (and once past Step 6)
+      const pastAddress = currentIndex > STEP6_INDEX || (onStep6 && step6.phase !== 'address');
+      const pastOrientation = currentIndex > STEP6_INDEX || (onStep6 && step6.phase === 'occupancy');
+      if (answers.address_full && pastAddress) {
+        breadcrumbItems.push({
+          key: 'address', index: STEP6_INDEX, shortLabel: 'Address',
+          value: answers.address_line1 || answers.postcode,
+        });
+      }
+      if (answers.roof_orientation && pastOrientation) {
+        breadcrumbItems.push({
+          key: 'orientation', index: STEP6_INDEX, shortLabel: 'Faces',
+          value: DIR_WORDS[answers.roof_orientation],
+        });
+      }
+      if (answers.occupants && currentIndex > STEP6_INDEX) {
+        breadcrumbItems.push({
+          key: 'occupants', index: STEP6_INDEX, shortLabel: 'Household',
+          value: formatOccupants(answers.occupants),
+        });
+      }
 
       // Progress: each step fills one segment (1/TOTAL_STEPS).
       const segment = 100 / TOTAL_STEPS;
@@ -1745,8 +2421,12 @@
         percent = 3 * segment;                                   // Steps 1–3 done
       } else if (onEv) {
         percent = 4 * segment;                                   // Steps 1–4 done
+      } else if (onStep6) {
+        // Steps 1–5 done; fill within Step 6 as its four phases complete
+        const phaseIdx = { address: 0, map: 1, orientation: 2, occupancy: 3 }[step6.phase] || 0;
+        percent = 5 * segment + (phaseIdx / 4) * segment;
       } else {
-        percent = 5 * segment;                                   // Steps 1–5 done
+        percent = 6 * segment;                                   // Steps 1–6 done
       }
 
       return (
@@ -1813,6 +2493,18 @@
                       onSelectPlans={handleEvPlans}
                       onSelectCharging={handleEvCharging}
                       onContinue={handleEvContinue}
+                    />
+                  )}
+                  {onStep6 && (
+                    <Step6
+                      state={step6}
+                      setState={setStep6}
+                      onAddressContinue={handleAddressContinue}
+                      onPinMove={handlePinMove}
+                      onConfirmPin={handleConfirmPin}
+                      onSetOrientation={handleSetOrientation}
+                      onSetOccupants={handleSetOccupants}
+                      onComplete={handleStep6Complete}
                     />
                   )}
                   {isComplete && <StepComplete answers={answers} onRestart={handleRestart} />}
