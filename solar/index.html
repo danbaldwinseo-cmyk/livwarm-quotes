@@ -747,6 +747,24 @@
     }
     .lw-cta:disabled { opacity: 0.4; cursor: not-allowed; }
 
+    /* Outlined pill — same footprint as the CTA, sits directly above it */
+    .lw-cta-outline {
+      display: block;
+      width: 100%;
+      margin: 8px 0 12px;
+      padding: 16px 24px;
+      background: #ffffff;
+      color: var(--color-primary);
+      border: 1.5px solid var(--color-primary);
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .lw-cta-outline:hover { background: rgba(232, 50, 58, 0.05); }
+
     /* ---------- Steps 4 & 5 — card question + same-screen sub-question ---------- */
     .lw-subq { animation: lwSubIn 200ms ease both; }
     @keyframes lwSubIn {
@@ -958,6 +976,7 @@
       {
         key: 'roof_type',
         question: 'What type of roof do you have?',
+        sub: 'Solar panels can only be installed on a pitched (sloping or angled) roof.',
         options: [
           { value: 'Pitched', label: 'Pitched', icon: 'pitched' },
           { value: 'Flat', label: 'Flat', icon: 'flatroof', deadEnd: true },
@@ -1125,7 +1144,7 @@
     function UsageStep({ data, onChange, onUseAverages, onContinue, onShowHelp }) {
       const patch = (p) => onChange({ ...data, ...p });
       const cleanInt = (v) => v.replace(/[^0-9,]/g, '');
-      const canContinue = String(data.usage).trim() !== '';
+      const canContinue = String(data.usage).trim() !== '' || !!data.used_national_average_kwh;
       return (
         <div className="lw-fade-in lw-eu">
           <h1 className="lw-question">Your current electricity usage</h1>
@@ -1136,14 +1155,14 @@
             <div className="lw-input-row">
               <input id="eu-usage" type="text" inputMode="numeric" autoComplete="off"
                      placeholder="e.g. 4,100" value={data.usage}
-                     onChange={(e) => patch({ usage: cleanInt(e.target.value) })} />
+                     onChange={(e) => patch({ usage: cleanInt(e.target.value), used_national_average_kwh: false })} />
               <span className="lw-input-unit">kWh/yr</span>
             </div>
             <button type="button" className="lw-link" onClick={onShowHelp}>Where do I find this?</button>
           </div>
 
-          <button type="button" className="lw-link lw-link-center" onClick={onUseAverages}>
-            I'm not sure — use national averages
+          <button type="button" className="lw-cta-outline" onClick={onUseAverages}>
+            I don't know - use national averages
           </button>
 
           <button type="button" className="lw-cta" disabled={!canContinue} onClick={onContinue}>
@@ -1157,6 +1176,10 @@
     function TariffStep({ data, onChange, onUseAverages, onContinue, onShowHelp }) {
       const patch = (p) => onChange({ ...data, ...p });
       const cleanDec = (v) => v.replace(/[^0-9.]/g, '');
+      const rateFilled = data.rateMode === 'different'
+        ? (String(data.dayRate).trim() !== '' && String(data.nightRate).trim() !== '')
+        : String(data.dayRate).trim() !== '';
+      const canContinue = rateFilled || !!data.used_national_average_rate;
       return (
         <div className="lw-fade-in lw-eu">
           <h1 className="lw-question">How are you charged for electricity?</h1>
@@ -1185,7 +1208,7 @@
               <div className="lw-input-row">
                 <input id="eu-rate" type="text" inputMode="decimal" autoComplete="off"
                        placeholder="e.g. 26.35" value={data.dayRate}
-                       onChange={(e) => patch({ dayRate: cleanDec(e.target.value) })} />
+                       onChange={(e) => patch({ dayRate: cleanDec(e.target.value), used_national_average_rate: false })} />
                 <span className="lw-input-unit">p/kWh</span>
               </div>
               <button type="button" className="lw-link" onClick={onShowHelp}>Where do I find this?</button>
@@ -1198,7 +1221,7 @@
                 <div className="lw-input-row">
                   <input id="eu-day" type="text" inputMode="decimal" autoComplete="off"
                          placeholder="e.g. 28" value={data.dayRate}
-                         onChange={(e) => patch({ dayRate: cleanDec(e.target.value) })} />
+                         onChange={(e) => patch({ dayRate: cleanDec(e.target.value), used_national_average_rate: false })} />
                   <span className="lw-input-unit">p/kWh</span>
                 </div>
               </div>
@@ -1207,7 +1230,7 @@
                 <div className="lw-input-row">
                   <input id="eu-night" type="text" inputMode="decimal" autoComplete="off"
                          placeholder="e.g. 15" value={data.nightRate}
-                         onChange={(e) => patch({ nightRate: cleanDec(e.target.value) })} />
+                         onChange={(e) => patch({ nightRate: cleanDec(e.target.value), used_national_average_rate: false })} />
                   <span className="lw-input-unit">p/kWh</span>
                 </div>
               </div>
@@ -1216,11 +1239,11 @@
             </React.Fragment>
           )}
 
-          <button type="button" className="lw-link lw-link-center" onClick={onUseAverages}>
-            I'm not sure — use national averages
+          <button type="button" className="lw-cta-outline" onClick={onUseAverages}>
+            I don't know - use national averages
           </button>
 
-          <button type="button" className="lw-cta" onClick={onContinue}>
+          <button type="button" className="lw-cta" disabled={!canContinue} onClick={onContinue}>
             Continue
           </button>
         </div>
@@ -1342,12 +1365,14 @@
       return (
         <div className="lw-fade-in">
           <h1 className="lw-question">Where would you like your battery installed?</h1>
+          <p className="lw-question-sub">Don't worry if you're not sure - our team will confirm the best location with you.</p>
           <CardChoice options={BATTERY_OPTIONS} value={location}
             onSelect={onSelectLocation}
             onSettle={(v) => { if (v !== 'Inside' && v !== 'Outside') onContinue(); }} />
           {showInside && (
             <div className="lw-subq">
               <h2 className="lw-subq-title">Where inside your home?</h2>
+              <p className="lw-question-sub">Don't worry if you're not sure - our team will confirm the best location with you.</p>
               <CardChoice options={BATTERY_INSIDE_OPTIONS} value={inside}
                 onSelect={onSelectInside} onSettle={onContinue} />
             </div>
@@ -1355,6 +1380,7 @@
           {showOutside && (
             <div className="lw-subq">
               <h2 className="lw-subq-title">Where outside your home?</h2>
+              <p className="lw-question-sub">For best performance, batteries installed outside should be in a shaded, well-ventilated spot.</p>
               <CardChoice options={BATTERY_OUTSIDE_OPTIONS} value={outside}
                 onSelect={onSelectOutside} onSettle={onContinue} />
             </div>
@@ -1383,6 +1409,7 @@
           {showPlans && (
             <div className="lw-subq">
               <h2 className="lw-subq-title">Are you planning to get one?</h2>
+              <p className="lw-question-sub">We'll factor this into your system size, so you're ready when you need it.</p>
               <CardChoice options={EV_PLANS_OPTIONS} value={plans}
                 onSelect={onSelectPlans} onSettle={onContinue} />
             </div>
@@ -1533,7 +1560,7 @@
       const [busy, setBusy] = useState(false);        // guards the press→select→advance sequence
       const [selectionTick, setSelectionTick] = useState(0); // bumps on each selection to replay the shimmer
       // Step 2 — electricity usage form state (kept in App so it persists across navigation)
-      const [electricity, setElectricity] = useState({ usage: '', rateMode: 'same', dayRate: '', nightRate: '' });
+      const [electricity, setElectricity] = useState({ usage: '', rateMode: 'same', dayRate: '', nightRate: '', used_national_average_kwh: false, used_national_average_rate: false });
       const [showHelp, setShowHelp] = useState(null); // null = closed; { caption? } = open
 
       const handleSelect = useCallback((option) => {
@@ -1590,13 +1617,13 @@
         setDeadEnd(null);
         setPressing(null);
         setBusy(false);
-        setElectricity({ usage: '', rateMode: 'same', dayRate: '', nightRate: '' });
+        setElectricity({ usage: '', rateMode: 'same', dayRate: '', nightRate: '', used_national_average_kwh: false, used_national_average_rate: false });
         setShowHelp(null);
       }, []);
 
-      // Step 2 (usage) — national average populates 4,100 kWh/yr.
+      // Step 2 (usage) — national average populates 4,100 kWh/yr and flags it.
       const handleUsageAverages = useCallback(() => {
-        setElectricity((eu) => ({ ...eu, usage: '4,100' }));
+        setElectricity((eu) => ({ ...eu, usage: '4,100', used_national_average_kwh: true }));
       }, []);
 
       // Step 2 (usage) — commit kWh into shared answers and advance to the tariff step.
@@ -1604,6 +1631,7 @@
         setAnswers((prev) => ({
           ...prev,
           electricity_usage: String(electricity.usage).replace(/[^0-9.]/g, ''),
+          used_national_average_kwh: !!electricity.used_national_average_kwh,
         }));
         setCurrentIndex(TARIFF_INDEX);
       }, [electricity]);
@@ -1611,8 +1639,8 @@
       // Step 3 (tariff) — national averages: 26.35p single, or 28p day / 15p night for Economy 7.
       const handleTariffAverages = useCallback(() => {
         setElectricity((eu) => eu.rateMode === 'different'
-          ? { ...eu, dayRate: '28', nightRate: '15' }
-          : { ...eu, dayRate: '26.35' });
+          ? { ...eu, dayRate: '28', nightRate: '15', used_national_average_rate: true }
+          : { ...eu, dayRate: '26.35', used_national_average_rate: true });
       }, []);
 
       // Step 3 (tariff) — commit rate(s) into shared answers (Payaca field names) and advance.
@@ -1622,6 +1650,7 @@
           day_unit_rate: String(electricity.dayRate).replace(/[^0-9.]/g, ''),
           night_unit_rate: electricity.rateMode === 'different'
             ? String(electricity.nightRate).replace(/[^0-9.]/g, '') : '',
+          used_national_average_rate: !!electricity.used_national_average_rate,
         }));
         setCurrentIndex(TARIFF_INDEX + 1);
       }, [electricity]);
