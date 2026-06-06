@@ -956,9 +956,10 @@
       transition: fill 150ms ease, opacity 150ms ease;
     }
     .lw-seg:hover .seg-fill {                                  /* sinks on hover; lighter fill vs darker inset = readable depth */
-      fill: rgba(0, 0, 0, 0.13);
+      fill: rgba(0, 0, 0, 0.06);
       filter: url(#segInsetHover);
     }
+    .seg-dots { pointer-events: none; }                        /* dot texture sits behind interactions */
     .lw-seg.selected .seg-fill {
       fill: var(--color-primary);                              /* #E8323A — complements the Continue button */
       filter: url(#segInsetSel);                               /* fully depressed */
@@ -1930,6 +1931,16 @@
         return `M ${ox1} ${oy1} A ${Ro} ${Ro} 0 0 1 ${ox2} ${oy2} `
              + `L ${ix2} ${iy2} A ${Ri} ${Ri} 0 0 0 ${ix1} ${iy1} Z`;
       };
+      // Bounding box of a sector → anchor the dot-fade at its lower-right corner (like the cards).
+      const segBBox = (a) => {
+        const ps = [];
+        for (let t = -22.5; t <= 22.5; t += 7.5) ps.push(pt(a + t, Ro));
+        ps.push(pt(a - 22.5, Ri)); ps.push(pt(a + 22.5, Ri)); ps.push(pt(a, Ri));
+        const xs = ps.map((p) => p[0]), ys = ps.map((p) => p[1]);
+        const minx = Math.min.apply(null, xs), maxx = Math.max.apply(null, xs);
+        const miny = Math.min.apply(null, ys), maxy = Math.max.apply(null, ys);
+        return { brx: maxx, bry: maxy, r: Math.hypot(maxx - minx, maxy - miny) * 0.65 };
+      };
       return (
         <div className="lw-rose">
           <svg viewBox="0 0 220 220" role="group" aria-label="Choose the direction your front door faces">
@@ -1976,6 +1987,32 @@
                 <stop offset="0.5" stopColor="#FF5A5F" />
                 <stop offset="1" stopColor="#C0272D" />
               </linearGradient>
+              {/* Dot texture (mirrors the answer cards) — grey default, red when selected */}
+              <pattern id="lwDots" width="10" height="10" patternUnits="userSpaceOnUse">
+                <circle cx="2" cy="2" r="0.9" fill="#d8d8d8" />
+              </pattern>
+              <pattern id="lwDotsRed" width="10" height="10" patternUnits="userSpaceOnUse">
+                <circle cx="2" cy="2" r="0.9" fill="rgba(232, 50, 58, 0.25)" />
+              </pattern>
+              {/* Per-segment clip + lower-right corner fade (mirrors the card mask) */}
+              {dirs.map((d) => {
+                const b = segBBox(d.a);
+                return (
+                  <React.Fragment key={'tex-' + d.k}>
+                    <clipPath id={'segclip-' + d.k}>
+                      <path d={sector(d.a - 22.5, d.a + 22.5)} />
+                    </clipPath>
+                    <radialGradient id={'segfade-' + d.k} gradientUnits="userSpaceOnUse"
+                      cx={b.brx} cy={b.bry} r={b.r}>
+                      <stop offset="0" stopColor="#ffffff" stopOpacity="0.5" />
+                      <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
+                    </radialGradient>
+                    <mask id={'segmask-' + d.k} maskUnits="userSpaceOnUse" x="0" y="0" width="220" height="220">
+                      <rect x="0" y="0" width="220" height="220" fill={'url(#segfade-' + d.k + ')'} />
+                    </mask>
+                  </React.Fragment>
+                );
+              })}
             </defs>
             {dirs.map((d) => {
               const [lx, ly] = pt(d.a, rL);
@@ -1992,6 +2029,9 @@
                    onBlur={() => setHover((h) => (h === d.k ? null : h))}
                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChange(d.k); } }}>
                   <path className="seg-fill" d={sector(d.a - 22.5, d.a + 22.5)} />
+                  <rect className="seg-dots" x="0" y="0" width="220" height="220"
+                        fill={value === d.k ? 'url(#lwDotsRed)' : 'url(#lwDots)'}
+                        clipPath={'url(#segclip-' + d.k + ')'} mask={'url(#segmask-' + d.k + ')'} />
                   <text className="seg-label" x={lx} y={ly} textAnchor="middle" dominantBaseline="central"
                         fontSize={d.card ? 17 : 13} fontWeight={d.card ? 700 : 500}>{d.k}</text>
                 </g>
