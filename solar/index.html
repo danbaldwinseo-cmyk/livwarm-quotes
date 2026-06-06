@@ -913,8 +913,8 @@
       line-height: 1.5;
     }
 
-    /* Orientation screen — compass rose overlaid on the right half of the map.
-       Disc: semi-transparent white so the map shows through slightly at the edges. */
+    /* Orientation screen — compass overlaid on the right half of the map.
+       Frosted-glass disc; a ring of eight tappable direction segments. */
     .lw-rose {
       position: absolute;
       top: 50%;
@@ -923,7 +923,10 @@
       width: 290px;
       height: 290px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.88);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
       box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18);
       display: flex;
       align-items: center;
@@ -931,27 +934,22 @@
       z-index: 2;
     }
     .lw-rose svg { width: 290px; height: 290px; display: block; }
-    .lw-rose-pt { cursor: pointer; }
-    .lw-rose-pt:focus { outline: none; }
-    .lw-rose-pt:focus-visible .gem { stroke: var(--color-primary-light); stroke-width: 2.5; }
-    .lw-rose-pt .hit { fill: transparent; pointer-events: all; }   /* ≥44px touch target */
-    .lw-rose-pt .gem {
-      fill: #D0D0D0;
-      stroke: #c4c4c4;
-      stroke-width: 1;
-      transition: fill 150ms ease, stroke 150ms ease;
+    .lw-seg { cursor: pointer; }
+    .lw-seg:focus { outline: none; }
+    .lw-seg .seg-fill {
+      fill: rgba(0, 0, 0, 0.06);
+      transition: fill 150ms ease;
     }
-    .lw-rose-pt .chipbg { fill: transparent; pointer-events: all; transition: fill 150ms ease; }
-    .lw-rose-pt .lbl {
+    .lw-seg:hover .seg-fill { fill: rgba(232, 50, 58, 0.15); }
+    .lw-seg.selected .seg-fill { fill: var(--color-primary); }
+    .lw-seg:focus-visible .seg-fill { fill: rgba(232, 50, 58, 0.20); }
+    .lw-seg .seg-label {
       fill: #444444;
-      font-weight: 800;
       transition: fill 150ms ease;
       pointer-events: none;
     }
-    .lw-rose-pt:hover .gem { fill: rgba(232, 50, 58, 0.15); stroke: rgba(232, 50, 58, 0.4); }
-    .lw-rose-pt.selected .gem { fill: var(--color-primary); stroke: var(--color-primary); }
-    .lw-rose-pt.selected .chipbg { fill: var(--color-primary); }
-    .lw-rose-pt.selected .lbl { fill: #fff; }
+    .lw-seg.selected .seg-label { fill: #fff; }
+    .lw-seg-divider { stroke: rgba(0, 0, 0, 0.10); stroke-width: 1; pointer-events: none; }
 
     /* Confirmation + Continue, centred below the map */
     .lw-orient-facing {
@@ -1714,7 +1712,7 @@
                 <div className="lw-subq">
                   <div className="lw-field">
                     <label className="lw-question-sub" htmlFor="s6-a1"
-                           style={{ textAlign: 'left', margin: '0 0 10px', display: 'block' }}>Now enter your house number and street:</label>
+                           style={{ textAlign: 'left', margin: '30px 0 12px', display: 'block', color: 'var(--color-body)', fontWeight: 600 }}>Now enter your house number and street</label>
                     <div className="lw-input-row">
                       <input id="s6-a1" type="text" autoComplete="address-line1"
                         placeholder="e.g. 5 Almond Way" value={s.address_line1}
@@ -1834,14 +1832,12 @@
       );
     }
 
-    /* ---- Part C: SVG compass rose — eight tappable arrowhead points ----
-       Sits on a 220×220 disc overlaid on the map. Cardinal points (N/E/S/W) are
-       longer/bolder arrowheads; intercardinal (NE/SE/SW/NW) shorter. Each arrowhead is
-       defined pointing north then rotated to its bearing; the label sits upright at the
-       TIP, just outside the arrowhead (with a red chip when selected so white text reads).
-       Each point carries a transparent hit circle ≥44px for mobile. Single-select. */
+    /* ---- Part C: compass — a ring of eight tappable direction segments ----
+       Clean, premium circular UI on a frosted-glass disc (no wind-rose illustration).
+       Each segment is a 45° annular sector; the label sits at the segment's mid-radius.
+       Cardinal labels (N/S/E/W) are larger/bolder; intercardinals smaller. Single-select. */
     function CompassDial({ value, onChange }) {
-      const C = 110;   // centre of the 220×220 viewBox
+      const C = 110, Ro = 104, Ri = 60, rL = 82;   // 220×220 viewBox, ring inner/outer + label radius
       const dirs = [
         { k: 'N',  a: 0,   card: true },
         { k: 'NE', a: 45,  card: false },
@@ -1852,38 +1848,39 @@
         { k: 'W',  a: 270, card: true },
         { k: 'NW', a: 315, card: false },
       ];
-      // North-pointing arrowhead with a concave base (classic compass-needle shape).
-      const cardPts  = `${C},40 ${C + 16},98 ${C},84 ${C - 16},98`;
-      const interPts = `${C},54 ${C + 13},98 ${C},84 ${C - 13},98`;
-      const lblR = (card) => (card ? 90 : 82);   // label radius — beyond the tip
-      const hitR = (card) => (card ? 46 : 40);    // hit-circle centre radius
+      // Compass angle (0 = N, clockwise) → SVG point at radius r.
+      const pt = (ang, r) => [C + r * Math.sin(ang * Math.PI / 180), C - r * Math.cos(ang * Math.PI / 180)];
+      // Annular sector path between two angles (outer arc CW, inner arc CCW).
+      const sector = (a1, a2) => {
+        const [ox1, oy1] = pt(a1, Ro), [ox2, oy2] = pt(a2, Ro);
+        const [ix2, iy2] = pt(a2, Ri), [ix1, iy1] = pt(a1, Ri);
+        return `M ${ox1} ${oy1} A ${Ro} ${Ro} 0 0 1 ${ox2} ${oy2} `
+             + `L ${ix2} ${iy2} A ${Ri} ${Ri} 0 0 0 ${ix1} ${iy1} Z`;
+      };
       return (
         <div className="lw-rose">
           <svg viewBox="0 0 220 220" role="group" aria-label="Choose the direction your front door faces">
             {dirs.map((d) => {
-              const rad = (d.a * Math.PI) / 180;
-              const lx = C + lblR(d.card) * Math.sin(rad);
-              const ly = C - lblR(d.card) * Math.cos(rad);
-              const hx = C + hitR(d.card) * Math.sin(rad);
-              const hy = C - hitR(d.card) * Math.cos(rad);
-              const fs = d.card ? 15 : 12;
-              const cw = d.k.length === 1 ? 20 : 26;     // chip sized to the label
+              const [lx, ly] = pt(d.a, rL);
               return (
                 <g key={d.k}
-                   className={'lw-rose-pt' + (value === d.k ? ' selected' : '') + (d.card ? ' card' : ' inter')}
+                   className={'lw-seg' + (value === d.k ? ' selected' : '') + (d.card ? ' card' : ' inter')}
                    role="button" aria-label={DIR_WORDS[d.k]} aria-pressed={value === d.k}
                    tabIndex={0}
                    onClick={() => onChange(d.k)}
                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChange(d.k); } }}>
-                  <polygon className="gem" points={d.card ? cardPts : interPts}
-                           transform={`rotate(${d.a} ${C} ${C})`} />
-                  <circle className="hit" cx={hx} cy={hy} r="24" />
-                  <rect className="chipbg" x={lx - cw / 2} y={ly - 10} width={cw} height="20" rx="5" />
-                  <text className="lbl" x={lx} y={ly} textAnchor="middle"
-                        dominantBaseline="central" fontSize={fs}>{d.k}</text>
+                  <path className="seg-fill" d={sector(d.a - 22.5, d.a + 22.5)} />
+                  <text className="seg-label" x={lx} y={ly} textAnchor="middle" dominantBaseline="central"
+                        fontSize={d.card ? 17 : 13} fontWeight={d.card ? 700 : 500}>{d.k}</text>
                 </g>
               );
             })}
+            {/* thin divider lines at each segment boundary */}
+            {dirs.map((d) => {
+              const [x1, y1] = pt(d.a + 22.5, Ri), [x2, y2] = pt(d.a + 22.5, Ro);
+              return <line key={'div-' + d.k} className="lw-seg-divider" x1={x1} y1={y1} x2={x2} y2={y2} />;
+            })}
+            {/* minimal centre — small grey dot only */}
             <circle cx={C} cy={C} r="5" fill="#bdbdbd" />
           </svg>
         </div>
