@@ -282,8 +282,9 @@
       text-align: center;
     }
     .lw-question-sub {
-      font-size: 16px;
-      color: #666;
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: var(--color-body);
       margin: 0 0 32px;
       line-height: 1.5;
       text-align: center;
@@ -1913,7 +1914,7 @@
       return (
         <div className="lw-fade-in">
           <h1 className="lw-question">If you look out of your front door, which direction are you facing?</h1>
-          <p className="lw-question-sub">Tap your direction on the compass.</p>
+          <p className="lw-question-sub">Select the closest direction to the way you face when you open your front door.</p>
           <div className="lw-map-wrap">
             {status === 'error'
               ? <div className="lw-map lw-map-fallback">Map preview isn't available here — it will load on the live site.</div>
