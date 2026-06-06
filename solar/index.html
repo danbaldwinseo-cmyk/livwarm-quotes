@@ -955,10 +955,15 @@
       transform-origin: center;
       transition: fill 150ms ease, opacity 150ms ease;
     }
-    .lw-seg:hover .seg-fill {                                  /* sinks on hover; lighter fill vs darker inset = readable depth */
-      fill: rgba(0, 0, 0, 0.06);
-      filter: url(#segInsetHover);
+    /* Hover inset lives on a separate overlay path that fades in over 150ms, so the
+       sink animates smoothly (SVG filter: url() can't be CSS-transitioned). The overlay
+       is clipPath-clipped to the exact pie-slice → pixel-perfect, no filter bleed. */
+    .lw-seg .seg-inset {
+      opacity: 0;
+      transition: opacity 150ms ease;
+      pointer-events: none;
     }
+    .lw-seg:hover .seg-inset { opacity: 1; }
     .seg-dots { pointer-events: none; }                        /* dot texture sits behind interactions */
     .lw-seg.selected .seg-fill {
       fill: var(--color-primary);                              /* #E8323A — complements the Continue button */
@@ -1966,14 +1971,13 @@
                 <feComposite operator="out" in="solid" in2="b2" result="inv2" />
                 <feFlood floodColor="#000000" floodOpacity="0.25" result="c2" />
                 <feComposite operator="in" in="c2" in2="inv2" result="s2" />
-                <feMerge result="merged">
+                {/* No in-filter clip needed — the overlay path is clipPath-clipped to the
+                    exact pie-slice at render level, which contains any blur bleed. */}
+                <feMerge>
                   <feMergeNode in="SourceGraphic" />
                   <feMergeNode in="s1" />
                   <feMergeNode in="s2" />
                 </feMerge>
-                {/* Clip output back to the segment shape (use the opaque `solid`, NOT
-                    SourceGraphic — the translucent 0.06 fill would crush the shadow alpha). */}
-                <feComposite operator="in" in="merged" in2="solid" />
               </filter>
               <filter id="segInsetSel" x="-50%" y="-50%" width="200%" height="200%">
                 <feOffset in="SourceAlpha" dx="0" dy="4" result="o1" />
@@ -2044,6 +2048,12 @@
                    onBlur={() => setHover((h) => (h === d.k ? null : h))}
                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChange(d.k); } }}>
                   <path className="seg-fill" d={sector(d.a - 22.5, d.a + 22.5)} />
+                  {/* Hover inset overlay — fades in over 150ms; clipPath = pixel-perfect pie-slice
+                      (no filter bleed). fill-opacity 0.01 just gives the filter a silhouette to
+                      work from; the inset shadow itself is built from the opaque `solid` in the filter. */}
+                  <path className="seg-inset" d={sector(d.a - 22.5, d.a + 22.5)}
+                        fill="#000000" fillOpacity="0.01" filter="url(#segInsetHover)"
+                        clipPath={'url(#segclip-' + d.k + ')'} />
                   <rect className="seg-dots" x="0" y="0" width="220" height="220"
                         fill={value === d.k ? 'url(#lwDotsRed)' : 'url(#lwDots)'}
                         clipPath={'url(#segclip-' + d.k + ')'} mask={'url(#segmask-' + d.k + ')'} />
