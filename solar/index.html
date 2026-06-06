@@ -2093,11 +2093,11 @@
               return <line key={'div-' + d.k} className="lw-seg-divider" x1={x1} y1={y1} x2={x2} y2={y2} />;
             })}
             {/* Faint engraved compass rose — long N/S/E/W points + short diagonals,
-                ~70% of the central disc. Behind the needle/hub; non-interactive. */}
+                ~85% of the central disc. Behind the needle/hub; non-interactive. */}
             <polygon className="lw-star" fill="#808080" opacity="0.08" pointerEvents="none"
               points={Array.from({ length: 8 }, (_, i) => {
-                const tip = pt(i * 45, i % 2 === 0 ? 42 : 22);
-                const valley = pt(i * 45 + 22.5, 6);
+                const tip = pt(i * 45, i % 2 === 0 ? 51 : 27);
+                const valley = pt(i * 45 + 22.5, 7);
                 return tip[0].toFixed(2) + ',' + tip[1].toFixed(2) + ' '
                      + valley[0].toFixed(2) + ',' + valley[1].toFixed(2);
               }).join(' ')} />
