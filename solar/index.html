@@ -913,6 +913,27 @@
       font-weight: 600;
       line-height: 1.5;
     }
+    /* Frosted instruction label at the lower edge of the orientation map */
+    .lw-map-label {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: calc(100% - 32px);
+      text-align: center;
+      background: rgba(0, 0, 0, 0.45);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      color: #ffffff;
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 1.4;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      pointer-events: none;
+      z-index: 3;
+    }
 
     /* Orientation screen — compass overlaid on the right half of the map.
        Frosted-glass disc; a ring of eight tappable direction segments. */
@@ -2104,13 +2125,15 @@
       return (
         <div className="lw-fade-in">
           <h1 className="lw-question">If you look out of your front door, which direction are you facing?</h1>
-          <p className="lw-question-sub">Select the closest direction to the way you face when you open your front door.</p>
+          <p className="lw-question-sub">Your roof's orientation affects how much energy your panels will generate - south-facing roofs produce the most.</p>
           <div className="lw-map-wrap">
             {status === 'error'
               ? <div className="lw-map lw-map-fallback">Map preview isn't available here — it will load on the live site.</div>
               : <div className="lw-map" ref={ref} />}
             {/* Compass rose overlaid on the right half; left half stays clear */}
             <CompassDial value={value} onChange={onChange} />
+            {/* Instruction as a frosted overlay label at the map's lower edge */}
+            <div className="lw-map-label">Select the closest direction to the way you face when you open your front door.</div>
           </div>
           {value && <p className="lw-orient-facing">Facing: {DIR_WORDS[value]}</p>}
           <div className="lw-orient-actions">
