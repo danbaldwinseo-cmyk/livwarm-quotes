@@ -928,7 +928,10 @@
       -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.6);
-      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18);
+      /* 3D depth: lift off the map + a shallow inner-bowl (instrument) feel */
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28),
+                  0 2px 8px rgba(0, 0, 0, 0.18),
+                  inset 0 2px 6px rgba(0, 0, 0, 0.10);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -937,20 +940,46 @@
     .lw-rose svg { width: 290px; height: 290px; display: block; }
     .lw-seg { cursor: pointer; }
     .lw-seg:focus { outline: none; }
+    /* Segment 3-state, mirroring the answer-card press system.
+       Default: raised (outer drop shadow). Hover: sinks (inset). Selected: fully
+       depressed (deeper inset) + red. Shadows are SVG filters (see <defs> in markup). */
     .lw-seg .seg-fill {
       fill: rgba(0, 0, 0, 0.06);
-      transition: fill 150ms ease;
+      filter: drop-shadow(0 1.5px 2px rgba(0, 0, 0, 0.20));   /* raised proud of the face */
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: fill 150ms ease, opacity 150ms ease;
     }
-    .lw-seg:hover .seg-fill { fill: rgba(232, 50, 58, 0.15); }
-    .lw-seg.selected .seg-fill { fill: var(--color-primary); }
-    .lw-seg:focus-visible .seg-fill { fill: rgba(232, 50, 58, 0.20); }
+    .lw-seg:hover .seg-fill { filter: url(#segInsetHover); }   /* sinks on hover */
+    .lw-seg.selected .seg-fill {
+      fill: var(--color-primary);
+      filter: url(#segInsetSel);                               /* fully depressed */
+      animation: seg-press 350ms ease-out;                     /* two-beat punch on click */
+    }
+    /* Two-beat punch: drive deep (0.96) → brief bounce (1.02) → settle, like the cards */
+    @keyframes seg-press {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(0.96); }
+      70%  { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
     .lw-seg .seg-label {
       fill: #444444;
-      transition: fill 150ms ease;
+      transition: fill 150ms ease, opacity 150ms ease;
       pointer-events: none;
     }
     .lw-seg.selected .seg-label { fill: #fff; }
+    /* Unselected segments dim to 60% once a selection is made (mirrors card desaturation) */
+    .lw-seg.dim { opacity: 0.6; }
+    .lw-seg.dim:hover { opacity: 1; }
     .lw-seg-divider { stroke: rgba(0, 0, 0, 0.10); stroke-width: 1; pointer-events: none; }
+    /* Red compass needle — sweeps smoothly toward the hovered/selected direction */
+    .lw-needle {
+      transition: transform 200ms ease-out;
+      transform-box: view-box;
+      transform-origin: 110px 110px;
+      pointer-events: none;
+    }
 
     /* Confirmation + Continue, centred below the map */
     .lw-orient-facing {
@@ -1836,9 +1865,12 @@
     /* ---- Part C: compass — a ring of eight tappable direction segments ----
        Clean, premium circular UI on a frosted-glass disc (no wind-rose illustration).
        Each segment is a 45° annular sector; the label sits at the segment's mid-radius.
-       Cardinal labels (N/S/E/W) are larger/bolder; intercardinals smaller. Single-select. */
+       Cardinal labels (N/S/E/W) are larger/bolder; intercardinals smaller. Single-select.
+       A red needle sweeps to the hovered/selected direction; segments mirror the
+       answer-card 3-state press system (raised → sink → punch → depressed). */
     function CompassDial({ value, onChange }) {
       const C = 110, Ro = 104, Ri = 60, rL = 82;   // 220×220 viewBox, ring inner/outer + label radius
+      const [hover, setHover] = React.useState(null);
       const dirs = [
         { k: 'N',  a: 0,   card: true },
         { k: 'NE', a: 45,  card: false },
@@ -1849,6 +1881,9 @@
         { k: 'W',  a: 270, card: true },
         { k: 'NW', a: 315, card: false },
       ];
+      const ANG = { N: 0, NE: 45, E: 90, SE: 135, S: 180, SW: 225, W: 270, NW: 315 };
+      // Needle points at the hovered segment, else the selected one, else rests at north.
+      const needleAngle = ANG[hover || value || 'N'];
       // Compass angle (0 = N, clockwise) → SVG point at radius r.
       const pt = (ang, r) => [C + r * Math.sin(ang * Math.PI / 180), C - r * Math.cos(ang * Math.PI / 180)];
       // Annular sector path between two angles (outer arc CW, inner arc CCW).
@@ -1861,14 +1896,38 @@
       return (
         <div className="lw-rose">
           <svg viewBox="0 0 220 220" role="group" aria-label="Choose the direction your front door faces">
+            <defs>
+              {/* Inner (inset) shadow filters — hover = shallow press, selected = deep press */}
+              <filter id="segInsetHover" x="-25%" y="-25%" width="150%" height="150%">
+                <feOffset dx="0" dy="2" />
+                <feGaussianBlur stdDeviation="2" result="off" />
+                <feComposite operator="out" in="SourceGraphic" in2="off" result="inverse" />
+                <feFlood floodColor="#000000" floodOpacity="0.15" result="color" />
+                <feComposite operator="in" in="color" in2="inverse" result="shadow" />
+                <feComposite operator="over" in="shadow" in2="SourceGraphic" />
+              </filter>
+              <filter id="segInsetSel" x="-25%" y="-25%" width="150%" height="150%">
+                <feOffset dx="0" dy="2" />
+                <feGaussianBlur stdDeviation="3" result="off" />
+                <feComposite operator="out" in="SourceGraphic" in2="off" result="inverse" />
+                <feFlood floodColor="#000000" floodOpacity="0.20" result="color" />
+                <feComposite operator="in" in="color" in2="inverse" result="shadow" />
+                <feComposite operator="over" in="shadow" in2="SourceGraphic" />
+              </filter>
+            </defs>
             {dirs.map((d) => {
               const [lx, ly] = pt(d.a, rL);
+              const dim = value && value !== d.k ? ' dim' : '';
               return (
                 <g key={d.k}
-                   className={'lw-seg' + (value === d.k ? ' selected' : '') + (d.card ? ' card' : ' inter')}
+                   className={'lw-seg' + (value === d.k ? ' selected' : '') + (d.card ? ' card' : ' inter') + dim}
                    role="button" aria-label={DIR_WORDS[d.k]} aria-pressed={value === d.k}
                    tabIndex={0}
                    onClick={() => onChange(d.k)}
+                   onMouseEnter={() => setHover(d.k)}
+                   onMouseLeave={() => setHover((h) => (h === d.k ? null : h))}
+                   onFocus={() => setHover(d.k)}
+                   onBlur={() => setHover((h) => (h === d.k ? null : h))}
                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChange(d.k); } }}>
                   <path className="seg-fill" d={sector(d.a - 22.5, d.a + 22.5)} />
                   <text className="seg-label" x={lx} y={ly} textAnchor="middle" dominantBaseline="central"
@@ -1881,6 +1940,10 @@
               const [x1, y1] = pt(d.a + 22.5, Ri), [x2, y2] = pt(d.a + 22.5, Ro);
               return <line key={'div-' + d.k} className="lw-seg-divider" x1={x1} y1={y1} x2={x2} y2={y2} />;
             })}
+            {/* red needle (points north at rest) — rotated to the active direction */}
+            <polygon className="lw-needle" points={`${C},52 ${C + 3},${C - 2} ${C - 3},${C - 2}`}
+                     fill="var(--color-primary)"
+                     style={{ transform: `rotate(${needleAngle}deg)` }} />
             {/* minimal centre — small grey dot only */}
             <circle cx={C} cy={C} r="5" fill="#bdbdbd" />
           </svg>
