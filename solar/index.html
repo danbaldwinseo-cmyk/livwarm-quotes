@@ -956,7 +956,7 @@
       transition: fill 150ms ease, opacity 150ms ease;
     }
     .lw-seg:hover .seg-fill {                                  /* sinks + darkens on hover; outer shadow collapses */
-      fill: rgba(0, 0, 0, 0.22);
+      fill: rgba(0, 0, 0, 0.26);
       filter: url(#segInsetHover);
     }
     .lw-seg.selected .seg-fill {
@@ -1937,15 +1937,15 @@
               {/* Inner (inset) shadow filters — two stacked insets per state.
                   Hover = clearly sunken; selected = deeply pressed in. */}
               <filter id="segInsetHover" x="-40%" y="-40%" width="180%" height="180%">
-                <feOffset in="SourceAlpha" dx="0" dy="5" result="o1" />
-                <feGaussianBlur in="o1" stdDeviation="8" result="b1" />
+                <feOffset in="SourceAlpha" dx="0" dy="6" result="o1" />
+                <feGaussianBlur in="o1" stdDeviation="9" result="b1" />
                 <feComposite operator="out" in="SourceGraphic" in2="b1" result="inv1" />
-                <feFlood floodColor="#000000" floodOpacity="0.36" result="c1" />
+                <feFlood floodColor="#000000" floodOpacity="0.45" result="c1" />
                 <feComposite operator="in" in="c1" in2="inv1" result="s1" />
                 <feOffset in="SourceAlpha" dx="0" dy="3" result="o2" />
-                <feGaussianBlur in="o2" stdDeviation="3.5" result="b2" />
+                <feGaussianBlur in="o2" stdDeviation="4" result="b2" />
                 <feComposite operator="out" in="SourceGraphic" in2="b2" result="inv2" />
-                <feFlood floodColor="#000000" floodOpacity="0.28" result="c2" />
+                <feFlood floodColor="#000000" floodOpacity="0.35" result="c2" />
                 <feComposite operator="in" in="c2" in2="inv2" result="s2" />
                 <feMerge>
                   <feMergeNode in="SourceGraphic" />
