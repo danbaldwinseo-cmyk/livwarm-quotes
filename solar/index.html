@@ -930,9 +930,9 @@
       backdrop-filter: blur(10px);
       /* Instrument-panel bezel */
       border: 2px solid rgba(200, 200, 200, 0.7);
-      /* 3D depth: pronounced lift + bright inner rim + deeper inner-bowl feel */
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45),
-                  0 4px 12px rgba(0, 0, 0, 0.30),
+      /* 3D depth: heavier grounded lift + bright inner rim + deeper inner-bowl feel */
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55),
+                  0 6px 16px rgba(0, 0, 0, 0.40),
                   inset 0 0 0 2px rgba(255, 255, 255, 0.85),
                   inset 0 3px 10px rgba(0, 0, 0, 0.18);
       display: flex;
@@ -956,7 +956,7 @@
       transition: fill 150ms ease, opacity 150ms ease;
     }
     .lw-seg:hover .seg-fill {                                  /* sinks + darkens on hover; outer shadow collapses */
-      fill: rgba(0, 0, 0, 0.16);
+      fill: rgba(0, 0, 0, 0.22);
       filter: url(#segInsetHover);
     }
     .lw-seg.selected .seg-fill {
@@ -1925,15 +1925,15 @@
               {/* Inner (inset) shadow filters — two stacked insets per state.
                   Hover = clearly sunken; selected = deeply pressed in. */}
               <filter id="segInsetHover" x="-40%" y="-40%" width="180%" height="180%">
-                <feOffset in="SourceAlpha" dx="0" dy="4" result="o1" />
-                <feGaussianBlur in="o1" stdDeviation="6" result="b1" />
+                <feOffset in="SourceAlpha" dx="0" dy="5" result="o1" />
+                <feGaussianBlur in="o1" stdDeviation="8" result="b1" />
                 <feComposite operator="out" in="SourceGraphic" in2="b1" result="inv1" />
-                <feFlood floodColor="#000000" floodOpacity="0.28" result="c1" />
+                <feFlood floodColor="#000000" floodOpacity="0.36" result="c1" />
                 <feComposite operator="in" in="c1" in2="inv1" result="s1" />
-                <feOffset in="SourceAlpha" dx="0" dy="2" result="o2" />
-                <feGaussianBlur in="o2" stdDeviation="2.5" result="b2" />
+                <feOffset in="SourceAlpha" dx="0" dy="3" result="o2" />
+                <feGaussianBlur in="o2" stdDeviation="3.5" result="b2" />
                 <feComposite operator="out" in="SourceGraphic" in2="b2" result="inv2" />
-                <feFlood floodColor="#000000" floodOpacity="0.20" result="c2" />
+                <feFlood floodColor="#000000" floodOpacity="0.28" result="c2" />
                 <feComposite operator="in" in="c2" in2="inv2" result="s2" />
                 <feMerge>
                   <feMergeNode in="SourceGraphic" />
