@@ -1907,8 +1907,20 @@
         { k: 'NW', a: 315, card: false },
       ];
       const ANG = { N: 0, NE: 45, E: 90, SE: 135, S: 180, SW: 225, W: 270, NW: 315 };
-      // Needle points at the hovered segment, else the selected one, else rests at north.
-      const needleAngle = ANG[hover || value || 'N'];
+      // Needle target: hovered segment, else selected, else north.
+      const targetDir = hover || value || 'N';
+      // Track a running (continuous) needle angle so the needle always takes the SHORTEST
+      // arc: each step normalises the delta to [-180, 180], so it never travels >180°
+      // (e.g. N→NW sweeps -45° anti-clockwise, not +315° the long way round).
+      const angleRef = React.useRef(ANG[targetDir]);
+      const [needleAngle, setNeedleAngle] = React.useState(ANG[targetDir]);
+      React.useEffect(() => {
+        let delta = ANG[targetDir] - angleRef.current;
+        while (delta > 180) delta -= 360;
+        while (delta < -180) delta += 360;
+        angleRef.current += delta;
+        setNeedleAngle(angleRef.current);
+      }, [targetDir]);
       // Compass angle (0 = N, clockwise) → SVG point at radius r.
       const pt = (ang, r) => [C + r * Math.sin(ang * Math.PI / 180), C - r * Math.cos(ang * Math.PI / 180)];
       // Annular sector path between two angles (outer arc CW, inner arc CCW).
