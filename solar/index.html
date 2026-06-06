@@ -924,13 +924,16 @@
       width: 290px;
       height: 290px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.88);
+      /* Domed face — light from above-left */
+      background: radial-gradient(ellipse at 35% 35%, #ffffff 0%, #f0f0f0 55%, #e4e4e4 100%);
       -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      /* 3D depth: pronounced lift off the map + a deeper inner-bowl (instrument) feel */
+      /* Instrument-panel bezel */
+      border: 2px solid rgba(200, 200, 200, 0.7);
+      /* 3D depth: pronounced lift + bright inner rim + deeper inner-bowl feel */
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45),
                   0 4px 12px rgba(0, 0, 0, 0.30),
+                  inset 0 0 0 2px rgba(255, 255, 255, 0.85),
                   inset 0 3px 10px rgba(0, 0, 0, 0.18);
       display: flex;
       align-items: center;
@@ -952,12 +955,12 @@
       transform-origin: center;
       transition: fill 150ms ease, opacity 150ms ease;
     }
-    .lw-seg:hover .seg-fill {                                  /* sinks on hover — visibly */
-      fill: rgba(0, 0, 0, 0.13);
+    .lw-seg:hover .seg-fill {                                  /* sinks + darkens on hover; outer shadow collapses */
+      fill: rgba(0, 0, 0, 0.16);
       filter: url(#segInsetHover);
     }
     .lw-seg.selected .seg-fill {
-      fill: #B01E24;                                           /* deeper pressed red (matches .lw-cta:active) */
+      fill: var(--color-primary);                              /* #E8323A — complements the Continue button */
       filter: url(#segInsetSel);                               /* fully depressed */
       animation: seg-press 350ms ease-out;                     /* two-beat punch on click */
     }
@@ -977,7 +980,7 @@
     /* Unselected segments dim to 60% once a selection is made (mirrors card desaturation) */
     .lw-seg.dim { opacity: 0.6; }
     .lw-seg.dim:hover { opacity: 1; }
-    .lw-seg-divider { stroke: rgba(0, 0, 0, 0.10); stroke-width: 1; pointer-events: none; }
+    .lw-seg-divider { stroke: rgba(180, 180, 180, 0.6); stroke-width: 1; pointer-events: none; }
     /* Red compass needle — sweeps smoothly toward the hovered/selected direction.
        Gradient fill (defined in markup) gives a raised triangular cross-section. */
     .lw-needle {
@@ -1922,15 +1925,15 @@
               {/* Inner (inset) shadow filters — two stacked insets per state.
                   Hover = clearly sunken; selected = deeply pressed in. */}
               <filter id="segInsetHover" x="-40%" y="-40%" width="180%" height="180%">
-                <feOffset in="SourceAlpha" dx="0" dy="3" result="o1" />
-                <feGaussianBlur in="o1" stdDeviation="5" result="b1" />
+                <feOffset in="SourceAlpha" dx="0" dy="4" result="o1" />
+                <feGaussianBlur in="o1" stdDeviation="6" result="b1" />
                 <feComposite operator="out" in="SourceGraphic" in2="b1" result="inv1" />
-                <feFlood floodColor="#000000" floodOpacity="0.26" result="c1" />
+                <feFlood floodColor="#000000" floodOpacity="0.28" result="c1" />
                 <feComposite operator="in" in="c1" in2="inv1" result="s1" />
-                <feOffset in="SourceAlpha" dx="0" dy="1" result="o2" />
-                <feGaussianBlur in="o2" stdDeviation="2" result="b2" />
+                <feOffset in="SourceAlpha" dx="0" dy="2" result="o2" />
+                <feGaussianBlur in="o2" stdDeviation="2.5" result="b2" />
                 <feComposite operator="out" in="SourceGraphic" in2="b2" result="inv2" />
-                <feFlood floodColor="#000000" floodOpacity="0.18" result="c2" />
+                <feFlood floodColor="#000000" floodOpacity="0.20" result="c2" />
                 <feComposite operator="in" in="c2" in2="inv2" result="s2" />
                 <feMerge>
                   <feMergeNode in="SourceGraphic" />
