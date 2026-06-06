@@ -2112,13 +2112,17 @@
         const unsub = onGmapsAuthFailure(() => { if (!cancelled) setStatus('error'); });
         loadGoogleMaps().then((maps) => {
           if (cancelled || !ref.current) return;
-          // Static close-up — visual reference only: no pin, no controls, no gestures.
+          // Static close-up — visual reference only: no controls, no gestures.
           // Tight zoom so the target property dominates the (clear) left half.
           map = new maps.Map(ref.current, {
             center: { lat, lng }, zoom: 21, mapTypeId: 'satellite', tilt: 0,
             disableDefaultUI: true, gestureHandling: 'none', draggable: false,
             keyboardShortcuts: false, clickableIcons: false,
           });
+          // Static standard pin at the confirmed location (same default style as the
+          // address-confirmation map). Not draggable, no listeners; the compass HTML
+          // overlay sits above the map div so the pin never interferes with it.
+          new maps.Marker({ position: { lat, lng }, map });
           setStatus('ready');
         }).catch(() => { if (!cancelled) setStatus('error'); });
         return () => { cancelled = true; unsub(); };
@@ -2127,7 +2131,7 @@
       return (
         <div className="lw-fade-in">
           <h1 className="lw-question">If you look out of your front door, which direction are you facing?</h1>
-          <p className="lw-question-sub">Your roof's orientation affects how much energy your panels will generate - south-facing roofs produce the most.</p>
+          <p className="lw-question-sub">Your roof's orientation affects how much energy your panels will generate.</p>
           <div className="lw-map-wrap">
             {status === 'error'
               ? <div className="lw-map lw-map-fallback">Map preview isn't available here — it will load on the live site.</div>
