@@ -422,10 +422,12 @@
       outline: 3px solid var(--color-primary-light);
       outline-offset: 2px;
     }
-    /* HOVER — sinks slightly, shadow reduces (cards start raised, not a tooltip lift) */
+    /* HOVER — clearly sinks: darker fill, drops 2px, shadow compresses + darkens */
     .lw-card:not(.is-selected):not(.is-pressing):hover {
-      transform: translateY(1px);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      background: #EAEAEA;
+      transform: translateY(2px);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+      transition: all 150ms ease;
     }
     /* PRESS — :active (mouse held) and .is-pressing (JS-held min 80ms for touch) */
     .lw-card:not(.is-selected):active,
