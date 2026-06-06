@@ -953,14 +953,14 @@
       filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.22)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.15));
       transform-box: fill-box;
       transform-origin: center;
-      transition: fill 150ms ease, opacity 150ms ease;
+      transition: fill 220ms ease, opacity 150ms ease;
     }
     /* Hover inset lives on a separate overlay path that fades in over 150ms, so the
        sink animates smoothly (SVG filter: url() can't be CSS-transitioned). The overlay
        is clipPath-clipped to the exact pie-slice → pixel-perfect, no filter bleed. */
     .lw-seg .seg-inset {
       opacity: 0;
-      transition: opacity 150ms ease;
+      transition: opacity 220ms ease;
       pointer-events: none;
     }
     .lw-seg:hover .seg-inset { opacity: 1; }
