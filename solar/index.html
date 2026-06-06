@@ -1987,12 +1987,14 @@
                 <stop offset="0.5" stopColor="#FF5A5F" />
                 <stop offset="1" stopColor="#C0272D" />
               </linearGradient>
-              {/* Dot texture (mirrors the answer cards) — grey default, red when selected */}
-              <pattern id="lwDots" width="10" height="10" patternUnits="userSpaceOnUse">
-                <circle cx="2" cy="2" r="0.9" fill="#d8d8d8" />
+              {/* Dot texture (mirrors the answer cards) — grey default, red when selected.
+                  Tile 7.6 / dot r0.76 in viewBox units ≈ the cards' 10px grid / 1px dots
+                  once the 290px svg scales the 220 viewBox up (×1.318). */}
+              <pattern id="lwDots" width="7.6" height="7.6" patternUnits="userSpaceOnUse">
+                <circle cx="3.8" cy="3.8" r="0.76" fill="#d8d8d8" />
               </pattern>
-              <pattern id="lwDotsRed" width="10" height="10" patternUnits="userSpaceOnUse">
-                <circle cx="2" cy="2" r="0.9" fill="rgba(232, 50, 58, 0.25)" />
+              <pattern id="lwDotsRed" width="7.6" height="7.6" patternUnits="userSpaceOnUse">
+                <circle cx="3.8" cy="3.8" r="0.76" fill="rgba(232, 50, 58, 0.25)" />
               </pattern>
               {/* Per-segment clip + lower-right corner fade (mirrors the card mask) */}
               {dirs.map((d) => {
