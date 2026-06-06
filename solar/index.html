@@ -928,10 +928,10 @@
       -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.6);
-      /* 3D depth: lift off the map + a shallow inner-bowl (instrument) feel */
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28),
-                  0 2px 8px rgba(0, 0, 0, 0.18),
-                  inset 0 2px 6px rgba(0, 0, 0, 0.10);
+      /* 3D depth: pronounced lift off the map + a deeper inner-bowl (instrument) feel */
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45),
+                  0 4px 12px rgba(0, 0, 0, 0.30),
+                  inset 0 3px 10px rgba(0, 0, 0, 0.18);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -942,17 +942,22 @@
     .lw-seg:focus { outline: none; }
     /* Segment 3-state, mirroring the answer-card press system.
        Default: raised (outer drop shadow). Hover: sinks (inset). Selected: fully
-       depressed (deeper inset) + red. Shadows are SVG filters (see <defs> in markup). */
+       depressed (deeper inset) + darker red. Shadows are SVG filters (see <defs> in markup).
+       Hover is PURE CSS :hover — independent of React state, active from first render. */
     .lw-seg .seg-fill {
       fill: rgba(0, 0, 0, 0.06);
-      filter: drop-shadow(0 1.5px 2px rgba(0, 0, 0, 0.20));   /* raised proud of the face */
+      /* raised proud of the face (two-layer outer drop shadow) */
+      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.22)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.15));
       transform-box: fill-box;
       transform-origin: center;
       transition: fill 150ms ease, opacity 150ms ease;
     }
-    .lw-seg:hover .seg-fill { filter: url(#segInsetHover); }   /* sinks on hover */
+    .lw-seg:hover .seg-fill {                                  /* sinks on hover — visibly */
+      fill: rgba(0, 0, 0, 0.13);
+      filter: url(#segInsetHover);
+    }
     .lw-seg.selected .seg-fill {
-      fill: var(--color-primary);
+      fill: #B01E24;                                           /* deeper pressed red (matches .lw-cta:active) */
       filter: url(#segInsetSel);                               /* fully depressed */
       animation: seg-press 350ms ease-out;                     /* two-beat punch on click */
     }
@@ -973,11 +978,28 @@
     .lw-seg.dim { opacity: 0.6; }
     .lw-seg.dim:hover { opacity: 1; }
     .lw-seg-divider { stroke: rgba(0, 0, 0, 0.10); stroke-width: 1; pointer-events: none; }
-    /* Red compass needle — sweeps smoothly toward the hovered/selected direction */
+    /* Red compass needle — sweeps smoothly toward the hovered/selected direction.
+       Gradient fill (defined in markup) gives a raised triangular cross-section. */
     .lw-needle {
       transition: transform 200ms ease-out;
       transform-box: view-box;
       transform-origin: 110px 110px;
+      pointer-events: none;
+      filter: drop-shadow(1px 2px 3px rgba(0, 0, 0, 0.35));
+    }
+    /* Central hub — raised dome (HTML element so it can use box-shadow + inset highlight) */
+    .lw-hub {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle at 40% 35%, #E8E8E8, #AAAAAA);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.30),
+                  inset 0 1px 2px rgba(255, 255, 255, 0.80);
+      z-index: 3;
       pointer-events: none;
     }
 
@@ -1897,23 +1919,48 @@
         <div className="lw-rose">
           <svg viewBox="0 0 220 220" role="group" aria-label="Choose the direction your front door faces">
             <defs>
-              {/* Inner (inset) shadow filters — hover = shallow press, selected = deep press */}
-              <filter id="segInsetHover" x="-25%" y="-25%" width="150%" height="150%">
-                <feOffset dx="0" dy="2" />
-                <feGaussianBlur stdDeviation="2" result="off" />
-                <feComposite operator="out" in="SourceGraphic" in2="off" result="inverse" />
-                <feFlood floodColor="#000000" floodOpacity="0.15" result="color" />
-                <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-                <feComposite operator="over" in="shadow" in2="SourceGraphic" />
+              {/* Inner (inset) shadow filters — two stacked insets per state.
+                  Hover = clearly sunken; selected = deeply pressed in. */}
+              <filter id="segInsetHover" x="-40%" y="-40%" width="180%" height="180%">
+                <feOffset in="SourceAlpha" dx="0" dy="3" result="o1" />
+                <feGaussianBlur in="o1" stdDeviation="5" result="b1" />
+                <feComposite operator="out" in="SourceGraphic" in2="b1" result="inv1" />
+                <feFlood floodColor="#000000" floodOpacity="0.26" result="c1" />
+                <feComposite operator="in" in="c1" in2="inv1" result="s1" />
+                <feOffset in="SourceAlpha" dx="0" dy="1" result="o2" />
+                <feGaussianBlur in="o2" stdDeviation="2" result="b2" />
+                <feComposite operator="out" in="SourceGraphic" in2="b2" result="inv2" />
+                <feFlood floodColor="#000000" floodOpacity="0.18" result="c2" />
+                <feComposite operator="in" in="c2" in2="inv2" result="s2" />
+                <feMerge>
+                  <feMergeNode in="SourceGraphic" />
+                  <feMergeNode in="s1" />
+                  <feMergeNode in="s2" />
+                </feMerge>
               </filter>
-              <filter id="segInsetSel" x="-25%" y="-25%" width="150%" height="150%">
-                <feOffset dx="0" dy="2" />
-                <feGaussianBlur stdDeviation="3" result="off" />
-                <feComposite operator="out" in="SourceGraphic" in2="off" result="inverse" />
-                <feFlood floodColor="#000000" floodOpacity="0.20" result="color" />
-                <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-                <feComposite operator="over" in="shadow" in2="SourceGraphic" />
+              <filter id="segInsetSel" x="-40%" y="-40%" width="180%" height="180%">
+                <feOffset in="SourceAlpha" dx="0" dy="4" result="o1" />
+                <feGaussianBlur in="o1" stdDeviation="7" result="b1" />
+                <feComposite operator="out" in="SourceGraphic" in2="b1" result="inv1" />
+                <feFlood floodColor="#000000" floodOpacity="0.38" result="c1" />
+                <feComposite operator="in" in="c1" in2="inv1" result="s1" />
+                <feOffset in="SourceAlpha" dx="0" dy="2" result="o2" />
+                <feGaussianBlur in="o2" stdDeviation="3" result="b2" />
+                <feComposite operator="out" in="SourceGraphic" in2="b2" result="inv2" />
+                <feFlood floodColor="#000000" floodOpacity="0.25" result="c2" />
+                <feComposite operator="in" in="c2" in2="inv2" result="s2" />
+                <feMerge>
+                  <feMergeNode in="SourceGraphic" />
+                  <feMergeNode in="s1" />
+                  <feMergeNode in="s2" />
+                </feMerge>
               </filter>
+              {/* Needle gradient — dark red edges, bright highlight stripe down the centre */}
+              <linearGradient id="needleGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="#C0272D" />
+                <stop offset="0.5" stopColor="#FF5A5F" />
+                <stop offset="1" stopColor="#C0272D" />
+              </linearGradient>
             </defs>
             {dirs.map((d) => {
               const [lx, ly] = pt(d.a, rL);
@@ -1942,11 +1989,11 @@
             })}
             {/* red needle (points north at rest) — rotated to the active direction */}
             <polygon className="lw-needle" points={`${C},52 ${C + 3},${C - 2} ${C - 3},${C - 2}`}
-                     fill="var(--color-primary)"
+                     fill="url(#needleGrad)"
                      style={{ transform: `rotate(${needleAngle}deg)` }} />
-            {/* minimal centre — small grey dot only */}
-            <circle cx={C} cy={C} r="5" fill="#bdbdbd" />
           </svg>
+          {/* raised dome hub (HTML so it can carry a box-shadow + inset highlight) */}
+          <div className="lw-hub" />
         </div>
       );
     }
