@@ -1127,9 +1127,19 @@
     /* system summary line under the address */
     .lw-quote-summary { font-size: 0.95rem; color: var(--color-body); margin: 4px 0 0; text-align: center; }
     /* savings folded into the headline block (no separate red box) */
-    .lw-quote-save { font-size: 1rem; color: var(--color-primary); font-weight: 500; text-align: center; margin: 12px 0 0; line-height: 1.5; }
     .lw-quote-strike { text-decoration: line-through; }
-    .lw-quote-longterm { font-size: 0.875rem; color: var(--color-body); text-align: center; margin: 6px 0 0; }
+    /* structured "Potential savings" block */
+    .lw-savings { text-align: center; }
+    .lw-savings-head {
+      font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--color-body); margin-top: 20px;
+    }
+    .lw-savings-line { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; margin: 8px 0 0; }
+    .lw-savings-line:first-of-type { margin-top: 10px; }
+    .lw-savings-num { font-size: 1.6rem; font-weight: 700; color: var(--color-dark); line-height: 1.1; }
+    .lw-savings-num--red { color: var(--color-primary); }
+    .lw-savings-sub { font-size: 0.9rem; color: var(--color-body); margin-left: 4px; }
+    .lw-savings-mid { font-size: 0.9rem; color: var(--color-body); margin: 0 8px; }
     .lw-quote-sep { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 24px 0; }
     /* section heading above the tier cards */
     .lw-tier-heading-wrap { text-align: center; margin-bottom: 24px; }
@@ -3056,12 +3066,21 @@
             </div>
             <p className="lw-quote-survey">Subject to survey and final system confirmation</p>
             <p className="lw-quote-breakdown">{breakdownLine}</p>
-            <p className="lw-quote-save">
-              Estimated monthly saving: ~{gbp(countMonthly)}/mo · your bill could drop from <span className="lw-quote-strike">~{gbp(currentBill)}/mo</span> to ~{gbp(billAfterSolar)}/mo
-            </p>
-            <p className="lw-quote-longterm">
-              {gbp(count20yr)} estimated over 20 years · pays for itself in {countBreak.toFixed(1)} years
-            </p>
+            <div className="lw-savings">
+              <div className="lw-savings-head">Potential savings</div>
+              <p className="lw-savings-line">
+                <span className="lw-savings-num lw-savings-num--red">~{gbp(countMonthly)}</span>
+                <span className="lw-savings-sub">/mo saved</span>
+                <span className="lw-savings-mid">·</span>
+                <span className="lw-savings-sub">your bill drops from <span className="lw-quote-strike">~{gbp(currentBill)}/mo</span> to ~{gbp(billAfterSolar)}/mo</span>
+              </p>
+              <p className="lw-savings-line">
+                <span className="lw-savings-num">{gbp(count20yr)}</span>
+                <span className="lw-savings-sub">over 20 years</span>
+                <span className="lw-savings-mid">·</span>
+                <span className="lw-savings-sub">pays for itself in {countBreak.toFixed(1)} years</span>
+              </p>
+            </div>
             <hr className="lw-quote-sep" />
           </Reveal>
 
