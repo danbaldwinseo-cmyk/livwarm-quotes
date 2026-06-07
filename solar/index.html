@@ -1169,7 +1169,9 @@
       justify-content: space-between;
       gap: 10px;
     }
-    .lw-tier-name { font-size: 1.1rem; font-weight: 800; color: var(--color-dark); }
+    /* Essential/Custom are secondary: smaller heading (1rem), grey price.
+       Performance is the conversion target: 1.1rem heading, red price (overrides below). */
+    .lw-tier-name { font-size: 1rem; font-weight: 800; color: var(--color-dark); }
     .lw-tier-badge {
       background: var(--color-primary);
       color: #fff;
@@ -1180,11 +1182,42 @@
       border-radius: 999px;
       white-space: nowrap;
     }
+    /* main row: spec/who_for on the left, product shot on the right */
+    .lw-tier-main { display: flex; align-items: flex-start; gap: 12px; }
+    .lw-tier-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
     .lw-tier-spec { color: var(--color-body); font-size: 0.95rem; line-height: 1.5; }
     .lw-tier-spec div { font-weight: 600; }
+    /* product shot (battery on Performance/Custom, panel on Essential) */
+    .lw-tier-img {
+      flex-shrink: 0;
+      width: auto;
+      max-width: 104px;
+      max-height: 120px;
+      object-fit: contain;
+      align-self: center;
+    }
+    .lw-tier-img--ph {
+      width: 84px;
+      height: 96px;
+      border-radius: 8px;
+      background: #ededed;
+    }
+    /* who_for blurb (all cards) */
+    .lw-tier-whofor { font-style: italic; font-size: 0.875rem; color: var(--color-body); line-height: 1.45; margin: 0; }
+    .lw-tier-whofor-ph { height: 46px; border-radius: 6px; background: #ededed; }
     .lw-tier-gen { color: var(--color-body); font-size: 0.85rem; }
-    .lw-tier-price { font-size: 1.4rem; font-weight: 800; color: var(--color-primary); margin-top: 4px; }
+    .lw-tier-price { font-size: 1.4rem; font-weight: 800; color: var(--color-body); margin-top: 4px; }
+    .lw-tier-breakdown { font-size: 0.8rem; color: var(--color-body); margin-top: -2px; }
     .lw-tier-finance { font-size: 0.85rem; color: var(--color-body); }
+    /* Performance — stronger visual weight */
+    .lw-tier-card--perf .lw-tier-name { font-size: 1.1rem; }
+    .lw-tier-card--perf .lw-tier-price { color: var(--color-primary); }
+    .lw-tier-card--perf.is-selected {
+      background: rgba(232, 50, 58, 0.03);
+      border: 2px solid rgba(232, 50, 58, 0.9);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.08),
+                  inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
     /* custom-tier dropdowns — match the existing input style */
     .lw-tier-custom { display: flex; flex-direction: column; gap: 10px; }
     .lw-tier-field { display: flex; flex-direction: column; gap: 4px; }
@@ -1221,6 +1254,64 @@
       color: var(--color-body);
       font-weight: 600;
     }
+    /* IMPROVEMENT 4 — headline price breakdown line */
+    .lw-quote-breakdown { font-size: 0.85rem; color: var(--color-body); margin: 4px 0 0; }
+    /* IMPROVEMENT 3 — crossed-out "before" figure in the monthly-saving stat */
+    .lw-stat-was { font-size: 0.8rem; color: #999; text-decoration: line-through; margin-bottom: 2px; }
+
+    /* Green CTA — same pill/shadow as .lw-cta, green fill (Step 6 → quote trigger) */
+    .lw-cta-green { background: var(--color-cta-green); }
+    .lw-cta-green:hover:not(:disabled) { background: #43A047; }
+    .lw-cta-green:active:not(:disabled) { background: #388E3C; }
+
+    /* ============================================================
+       "Preparing your quote" transition overlay (Step 6 → Step 7)
+       ============================================================ */
+    .lw-prep {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      animation: lw-prep-in 300ms ease both;
+    }
+    .lw-prep.is-leaving { animation: lw-prep-out 500ms ease both; }
+    @keyframes lw-prep-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes lw-prep-out { from { opacity: 1; } to { opacity: 0; } }
+    .lw-prep-logo { margin-bottom: 36px; }
+    .lw-prep-sun { color: var(--color-primary); margin-bottom: 18px; animation: lw-spin 3s linear infinite; }
+    @keyframes lw-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .lw-prep-title { font-size: 2rem; font-weight: 700; color: var(--color-dark); margin: 0 0 28px; }
+    .lw-prep-bar {
+      width: 100%;
+      max-width: 500px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--color-border);
+      overflow: hidden;
+    }
+    .lw-prep-bar-fill {
+      height: 100%;
+      width: 0;
+      background: var(--color-primary);
+      border-radius: 3px;
+      transition: width 4000ms linear;
+    }
+    .lw-prep-bar-fill.is-full { width: 100%; }
+    .lw-prep-msg {
+      margin-top: 22px;
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--color-body);
+      min-height: 1.4em;
+      animation: lw-msg-in 200ms ease both;
+    }
+    @keyframes lw-msg-in { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body>
@@ -2451,12 +2542,60 @@
 
     /* ---- Part D: occupancy ---- */
     function OccupancyStep({ value, onSelect, onContinue }) {
+      // Final phase of Step 6: cards no longer auto-advance — a green
+      // "Prepare my quote" button triggers the transition overlay (Improvement 5).
       return (
         <div className="lw-fade-in">
           <h1 className="lw-question">How many people live in your home?</h1>
           <p className="lw-question-sub">This helps us size your system to match your day-to-day energy use.</p>
-          <CardChoice options={OCCUPANCY_OPTIONS} value={value}
-            onSelect={onSelect} onSettle={onContinue} />
+          <CardChoice options={OCCUPANCY_OPTIONS} value={value} onSelect={onSelect} />
+          <button type="button" className="lw-cta lw-cta-green" disabled={!value} onClick={onContinue}>
+            Prepare my quote →
+          </button>
+        </div>
+      );
+    }
+
+    /* ---- "Preparing your quote" transition overlay (Step 6 → Step 7) ----
+       Pure setTimeout choreography — no real work happens here; the quote is
+       already computed from app state. Runs for ~4s, then dissolves away. */
+    function PrepareOverlay({ onReveal, onDone }) {
+      const MESSAGES = [
+        'Analysing your property and roof orientation...',
+        'Calculating your solar generation potential...',
+        'Checking current energy rates and export tariffs...',
+        'Matching you to the best available systems...',
+        'Finalising your personalised quote...',
+      ];
+      const [msg, setMsg] = useState(0);
+      const [full, setFull] = useState(false);
+      const [leaving, setLeaving] = useState(false);
+      React.useEffect(() => {
+        const t = [];
+        t.push(setTimeout(() => setFull(true), 50));            // kick off the 4s bar fill
+        t.push(setTimeout(() => setMsg(1), 750));
+        t.push(setTimeout(() => setMsg(2), 1500));
+        t.push(setTimeout(() => setMsg(3), 2250));
+        t.push(setTimeout(() => setMsg(4), 3000));
+        t.push(setTimeout(() => { setLeaving(true); onReveal(); }, 3800)); // reveal quote behind + fade out
+        t.push(setTimeout(() => onDone(), 4300));               // unmount overlay
+        return () => t.forEach(clearTimeout);
+      }, []);
+      return (
+        <div className={'lw-prep' + (leaving ? ' is-leaving' : '')} role="status" aria-live="polite">
+          <div className="lw-prep-logo lw-logo" aria-label="LivWarm">
+            <span className="liv">Liv</span><span className="warm">Warm</span><span className="dot">.</span>
+          </div>
+          <svg className="lw-prep-sun" width="40" height="40" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.2" />
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M19.4 4.6l-2.1 2.1M6.7 17.3l-2.1 2.1" />
+          </svg>
+          <h2 className="lw-prep-title">Preparing your quote</h2>
+          <div className="lw-prep-bar">
+            <div className={'lw-prep-bar-fill' + (full ? ' is-full' : '')} />
+          </div>
+          <p className="lw-prep-msg" key={msg}>{MESSAGES[msg]}</p>
         </div>
       );
     }
@@ -2486,7 +2625,10 @@
     // sink+shimmer hover, two-beat punch-and-rise on click, depressed selected,
     // 60% dim on unselected) but is a div (not a button) so the Custom card can hold
     // dropdowns, and it switches immediately — no 500ms auto-advance.
-    function TierCard({ data, selected, pressing, tick, onSelect, custom, onCustomChange }) {
+    // Capacity number → label without trailing zeros (11.52 → "11.52kWh", 6 → "6kWh").
+    function fmtCap(c) { return (Number(c) % 1 === 0 ? String(Number(c)) : String(c)) + 'kWh'; }
+
+    function TierCard({ data, selected, pressing, tick, onSelect, custom, onCustomChange, products, prodStatus }) {
       const ref = useRef(null);
       useLayoutEffect(() => {
         const el = ref.current;
@@ -2497,9 +2639,30 @@
         }
       }, [selected, tick]);
       const cls = 'lw-card lw-tier-card'
+        + (data.id === 'performance' ? ' lw-tier-card--perf' : '')
         + (selected ? ' is-selected' : '')
         + (pressing ? ' is-pressing' : '');
       const isCustom = data.id === 'custom';
+      const loading = prodStatus === 'loading';
+
+      // Product data (with silent fallback to the hardcoded values).
+      const battery = products && products.batteries ? products.batteries[data.battery] : null;
+      const batteryName = (battery && battery.name) || BATTERY_NAME[data.battery];
+      const batteryCap = battery && battery.capacity_kwh ? battery.capacity_kwh : 0;
+      const batteryLine = data.battery === 'none'
+        ? batteryName
+        : batteryName + (batteryCap ? ' · ' + fmtCap(batteryCap) : '');
+      // Product shot: battery image when there's a battery, otherwise the panel image.
+      const panelImg = products && products.panels && products.panels.standard ? products.panels.standard.image : null;
+      const imgUrl = data.battery !== 'none'
+        ? (battery && battery.image) || null
+        : panelImg;
+      const whoFor = products && products.tiers && products.tiers[data.id] ? products.tiers[data.id].who_for : null;
+
+      // Performance card — price breakdown beneath the total.
+      const panelsCost = getPrice(data.panels, 'none');
+      const batteryCost = data.price - panelsCost;
+
       return (
         <div ref={ref} className={cls} role="button" tabIndex={0} aria-pressed={selected}
              onClick={() => onSelect(data.id)}
@@ -2508,35 +2671,48 @@
             <span className="lw-tier-name">{data.name}</span>
             {data.badge && <span className="lw-tier-badge">{data.badge}</span>}
           </div>
-          {isCustom ? (
-            <div className="lw-tier-custom" onClick={(e) => e.stopPropagation()}>
-              <label className="lw-tier-field">
-                <span>Number of panels</span>
-                <select value={custom.panels}
-                        onChange={(e) => onCustomChange({ panels: Number(e.target.value) })}>
-                  {Array.from({ length: 17 }, (_, i) => i + 6).map((n) => (
-                    <option key={n} value={n}>{n} panels</option>
-                  ))}
-                </select>
-              </label>
-              <label className="lw-tier-field">
-                <span>Battery storage</span>
-                <select value={custom.battery}
-                        onChange={(e) => onCustomChange({ battery: e.target.value })}>
-                  {BATTERY_DROPDOWN.map((b) => (
-                    <option key={b.value} value={b.value}>{b.label}</option>
-                  ))}
-                </select>
-              </label>
+          <div className="lw-tier-main">
+            <div className="lw-tier-info">
+              {isCustom ? (
+                <div className="lw-tier-custom" onClick={(e) => e.stopPropagation()}>
+                  <label className="lw-tier-field">
+                    <span>Number of panels</span>
+                    <select value={custom.panels}
+                            onChange={(e) => onCustomChange({ panels: Number(e.target.value) })}>
+                      {Array.from({ length: 17 }, (_, i) => i + 6).map((n) => (
+                        <option key={n} value={n}>{n} panels</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="lw-tier-field">
+                    <span>Battery storage</span>
+                    <select value={custom.battery}
+                            onChange={(e) => onCustomChange({ battery: e.target.value })}>
+                      {BATTERY_DROPDOWN.map((b) => (
+                        <option key={b.value} value={b.value}>{b.label}</option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+              ) : (
+                <div className="lw-tier-spec">
+                  <div>{data.panels} panels ({fmtKw(data.kw)}kW system)</div>
+                  <div>{batteryLine}</div>
+                </div>
+              )}
+              {loading
+                ? <div className="lw-tier-whofor-ph" />
+                : whoFor && <p className="lw-tier-whofor">{whoFor}</p>}
             </div>
-          ) : (
-            <div className="lw-tier-spec">
-              <div>{data.panels} panels ({fmtKw(data.kw)}kW system)</div>
-              <div>{BATTERY_NAME[data.battery]}</div>
-            </div>
-          )}
+            {loading
+              ? <div className="lw-tier-img lw-tier-img--ph" />
+              : imgUrl && <img className="lw-tier-img" src={imgUrl} alt="" loading="lazy" />}
+          </div>
           <div className="lw-tier-gen">{fmtNum(data.gen)} kWh/year estimated</div>
           <div className="lw-tier-price">{gbp(data.price)}</div>
+          {data.id === 'performance' && data.battery !== 'none' && (
+            <div className="lw-tier-breakdown">{gbp(panelsCost)} panels + {gbp(batteryCost)} battery</div>
+          )}
           <div className="lw-tier-finance">or £{data.monthly}/mo</div>
         </div>
       );
@@ -2554,8 +2730,33 @@
       const [tick, setTick] = useState(0);
       const [busy, setBusy] = useState(false);
 
+      // IMPROVEMENT 1 — product data (brand names, capacities, images, who_for).
+      // Silent fallback to the hardcoded values if the fetch fails.
+      const [products, setProducts] = useState(null);
+      const [prodStatus, setProdStatus] = useState('loading'); // loading | ready | error
+      React.useEffect(() => {
+        let alive = true;
+        fetch('/solar/solar-products.json')
+          .then((r) => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+          .then((d) => { if (alive) { setProducts(d); setProdStatus('ready'); } })
+          .catch(() => { if (alive) setProdStatus('error'); });
+        return () => { alive = false; };
+      }, []);
+
       const tiers = buildTiers(answers, custom);
       const active = tiers[selected];
+
+      // IMPROVEMENT 4 — headline price breakdown for the active tier.
+      const activePanelsCost = getPrice(active.panels, 'none');
+      const activeBatteryCost = active.price - activePanelsCost;
+      const breakdownLine = active.battery !== 'none'
+        ? gbp(activePanelsCost) + ' panels + ' + gbp(activeBatteryCost) + ' battery storage'
+        : gbp(active.price) + ' panels only';
+
+      // IMPROVEMENT 3 — estimated monthly bill before solar.
+      const usageKwh = Number(String(answers.electricity_usage || '').replace(/[^0-9.]/g, '')) || 0;
+      const rateP = Number(String(answers.day_unit_rate || '').replace(/[^0-9.]/g, '')) || 26.35;
+      const monthlyBillBefore = (usageKwh / 12) * (rateP / 100);
 
       const choose = (id) => {
         setPressing(id);
@@ -2602,11 +2803,15 @@
           {addressLine && <p className="lw-quote-address">{addressLine}</p>}
           <p className="lw-quote-price">{gbp(active.price)}</p>
           <p className="lw-quote-finance">or from £{active.monthly}/month</p>
+          <p className="lw-quote-breakdown">{breakdownLine}</p>
 
           {/* 2 — three savings figures */}
           <div className="lw-stat-row">
             <div className="lw-stat">
-              <div className="lw-stat-value">{gbp(active.monthlySaving)}/mo</div>
+              {monthlyBillBefore > 0 && (
+                <div className="lw-stat-was">Was ~{gbp(monthlyBillBefore)}/mo</div>
+              )}
+              <div className="lw-stat-value">Save ~{gbp(active.monthlySaving)}/mo</div>
               <div className="lw-stat-label">Estimated monthly saving</div>
             </div>
             <div className="lw-stat">
@@ -2628,7 +2833,9 @@
                 tick={tick}
                 onSelect={choose}
                 custom={custom}
-                onCustomChange={onCustomChange} />
+                onCustomChange={onCustomChange}
+                products={products}
+                prodStatus={prodStatus} />
             ))}
           </div>
 
@@ -2842,6 +3049,8 @@
       // to the furthest step reached (the "current step" frontier).
       const [bcExpanded, setBcExpanded] = useState(false);
       const frontierRef = useRef(0);
+      // Step 6 → Step 7 "Preparing your quote" transition overlay (Improvement 5).
+      const [preparing, setPreparing] = useState(false);
       React.useEffect(() => {
         if (currentIndex >= frontierRef.current) {
           frontierRef.current = currentIndex;   // at/forward of the frontier → collapse
@@ -2922,6 +3131,7 @@
         setShowHelp(null);
         setStep6({ phase: 'address', postcode: '', address_line1: '', town: '', lat: null, lng: null, manual: false, looking: false, lookupError: '', suggestedDir: null, roof_orientation: '', occupants: '' });
         setBcExpanded(false);
+        setPreparing(false);
         frontierRef.current = 0;
       }, []);
 
@@ -3044,7 +3254,8 @@
         setStep6((s) => ({ ...s, occupants: val }));
         setAnswers((prev) => ({ ...prev, occupants: val }));
       }, []);
-      const handleStep6Complete = useCallback(() => setCurrentIndex(STEP6_INDEX + 1), []);
+      // End of Step 6 — show the transition overlay; it reveals Step 7 itself.
+      const handleStep6Complete = useCallback(() => setPreparing(true), []);
 
       // Step 7 (quote) — store the chosen system (Payaca field names) and advance to
       // Step 8 (placeholder for now).
@@ -3241,6 +3452,12 @@
           </main>
           <Footer />
           {showHelp && <HelpModal caption={showHelp.caption} onClose={() => setShowHelp(null)} />}
+          {preparing && (
+            <PrepareOverlay
+              onReveal={() => setCurrentIndex(QUOTE_INDEX)}
+              onDone={() => setPreparing(false)}
+            />
+          )}
         </div>
       );
     }
