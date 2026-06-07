@@ -1126,20 +1126,24 @@
     .lw-quote-survey { font-size: 0.75rem; color: #999; font-style: italic; margin: 8px 0 0; text-align: center; }
     /* system summary line under the address */
     .lw-quote-summary { font-size: 0.95rem; color: var(--color-body); margin: 4px 0 0; text-align: center; }
-    /* savings folded into the headline block (no separate red box) */
     .lw-quote-strike { text-decoration: line-through; }
-    /* structured "Potential savings" block */
-    .lw-savings { text-align: center; }
-    .lw-savings-head {
-      font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em;
-      text-transform: uppercase; color: var(--color-body); margin-top: 20px;
+    /* "Potential savings" — label + two stat boxes */
+    .lw-savings-label {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--color-body); text-align: center;
+      margin: 24px 0 12px;
     }
-    .lw-savings-line { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; margin: 8px 0 0; }
-    .lw-savings-line:first-of-type { margin-top: 10px; }
-    .lw-savings-num { font-size: 1.6rem; font-weight: 700; color: var(--color-dark); line-height: 1.1; }
-    .lw-savings-num--red { color: var(--color-primary); }
-    .lw-savings-sub { font-size: 0.9rem; color: var(--color-body); margin-left: 4px; }
-    .lw-savings-mid { font-size: 0.9rem; color: var(--color-body); margin: 0 8px; }
+    .lw-savings-boxes { display: flex; gap: 12px; max-width: 640px; margin: 0 auto; }
+    .lw-savings-box {
+      flex: 1; background: #fff; border: 1px solid var(--color-border);
+      border-radius: 12px; padding: 20px 24px; text-align: center;
+    }
+    .lw-savings-box-val { font-size: 1.75rem; font-weight: 700; color: var(--color-dark); line-height: 1.1; }
+    .lw-savings-box-val--red { color: var(--color-primary); }
+    .lw-savings-box-label { font-size: 0.85rem; color: var(--color-body); margin-top: 6px; }
+    @media (max-width: 560px) { .lw-savings-boxes { flex-direction: column; } }
+    /* bill drop + payback, shown on each carousel card */
+    .lw-show-payback { font-size: 0.8rem; color: var(--color-body); margin-top: 4px; }
     .lw-quote-sep { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 24px 0; }
     /* section heading above the tier cards */
     .lw-tier-heading-wrap { text-align: center; margin-bottom: 24px; }
@@ -2833,10 +2837,11 @@
 
     // A single product-showcase card for the carousel. The active card shows the full
     // layout; inactive (peek) cards render the same markup, clipped + faded by the carousel.
-    function CarouselCard({ data, products, custom, onCustomChange, isActive }) {
+    function CarouselCard({ data, products, custom, onCustomChange, isActive, currentBill }) {
       const isCustom = data.id === 'custom';
       const hasBattery = data.battery !== 'none';
       const hideImg = (e) => { e.currentTarget.style.display = 'none'; };
+      const billAfterSolar = Math.max(0, (currentBill || 0) - Math.round(data.monthlySaving));
 
       const tierMeta = products && products.tiers ? products.tiers[data.id] : null;
       const tagline = tierMeta ? tierMeta.tagline : '';
@@ -2941,6 +2946,10 @@
               <div className="lw-show-price">{gbp(data.price)}</div>
               <div className="lw-show-finance">or £{data.monthly}/mo</div>
               {hasBattery && <div className="lw-show-breakdown">{gbp(panelsCost)} panels + {gbp(batteryCost)} battery</div>}
+              <div className="lw-show-payback">
+                Bill drops from <span className="lw-quote-strike">~{gbp(currentBill)}/mo</span> to ~{gbp(billAfterSolar)}/mo
+              </div>
+              <div className="lw-show-payback">Pays for itself in {data.breakEvenYear.toFixed(1)} years</div>
             </div>
           </div>
         </div>
@@ -2981,13 +2990,12 @@
         ? gbp(activePanelsCost) + ' panels + ' + gbp(activeBatteryCost) + ' battery storage'
         : gbp(active.price) + ' panels only';
 
-      // FIX 4 — current monthly bill (before solar) and the bill remaining after solar.
+      // Current monthly bill (before solar) — same for every tier; passed to each card
+      // so the bill-drop + payback detail can render there (not in the headline).
       const usageKwh = Number(String(answers.electricity_usage || '').replace(/[^0-9.]/g, '')) || 0;
       const rateP = Number(String(answers.day_unit_rate || '').replace(/[^0-9.]/g, '')) || 26.35;
       let currentBill = Math.round((usageKwh / 12) * (rateP / 100));
       if (currentBill < 20) currentBill = 120;            // guard against missing/zero usage
-      const monthlySave = Math.round(active.monthlySaving);
-      const billAfterSolar = Math.max(0, currentBill - monthlySave);
 
       // FIX 3 — system summary line under the address.
       const sumBattery = products && products.batteries ? products.batteries[active.battery] : null;
@@ -3003,7 +3011,6 @@
       React.useEffect(() => { setCounting(true); }, []);
       const countMonthly = useCountUp(active.monthlySaving, counting);
       const count20yr = useCountUp(active.saving20yr, counting);
-      const countBreak = useCountUp(active.breakEvenYear, counting);
 
       // FIX 5 — full specification expandable (collapsed by default).
       const [specOpen, setSpecOpen] = useState(false);
@@ -3079,20 +3086,16 @@
             </div>
             <p className="lw-quote-survey">Subject to survey and final system confirmation</p>
             <p className="lw-quote-breakdown">{breakdownLine}</p>
-            <div className="lw-savings">
-              <div className="lw-savings-head">Potential savings</div>
-              <p className="lw-savings-line">
-                <span className="lw-savings-num lw-savings-num--red">~{gbp(countMonthly)}</span>
-                <span className="lw-savings-sub">/mo saved</span>
-                <span className="lw-savings-mid">·</span>
-                <span className="lw-savings-sub">your bill drops from <span className="lw-quote-strike">~{gbp(currentBill)}/mo</span> to ~{gbp(billAfterSolar)}/mo</span>
-              </p>
-              <p className="lw-savings-line">
-                <span className="lw-savings-num">{gbp(count20yr)}</span>
-                <span className="lw-savings-sub">over 20 years</span>
-                <span className="lw-savings-mid">·</span>
-                <span className="lw-savings-sub">pays for itself in {countBreak.toFixed(1)} years</span>
-              </p>
+            <div className="lw-savings-label">Potential savings</div>
+            <div className="lw-savings-boxes">
+              <div className="lw-savings-box">
+                <div className="lw-savings-box-val lw-savings-box-val--red">~{gbp(countMonthly)}/mo</div>
+                <div className="lw-savings-box-label">Monthly bill reduction</div>
+              </div>
+              <div className="lw-savings-box">
+                <div className="lw-savings-box-val">{gbp(count20yr)}</div>
+                <div className="lw-savings-box-label">Estimated over 20 years</div>
+              </div>
             </div>
             <hr className="lw-quote-sep" />
           </Reveal>
@@ -3115,7 +3118,7 @@
                          className={'lw-carousel-slide' + (i === activeCard ? ' is-active' : '')}
                          style={{ width: slideW + 'px' }}
                          onClick={() => { if (i !== activeCard) setActiveCard(i); }}>
-                      <CarouselCard data={tiers[id]} products={products}
+                      <CarouselCard data={tiers[id]} products={products} currentBill={currentBill}
                         custom={custom} onCustomChange={onCustomChange} isActive={i === activeCard} />
                     </div>
                   ))}
