@@ -1143,10 +1143,11 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
       transform: translateY(-2px);
     }
-    .lw-savings-box--accent { border-left: 3px solid var(--color-primary); border-radius: 0 16px 16px 0; }
     .lw-savings-box-label { font-size: 0.85rem; font-weight: 500; color: var(--color-body); }
     .lw-savings-box-val { font-size: 1.75rem; font-weight: 700; color: var(--color-dark); line-height: 1.1; margin-top: 6px; }
     .lw-savings-box-val--red { color: var(--color-primary); }
+    /* quiet "est." qualifier after a figure */
+    .lw-est { font-size: 0.75rem; font-weight: 400; color: #999; }
     @media (max-width: 560px) { .lw-savings-boxes { flex-direction: column; } }
     /* bill drop + payback, shown on each carousel card */
     .lw-show-payback { font-size: 0.8rem; color: var(--color-body); margin-top: 4px; }
@@ -1321,9 +1322,9 @@
     }
     /* what's included */
     .lw-show-incl-wrap { max-width: 560px; text-align: left; }
-    .lw-show-incl-head { font-size: 0.8rem; font-weight: 600; color: var(--color-dark); margin-bottom: 6px; text-align: left; }
+    .lw-show-incl-head { font-size: 0.875rem; font-weight: 600; color: var(--color-dark); margin-bottom: 6px; text-align: left; }
     .lw-show-incl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; }
-    .lw-show-incl-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--color-dark); }
+    .lw-show-incl-row { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--color-dark); }
     .lw-show-incl-row svg { color: var(--color-primary); width: 12px; height: 12px; flex-shrink: 0; }
     /* diagonal gold "Recommended" corner ribbon (Performance card only) */
     .lw-show-ribbon {
@@ -1331,13 +1332,16 @@
       transform: rotate(45deg); pointer-events: none;
       background: linear-gradient(135deg, #C9A84C 0%, #B8962E 100%);
       color: #fff; text-align: center;
-      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.03em; padding: 8px 0;
+      font-size: 0.85rem; font-weight: 800; letter-spacing: 0.03em; padding: 8px 0;
     }
     /* summary (left) + monthly-price hero (right), bottom-aligned */
     .lw-show-foot { display: flex; gap: 24px; align-items: flex-end; margin-top: 20px; }
     .lw-show-summary { flex: 1 1 60%; text-align: left; }
     .lw-show-summary-label { font-size: 0.85rem; font-weight: 600; color: var(--color-primary); margin-bottom: 6px; }
     .lw-show-summary-text { font-size: 0.9rem; color: var(--color-body); line-height: 1.6; margin: 0; }
+    .lw-show-datasheets { font-size: 0.8rem; color: var(--color-body); margin-top: 10px; }
+    .lw-show-ds-label { font-weight: 600; color: var(--color-body); }
+    .lw-show-ds-link { color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
     .lw-show-price-block { flex: 1 1 40%; text-align: right; }
     .lw-show-price-hero { font-size: 2.5rem; font-weight: 700; color: var(--color-primary); line-height: 1.1; }
     .lw-show-price-cash { font-size: 1.25rem; font-weight: 500; color: var(--color-dark); margin-top: 2px; }
@@ -2927,7 +2931,7 @@
 
       return (
         <div className={cardCls}>
-          {data.badge && <div className="lw-show-ribbon">★ Recommended</div>}
+          {data.badge && <div className="lw-show-ribbon">★ Top Pick</div>}
           {/* header */}
           <div className="lw-show-head">
             <div className="lw-show-title">{head.title}</div>
@@ -2993,90 +2997,16 @@
             <div className="lw-show-summary">
               <div className="lw-show-summary-label">Summary:</div>
               {whoFor && <p className="lw-show-summary-text">{whoFor}</p>}
+              <div className="lw-show-datasheets">
+                <span className="lw-show-ds-label">Data sheets:</span>{' '}
+                {hasBattery && <React.Fragment><a className="lw-show-ds-link" href="#">{batteryName}</a> · </React.Fragment>}
+                <a className="lw-show-ds-link" href="#">Fox ESS H1 G2 Inverter</a>
+              </div>
             </div>
             <div className="lw-show-price-block">
               <div className="lw-show-price-hero">£{data.monthly}/mo</div>
               <div className="lw-show-price-cash">or {gbp(data.price)} cash</div>
             </div>
-          </div>
-        </div>
-      );
-    }
-
-    // Expanded "Full system specification" — a richer LivWarm-style product card for the
-    // active tier (more detail than the condensed card: full includes list + data sheets).
-    function FullSpec({ active, products }) {
-      const isNone = active.battery === 'none';
-      const hideImg = (e) => { e.currentTarget.style.display = 'none'; };
-      const panel = products && products.panels ? products.panels.standard : null;
-      const inverter = products && products.inverter ? products.inverter : null;
-      const battery = products && products.batteries ? products.batteries[active.battery] : null;
-      const batteryName = (battery && battery.name) || BATTERY_NAME[active.battery];
-      const batteryCap = battery && battery.capacity_kwh ? battery.capacity_kwh : 0;
-      const whoFor = products && products.tiers && products.tiers[active.id] ? products.tiers[active.id].who_for : '';
-      const subtitle = isNone
-        ? active.panels + ' Panels with No Battery Storage'
-        : active.panels + ' Panels with ' + fmtCap(batteryCap) + ' Battery Storage';
-      const includes = [
-        active.panels + ' × ' + PANEL_WATT + 'W solar panels',
-        ...(!isNone ? [batteryName.replace(/\s*battery\s*$/i, '') + ' battery storage'] : []),
-        'Fox ESS H1 G2 hybrid inverter',
-        'Professional installation',
-        'Smart monitoring app',
-        'MCS certified installation',
-        'Manufacturer warranty',
-        'Scaffolding included',
-      ];
-      const dsLabel = BATTERY_DATASHEET[active.battery];   // undefined for 'none'
-
-      return (
-        <div className="lw-spec-card">
-          <div className="lw-spec-header">{TIER_TITLES[active.id] || active.name}</div>
-          <hr className="lw-spec-rule" />
-          <div className="lw-spec-subtitle">{subtitle}</div>
-
-          <div className="lw-comp-row lw-spec-comp-row">
-            <div className="lw-comp">
-              {panel && panel.image && <img className="lw-comp-img" src={panel.image} alt="" onError={hideImg} />}
-              <div className="lw-comp-text">
-                <div className="lw-comp-name">{active.panels} × 445W Solar Panels</div>
-                <div className="lw-comp-spec">{fmtKw(active.kw)}kW system</div>
-              </div>
-            </div>
-            <div className="lw-comp">
-              {inverter && inverter.image && <img className="lw-comp-img" src={inverter.image} alt="" onError={hideImg} />}
-              <div className="lw-comp-text">
-                <div className="lw-comp-name">Fox ESS H1 G2 Hybrid Inverter</div>
-                <div className="lw-comp-spec">Hybrid inverter, smart monitoring</div>
-              </div>
-            </div>
-            <div className="lw-comp">
-              {!isNone && battery && battery.image && <img className="lw-comp-img" src={battery.image} alt="" onError={hideImg} />}
-              <div className="lw-comp-text">
-                <div className="lw-comp-name">{isNone ? 'No Battery Storage' : batteryName}</div>
-                <div className="lw-comp-spec">{isNone ? 'Add storage anytime' : (batteryCap ? batteryCap + 'kWh storage' : 'Battery storage')}</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="lw-spec-summary-label">Summary:</div>
-          <p className="lw-spec-summary">{whoFor}</p>
-
-          <div className="lw-spec-includes">
-            {includes.map((it, i) => (
-              <div className="lw-show-incl-row" key={i}>{ICONS.check}<span>{it}</span></div>
-            ))}
-          </div>
-
-          <div className="lw-spec-datasheets">
-            <span className="lw-spec-ds-label">Data Sheets:</span>
-            {dsLabel && <a className="lw-spec-ds-link" href="#">{dsLabel}</a>}
-            <a className="lw-spec-ds-link" href="#">Inverter</a>
-          </div>
-
-          <div className="lw-spec-price">
-            <div className="lw-spec-price-val">{gbp(active.price)}</div>
-            <div className="lw-spec-price-mo">or £{active.monthly}/mo</div>
           </div>
         </div>
       );
@@ -3137,9 +3067,6 @@
       React.useEffect(() => { setCounting(true); }, []);
       const countMonthly = useCountUp(active.monthlySaving, counting);
       const count20yr = useCountUp(active.saving20yr, counting);
-
-      // FIX 5 — full specification expandable (collapsed by default).
-      const [specOpen, setSpecOpen] = useState(false);
 
       const onCustomChange = (patch) => {
         setCustom((c) => ({ ...c, ...patch }));
@@ -3214,13 +3141,13 @@
             <p className="lw-quote-breakdown">{breakdownLine}</p>
             <div className="lw-savings-label">Potential Savings</div>
             <div className="lw-savings-boxes">
-              <div className="lw-savings-box lw-savings-box--accent">
+              <div className="lw-savings-box">
                 <div className="lw-savings-box-label">Monthly bill reduction</div>
-                <div className="lw-savings-box-val lw-savings-box-val--red">~{gbp(countMonthly)}/mo</div>
+                <div className="lw-savings-box-val lw-savings-box-val--red">{gbp(countMonthly)}/mo<span className="lw-est"> est.</span></div>
               </div>
               <div className="lw-savings-box">
                 <div className="lw-savings-box-label">Estimated over 20 years</div>
-                <div className="lw-savings-box-val">{gbp(count20yr)}</div>
+                <div className="lw-savings-box-val">{gbp(count20yr)}<span className="lw-est"> est.</span></div>
               </div>
             </div>
             <hr className="lw-quote-sep" />
@@ -3273,16 +3200,6 @@
                   <span key={id} className={'lw-dot' + (i === activeCard ? ' is-active' : '')} />
                 ))}
               </div>
-            </div>
-          </Reveal>
-
-          {/* Full specification (expandable, collapsed by default) */}
-          <Reveal delay={1350}>
-            <div className="lw-spec-toggle-wrap">
-              <button type="button" className="lw-spec-toggle" onClick={() => setSpecOpen((o) => !o)}>
-                Full system specification {specOpen ? '∧' : '∨'}
-              </button>
-              {specOpen && <FullSpec active={active} products={products} />}
             </div>
           </Reveal>
 
