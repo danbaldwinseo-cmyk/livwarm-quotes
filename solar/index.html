@@ -1078,6 +1078,149 @@
       from { opacity: 0; transform: translateY(6px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+    /* ============================================================
+       STEP 7 — Quote screen (Your Solar Potential)
+       ============================================================ */
+    .lw-quote { text-align: center; }
+    /* 1 — price headline */
+    .lw-quote-title {
+      font-size: var(--text-h1);
+      font-weight: 700;
+      color: var(--color-dark);
+      margin: 0 0 6px;
+    }
+    .lw-quote-address {
+      font-size: 0.9rem;
+      color: var(--color-body);
+      margin: 0 0 18px;
+    }
+    .lw-quote-price {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.05;
+      color: var(--color-primary);
+      margin: 0;
+    }
+    .lw-quote-finance {
+      font-size: 1.1rem;
+      color: var(--color-body);
+      margin: 6px 0 0;
+    }
+    /* 2 — three savings figures */
+    .lw-stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 28px 0 36px;
+    }
+    .lw-stat {
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      text-align: center;
+    }
+    .lw-stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-dark);
+      line-height: 1.1;
+    }
+    .lw-stat-label {
+      font-size: 0.875rem;
+      color: var(--color-body);
+      margin-top: 6px;
+    }
+    @media (max-width: 620px) {
+      .lw-stat-row { grid-template-columns: 1fr; }
+    }
+    /* 3 — tier cards (full answer-card interaction, no auto-advance) */
+    .lw-tier-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 36px;
+      text-align: left;
+    }
+    @media (max-width: 760px) {
+      .lw-tier-grid { grid-template-columns: 1fr; }
+    }
+    /* unselected tiers dim to 60% (matches the answer-card 3-state system) */
+    .lw-tier-grid.has-selection .lw-card:not(.is-selected) {
+      opacity: 0.6;
+      filter: saturate(0.4);
+      transition: opacity 300ms ease, filter 300ms ease;
+    }
+    /* layout overrides on top of the shared .lw-card visual states */
+    .lw-tier-card {
+      align-items: stretch;
+      justify-content: flex-start;
+      text-align: left;
+      padding: 22px 22px 24px;
+      min-height: 0;
+      gap: 10px;
+      border-radius: var(--radius-card);
+    }
+    .lw-tier-card > * { position: relative; z-index: 1; }
+    .lw-tier-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .lw-tier-name { font-size: 1.1rem; font-weight: 800; color: var(--color-dark); }
+    .lw-tier-badge {
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .lw-tier-spec { color: var(--color-body); font-size: 0.95rem; line-height: 1.5; }
+    .lw-tier-spec div { font-weight: 600; }
+    .lw-tier-gen { color: var(--color-body); font-size: 0.85rem; }
+    .lw-tier-price { font-size: 1.4rem; font-weight: 800; color: var(--color-primary); margin-top: 4px; }
+    .lw-tier-finance { font-size: 0.85rem; color: var(--color-body); }
+    /* custom-tier dropdowns — match the existing input style */
+    .lw-tier-custom { display: flex; flex-direction: column; gap: 10px; }
+    .lw-tier-field { display: flex; flex-direction: column; gap: 4px; }
+    .lw-tier-field span { font-size: 12px; font-weight: 700; color: var(--color-dark); }
+    .lw-tier-field select {
+      width: 100%;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-dark);
+      background: #fff;
+      border: 1.5px solid var(--color-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .lw-tier-field select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(232, 50, 58, 0.12); }
+    /* 4 — what's included */
+    .lw-incl { text-align: left; max-width: 560px; margin: 0 auto 32px; }
+    .lw-incl-title { font-size: var(--text-h2); font-weight: 700; color: var(--color-dark); margin: 0 0 16px; }
+    .lw-incl-row { display: flex; align-items: center; gap: 12px; padding: 7px 0; font-size: 1rem; color: var(--color-body); font-weight: 600; }
+    .lw-incl-row svg { color: var(--color-primary); flex-shrink: 0; }
+    /* 5 — trust signals */
+    .lw-trust-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 32px; }
+    .lw-trust-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--color-border);
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 0.875rem;
+      color: var(--color-body);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -1197,6 +1340,7 @@
     const BATTERY_INDEX = QUESTIONS.length + 2;  // 6
     const EV_INDEX = QUESTIONS.length + 3;       // 7
     const STEP6_INDEX = QUESTIONS.length + 4;    // 8 — Address & Roof Confirmation (4 internal phases)
+    const QUOTE_INDEX = QUESTIONS.length + 5;    // 9 — Step 7 quote screen (Your Solar Potential)
 
     // Card interaction timings (Section 7 #9): minimum press hold, then settle.
     const PRESS_MS = 80;
@@ -1733,6 +1877,130 @@
       { value: '5+', label: '5+', num: true, unit: 'person', unitPlural: 'people' },
     ];
 
+    /* ============================================================
+       STEP 7 — pricing data + quote calculation engine
+       (Section 6 — Step 7. Pricing hardcoded here, not a separate file.)
+       ============================================================ */
+    const PRICING = {
+      basePanels: 6,
+      pricePerExtraPanel: 250,
+      base: { noB: 4342, b5: 5842, b10: 6842, b15: 7842, pw: 10842 },
+    };
+    const PANEL_WATT = 445;            // W per panel
+    const BASE_GEN_PER_PANEL = 400;    // kWh/yr at south-facing
+    const ORIENTATION_MULT = {
+      S: 1.00, SE: 0.93, SW: 0.93, E: 0.82, W: 0.82, NE: 0.65, NW: 0.65, N: 0.52,
+    };
+    const EXPORT_TARIFF = 0.15;        // £/kWh
+    const SELF_CONSUMPTION = 0.5;
+    const FINANCE_APR = 0.069;
+    const FINANCE_MONTHS = 120;
+    // battery option key → PRICING.base key
+    const BATTERY_PRICE_KEY = { none: 'noB', '5kw': 'b5', '10kw': 'b10', '15kw': 'b15', powerwall: 'pw' };
+    // battery option key → display labels
+    const BATTERY_NAME = { none: 'No battery storage', '5kw': '5kW battery', '10kw': '10kW battery', '15kw': '15kW battery', powerwall: 'Tesla Powerwall' };
+    const BATTERY_INCLUDED = { '5kw': '5kW battery storage', '10kw': '10kW battery storage', '15kw': '15kW battery storage', powerwall: 'Tesla Powerwall battery storage' };
+    const BATTERY_DROPDOWN = [
+      { value: 'none', label: 'No battery' },
+      { value: '5kw', label: '5kW battery' },
+      { value: '10kw', label: '10kW battery' },
+      { value: '15kw', label: '15kW battery' },
+      { value: 'powerwall', label: 'Tesla Powerwall' },
+    ];
+
+    // Base panel count from the lookup table (Section 6 — Step 7).
+    function basePanelCount(houseType, bedrooms) {
+      const n = bedrooms === '5+' ? 5 : (parseInt(bedrooms, 10) || 3);
+      switch (houseType) {
+        case 'Terrace':       return n <= 2 ? 6 : n === 3 ? 8 : 10;
+        case 'Semi-Detached': return n <= 2 ? 8 : n === 3 ? 10 : 12;
+        case 'Detached':      return n <= 3 ? 12 : n === 4 ? 14 : 16;
+        case 'Bungalow':      return n <= 2 ? 10 : 12;
+        default:              return 10;
+      }
+    }
+
+    // EV adjustment to the Performance panel count.
+    function evPanelAdjustment(a) {
+      let add = 0;
+      if (a.has_ev === 'Yes') add += 2;
+      if (a.ev_plans === 'within_2_years') add += 2;
+      else if (a.ev_plans === 'maybe_2_5_years') add += 1;
+      return add;
+    }
+
+    function getPrice(panels, battery) {
+      const extra = Math.max(0, panels - PRICING.basePanels);
+      return PRICING.base[BATTERY_PRICE_KEY[battery]] + extra * PRICING.pricePerExtraPanel;
+    }
+
+    function annualGeneration(panels, orientation) {
+      const mult = ORIENTATION_MULT[orientation] != null ? ORIENTATION_MULT[orientation] : ORIENTATION_MULT.S;
+      return panels * BASE_GEN_PER_PANEL * mult;
+    }
+
+    // Effective grid import rate in £/kWh (defaults to 26.35p if missing/zero).
+    function gridImportRate(a) {
+      let r = Number(String(a.day_unit_rate || '').replace(/[^0-9.]/g, ''));
+      if (!r || r <= 0) r = 26.35;
+      return r / 100;
+    }
+
+    // Recommended Performance-tier battery from its annual generation.
+    function recommendedBattery(gen) {
+      if (gen < 4000) return '5kw';
+      if (gen <= 6000) return '10kw';
+      if (gen <= 8000) return '15kw';
+      return 'powerwall';
+    }
+
+    // Finance monthly payment: 6.9% APR over 10 years, rounded up to the nearest £.
+    function monthlyPayment(systemCost) {
+      const r = FINANCE_APR / 12;
+      const p = systemCost * (r * Math.pow(1 + r, FINANCE_MONTHS)) / (Math.pow(1 + r, FINANCE_MONTHS) - 1);
+      return Math.ceil(p);
+    }
+
+    // Build a complete tier object (price, generation, savings, finance).
+    function buildTier(id, name, panels, battery, badge, orientation, importRate) {
+      const price = getPrice(panels, battery);
+      const gen = annualGeneration(panels, orientation);
+      const annualSaving = (gen * SELF_CONSUMPTION * importRate) + (gen * SELF_CONSUMPTION * EXPORT_TARIFF);
+      const breakEvenYear = annualSaving > 0 ? price / annualSaving : 0;
+      const saving20yr = Math.max(0, annualSaving * 20 - price);
+      const monthlySaving = annualSaving / 12;
+      return {
+        id, name, panels, battery, badge, price, gen,
+        kw: panels * PANEL_WATT / 1000,
+        monthly: monthlyPayment(price),
+        annualSaving, breakEvenYear, saving20yr, monthlySaving,
+      };
+    }
+
+    // Derive all three tiers from the collected answers (+ live custom selections).
+    function buildTiers(a, custom) {
+      const orientation = a.roof_orientation || 'S';
+      const importRate = gridImportRate(a);
+      const baseCount = basePanelCount(a.house_type, a.house_bedrooms);
+      const perfCount = baseCount + evPanelAdjustment(a);
+      const perfGen = annualGeneration(perfCount, orientation);
+      const perfBattery = recommendedBattery(perfGen);
+      return {
+        essential: buildTier('essential', 'Essential', baseCount, 'none', null, orientation, importRate),
+        performance: buildTier('performance', 'Performance', perfCount, perfBattery, 'RECOMMENDED', orientation, importRate),
+        custom: buildTier('custom', 'Custom', custom.panels, custom.battery, null, orientation, importRate),
+        defaults: { baseCount, perfCount, perfBattery },
+      };
+    }
+
+    // Currency: £X,XXX (no decimals). kWh / counts with thousands separators.
+    function gbp(n) { return '£' + Math.round(n).toLocaleString('en-GB'); }
+    function fmtNum(n) { return Math.round(n).toLocaleString('en-GB'); }
+    function fmtKw(kw) {
+      const s = kw.toFixed(2);
+      return s.replace(/\.?0+$/, '');   // 4.45 → 4.45, 5.00 → 5
+    }
+
     /* ---- Part A: postcode lookup + address entry (postcodes.io) ---- */
     function AddressStep({ state, setState, onContinue }) {
       const s = state;
@@ -2211,6 +2479,182 @@
       return <OccupancyStep value={s.occupants} onSelect={onSetOccupants} onContinue={onComplete} />;
     }
 
+    /* ============================================================
+       STEP 7 — Quote screen
+       ============================================================ */
+    // A single tier card. Reuses the shared .lw-card visual states (raised default,
+    // sink+shimmer hover, two-beat punch-and-rise on click, depressed selected,
+    // 60% dim on unselected) but is a div (not a button) so the Custom card can hold
+    // dropdowns, and it switches immediately — no 500ms auto-advance.
+    function TierCard({ data, selected, pressing, tick, onSelect, custom, onCustomChange }) {
+      const ref = useRef(null);
+      useLayoutEffect(() => {
+        const el = ref.current;
+        if (selected && el) {
+          el.classList.remove('is-selected');
+          void el.offsetWidth;            // restart the punch-and-rise animation
+          el.classList.add('is-selected');
+        }
+      }, [selected, tick]);
+      const cls = 'lw-card lw-tier-card'
+        + (selected ? ' is-selected' : '')
+        + (pressing ? ' is-pressing' : '');
+      const isCustom = data.id === 'custom';
+      return (
+        <div ref={ref} className={cls} role="button" tabIndex={0} aria-pressed={selected}
+             onClick={() => onSelect(data.id)}
+             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(data.id); } }}>
+          <div className="lw-tier-head">
+            <span className="lw-tier-name">{data.name}</span>
+            {data.badge && <span className="lw-tier-badge">{data.badge}</span>}
+          </div>
+          {isCustom ? (
+            <div className="lw-tier-custom" onClick={(e) => e.stopPropagation()}>
+              <label className="lw-tier-field">
+                <span>Number of panels</span>
+                <select value={custom.panels}
+                        onChange={(e) => onCustomChange({ panels: Number(e.target.value) })}>
+                  {Array.from({ length: 17 }, (_, i) => i + 6).map((n) => (
+                    <option key={n} value={n}>{n} panels</option>
+                  ))}
+                </select>
+              </label>
+              <label className="lw-tier-field">
+                <span>Battery storage</span>
+                <select value={custom.battery}
+                        onChange={(e) => onCustomChange({ battery: e.target.value })}>
+                  {BATTERY_DROPDOWN.map((b) => (
+                    <option key={b.value} value={b.value}>{b.label}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          ) : (
+            <div className="lw-tier-spec">
+              <div>{data.panels} panels ({fmtKw(data.kw)}kW system)</div>
+              <div>{BATTERY_NAME[data.battery]}</div>
+            </div>
+          )}
+          <div className="lw-tier-gen">{fmtNum(data.gen)} kWh/year estimated</div>
+          <div className="lw-tier-price">{gbp(data.price)}</div>
+          <div className="lw-tier-finance">or £{data.monthly}/mo</div>
+        </div>
+      );
+    }
+
+    function QuoteStep({ answers, onContinue }) {
+      // Sensible initial Custom selection: the Performance system, clamped to 6–22.
+      const init = buildTiers(answers, { panels: 6, battery: 'none' }).defaults;
+      const [custom, setCustom] = useState({
+        panels: Math.min(22, Math.max(6, init.perfCount)),
+        battery: init.perfBattery,
+      });
+      const [selected, setSelected] = useState('performance'); // pre-selected on load
+      const [pressing, setPressing] = useState(null);
+      const [tick, setTick] = useState(0);
+      const [busy, setBusy] = useState(false);
+
+      const tiers = buildTiers(answers, custom);
+      const active = tiers[selected];
+
+      const choose = (id) => {
+        setPressing(id);
+        setTimeout(() => {
+          setPressing(null);
+          setSelected(id);
+          setTick((t) => t + 1);   // replay punch even when re-selecting
+        }, PRESS_MS);
+      };
+      const onCustomChange = (patch) => {
+        setCustom((c) => ({ ...c, ...patch }));
+        if (selected !== 'custom') { setSelected('custom'); setTick((t) => t + 1); }
+      };
+
+      const order = ['essential', 'performance', 'custom'];
+      const addressLine = [answers.address_line1, answers.town].filter(Boolean).join(', ');
+
+      // What's-included list for the active tier.
+      const included = [
+        `${active.panels} × ${PANEL_WATT}W solar panels`,
+        ...(active.battery !== 'none' ? [BATTERY_INCLUDED[active.battery]] : []),
+        'Solar inverter',
+        'Smart monitoring app',
+        'Professional installation',
+        'MCS certified installation',
+        'Manufacturer warranty',
+      ];
+
+      const handleContinue = () => {
+        if (busy) return;
+        setBusy(true);
+        onContinue({
+          product_selection: `${active.name} Solar PV System`,
+          solar_panel_number: String(active.panels),
+          payment_total: active.price.toFixed(2),
+          battery: BATTERY_NAME[active.battery],
+        });
+      };
+
+      return (
+        <div className="lw-fade-in lw-quote">
+          {/* 1 — price headline */}
+          <h1 className="lw-quote-title">Your solar quote</h1>
+          {addressLine && <p className="lw-quote-address">{addressLine}</p>}
+          <p className="lw-quote-price">{gbp(active.price)}</p>
+          <p className="lw-quote-finance">or from £{active.monthly}/month</p>
+
+          {/* 2 — three savings figures */}
+          <div className="lw-stat-row">
+            <div className="lw-stat">
+              <div className="lw-stat-value">{gbp(active.monthlySaving)}/mo</div>
+              <div className="lw-stat-label">Estimated monthly saving</div>
+            </div>
+            <div className="lw-stat">
+              <div className="lw-stat-value">{gbp(active.saving20yr)}</div>
+              <div className="lw-stat-label">20-year saving</div>
+            </div>
+            <div className="lw-stat">
+              <div className="lw-stat-value">{active.breakEvenYear.toFixed(1)} years</div>
+              <div className="lw-stat-label">Estimated break-even</div>
+            </div>
+          </div>
+
+          {/* 3 — tier cards */}
+          <div className={'lw-tier-grid' + (selected ? ' has-selection' : '')}>
+            {order.map((id) => (
+              <TierCard key={id} data={tiers[id]}
+                selected={selected === id}
+                pressing={pressing === id}
+                tick={tick}
+                onSelect={choose}
+                custom={custom}
+                onCustomChange={onCustomChange} />
+            ))}
+          </div>
+
+          {/* 4 — what's included */}
+          <div className="lw-incl">
+            <h2 className="lw-incl-title">What's included</h2>
+            {included.map((item, i) => (
+              <div className="lw-incl-row" key={i}>{ICONS.check}<span>{item}</span></div>
+            ))}
+          </div>
+
+          {/* 5 — trust signals */}
+          <div className="lw-trust-pills">
+            <span className="lw-trust-pill">{ICONS.shield} MCS Certified</span>
+            <span className="lw-trust-pill">{ICONS.star} 4.9 Trustpilot</span>
+            <span className="lw-trust-pill">HIES Member</span>
+          </div>
+
+          {/* 6 — CTA */}
+          <button type="button" className="lw-cta" onClick={handleContinue}>
+            Continue with this system →
+          </button>
+        </div>
+      );
+    }
+
     function StepComplete({ answers, onRestart }) {
       return (
         <div className="lw-complete lw-fade-in">
@@ -2265,8 +2709,14 @@
                 <span className="lw-pill-value">{formatOccupants(answers.occupants)}</span>
               </span>
             )}
+            {answers.product_selection && (
+              <span className="lw-pill" style={{ cursor: 'default' }}>
+                <span className="lw-pill-label">System:</span>
+                <span className="lw-pill-value">{answers.product_selection} · {answers.solar_panel_number} panels · {gbp(Number(answers.payment_total))}</span>
+              </span>
+            )}
           </div>
-          <p className="lw-next-note">Step 7 — Your Solar Potential (the quote screen) — is built in the next session.</p>
+          <p className="lw-next-note">Step 8 coming soon — upsell &amp; your details are built in the next session.</p>
           <div style={{ marginTop: 8 }}>
             <button className="lw-btn lw-btn-ghost" onClick={onRestart}>Start over</button>
           </div>
@@ -2596,6 +3046,22 @@
       }, []);
       const handleStep6Complete = useCallback(() => setCurrentIndex(STEP6_INDEX + 1), []);
 
+      // Step 7 (quote) — store the chosen system (Payaca field names) and advance to
+      // Step 8 (placeholder for now).
+      const handleQuoteContinue = useCallback((sel) => {
+        setAnswers((prev) => {
+          const next = {
+            ...prev,
+            product_selection: sel.product_selection,
+            solar_panel_number: sel.solar_panel_number,
+            payment_total: sel.payment_total,
+          };
+          console.log('[LivWarm] Step 7 selection committed:', next);
+          return next;
+        });
+        setCurrentIndex(QUOTE_INDEX + 1);
+      }, []);
+
       // Screen routing across steps.
       const inQualifier = currentIndex < USAGE_INDEX;     // Step 1 question screens
       const onUsage = currentIndex === USAGE_INDEX;       // Step 2 annual usage (kWh)
@@ -2603,14 +3069,16 @@
       const onBattery = currentIndex === BATTERY_INDEX;   // Step 4 battery location
       const onEv = currentIndex === EV_INDEX;             // Step 5 EV details
       const onStep6 = currentIndex === STEP6_INDEX;       // Step 6 address & roof confirmation
-      const isComplete = currentIndex > STEP6_INDEX;      // handover (placeholder for Step 7)
+      const onQuote = currentIndex === QUOTE_INDEX;       // Step 7 quote screen
+      const isComplete = currentIndex > QUOTE_INDEX;      // handover (placeholder for Step 8)
       const currentQuestion = inQualifier ? QUESTIONS[currentIndex] : null;
       const step = inQualifier ? { number: 1, name: 'Home Details' }
         : onUsage ? { number: 2, name: 'Electricity Usage' }
         : onTariff ? { number: 3, name: 'Electricity Tariff' }
         : onBattery ? { number: 4, name: 'Battery Details' }
         : onEv ? { number: 5, name: 'EV Details' }
-        : { number: 6, name: 'Address & Roof' };
+        : onStep6 ? { number: 6, name: 'Address & Roof' }
+        : { number: 7, name: 'Your Solar Potential' };
 
       // Breadcrumb pills: answers for screens *before* the current one (so the current
       // screen's value shows in-place rather than duplicated as a pill above).
@@ -2678,8 +3146,10 @@
         // Steps 1–5 done; fill within Step 6 as its four phases complete
         const phaseIdx = { address: 0, map: 1, orientation: 2, occupancy: 3 }[step6.phase] || 0;
         percent = 5 * segment + (phaseIdx / 4) * segment;
+      } else if (onQuote) {
+        percent = 6 * segment;                                   // Steps 1–6 done; on the quote screen
       } else {
-        percent = 6 * segment;                                   // Steps 1–6 done
+        percent = 7 * segment;                                   // Steps 1–7 done
       }
 
       return (
@@ -2760,6 +3230,9 @@
                       onSetOccupants={handleSetOccupants}
                       onComplete={handleStep6Complete}
                     />
+                  )}
+                  {onQuote && (
+                    <QuoteStep answers={answers} onContinue={handleQuoteContinue} />
                   )}
                   {isComplete && <StepComplete answers={answers} onRestart={handleRestart} />}
                 </React.Fragment>
