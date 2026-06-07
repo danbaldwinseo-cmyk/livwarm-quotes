@@ -1299,15 +1299,23 @@
     .lw-show-title { font-size: 1.4rem; font-weight: 700; color: var(--color-dark); line-height: 1.2; }
     .lw-show-sub { font-size: 0.9rem; color: var(--color-body); margin-top: 2px; }
     .lw-show-bestmatch { font-size: 0.8rem; color: var(--color-primary); font-weight: 500; margin-top: 4px; }
-    /* component rows — image left, text right, stacked */
-    .lw-comp-row { display: flex; flex-direction: column; gap: 12px; }
-    .lw-comp { display: flex; flex-direction: row; align-items: center; gap: 14px; text-align: left; }
-    .lw-comp-img { width: 72px; height: 72px; object-fit: contain; flex-shrink: 0; }
+    /* component row — three equal columns, image over text, vertical dividers between */
+    .lw-comp-row { display: flex; flex-direction: row; align-items: stretch; }
+    .lw-comp { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 12px; }
+    .lw-comp + .lw-comp { border-left: 1px solid var(--color-border); }
+    .lw-comp-img { height: 90px; max-width: 100%; object-fit: contain; }
     .lw-comp-text { display: flex; flex-direction: column; }
-    .lw-comp-name { font-size: 0.9rem; font-weight: 600; color: var(--color-primary); line-height: 1.3; }
-    .lw-comp-spec { font-size: 0.85rem; color: var(--color-body); }
+    .lw-comp-name { font-size: 0.9rem; font-weight: 600; color: var(--color-primary); margin-top: 10px; line-height: 1.3; }
+    .lw-comp-spec { font-size: 0.8rem; color: var(--color-body); }
+    .lw-show-div { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 20px 0; }
+    @media (max-width: 600px) {
+      .lw-comp-row { flex-direction: column; }
+      .lw-comp { padding: 12px 0; }
+      .lw-comp + .lw-comp { border-left: none; border-top: 1px solid var(--color-border); }
+    }
     /* what's included */
-    .lw-show-incl-head { font-size: 0.8rem; font-weight: 600; color: var(--color-dark); margin-bottom: 6px; }
+    .lw-show-incl-wrap { max-width: 560px; text-align: left; }
+    .lw-show-incl-head { font-size: 0.8rem; font-weight: 600; color: var(--color-dark); margin-bottom: 6px; text-align: left; }
     .lw-show-incl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; }
     .lw-show-incl-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--color-dark); }
     .lw-show-incl-row svg { color: var(--color-primary); width: 12px; height: 12px; flex-shrink: 0; }
@@ -1372,6 +1380,34 @@
     @media (max-width: 600px) { .lw-incl-grid { grid-template-columns: 1fr; } }
     .lw-incl-row { display: flex; align-items: center; gap: 12px; padding: 7px 0; font-size: 1rem; color: var(--color-dark); font-weight: 600; }
     .lw-incl-row svg { color: var(--color-primary); flex-shrink: 0; width: 16px; height: 16px; }
+    /* ---------- Step 7 — expanded full specification card (LivWarm package-card style) ---------- */
+    .lw-spec-card {
+      background: #fff; border: 1px solid var(--color-border); border-radius: 12px;
+      padding: 32px; max-width: 860px; margin: 16px auto 0; text-align: left;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+    .lw-spec-header { font-size: 1.25rem; font-weight: 700; color: var(--color-primary); }
+    .lw-spec-rule { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 12px 0 0; }
+    .lw-spec-subtitle { font-size: 1rem; font-weight: 700; color: var(--color-dark); margin-top: 16px; }
+    .lw-spec-comp-row { margin-top: 20px; }
+    .lw-spec-comp-row .lw-comp { padding: 0 24px; }
+    .lw-spec-comp-row .lw-comp-img { height: 100px; }
+    .lw-spec-summary-label { font-size: 0.9rem; font-weight: 600; color: var(--color-primary); margin-top: 24px; }
+    .lw-spec-summary { font-size: 0.9rem; color: var(--color-dark); line-height: 1.7; max-width: 600px; margin: 6px 0 0; }
+    .lw-spec-includes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 24px; margin-top: 20px; }
+    .lw-spec-includes .lw-show-incl-row { font-size: 0.85rem; }
+    .lw-spec-datasheets { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .lw-spec-ds-label { font-size: 0.85rem; font-weight: 600; color: var(--color-primary); }
+    .lw-spec-ds-link { font-size: 0.85rem; color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; }
+    .lw-spec-ds-link:hover { color: var(--color-primary-light); }
+    .lw-spec-price { text-align: right; margin-top: 16px; }
+    .lw-spec-price-val { font-size: 1.75rem; font-weight: 700; color: var(--color-primary); line-height: 1.1; }
+    .lw-spec-price-mo { font-size: 0.875rem; color: var(--color-body); }
+    @media (max-width: 600px) {
+      .lw-spec-card { padding: 22px 18px; }
+      .lw-spec-includes { grid-template-columns: 1fr; }
+      .lw-spec-comp-row .lw-comp { padding: 12px 0; }
+    }
     /* 5 — trust signals */
     .lw-trust-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 32px; }
     .lw-trust-pill {
@@ -2161,6 +2197,10 @@
       { value: '15kw', label: '15kW battery' },
       { value: 'powerwall', label: 'Tesla Powerwall' },
     ];
+    // Descriptive tier titles (shared by the carousel card + the expanded spec sheet).
+    const TIER_TITLES = { essential: 'Solar Panels Only', performance: 'Our Recommended Package', custom: 'Build Your Own System' };
+    // Battery → data-sheet link label (expanded spec sheet).
+    const BATTERY_DATASHEET = { '5kw': 'EP6 Battery', '10kw': 'EP12 Battery', '15kw': 'EP18 Battery', powerwall: 'Powerwall' };
 
     // Base panel count from the lookup table (Section 6 — Step 7).
     function basePanelCount(houseType, bedrooms) {
@@ -2866,12 +2906,12 @@
       // Descriptive heading + subtitle per tier. The Performance subtitle names the
       // battery (trailing "Battery" stripped so it doesn't read "… Battery battery storage").
       const subBatteryName = batteryName.replace(/\s*battery\s*$/i, '');
-      const headings = {
-        essential: { title: 'Solar Panels Only', sub: 'Clean energy, no battery storage' },
-        performance: { title: 'Our Recommended Package', sub: 'Panels + ' + subBatteryName + ' battery storage' },
-        custom: { title: 'Build Your Own System', sub: 'Choose your panel count and battery size' },
+      const subs = {
+        essential: 'Clean energy, no battery storage',
+        performance: 'Panels + ' + subBatteryName + ' battery storage',
+        custom: 'Choose your panel count and battery size',
       };
-      const head = headings[data.id] || { title: data.name, sub: '' };
+      const head = { title: TIER_TITLES[data.id] || data.name, sub: subs[data.id] || '' };
 
       return (
         <div className={cardCls}>
@@ -2907,6 +2947,8 @@
             </div>
           </div>
 
+          <hr className="lw-show-div" />
+
           {/* custom dropdowns */}
           {isCustom && (
             <div className="lw-tier-custom" onClick={(e) => e.stopPropagation()}>
@@ -2925,7 +2967,7 @@
             </div>
           )}
 
-          <div>
+          <div className="lw-show-incl-wrap">
             <div className="lw-show-incl-head">What's included:</div>
             <div className="lw-show-incl">
               {inclItems.map((it, i) => (
@@ -2951,6 +2993,85 @@
               </div>
               <div className="lw-show-payback">Pays for itself in {data.breakEvenYear.toFixed(1)} years</div>
             </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Expanded "Full system specification" — a richer LivWarm-style product card for the
+    // active tier (more detail than the condensed card: full includes list + data sheets).
+    function FullSpec({ active, products }) {
+      const isNone = active.battery === 'none';
+      const hideImg = (e) => { e.currentTarget.style.display = 'none'; };
+      const panel = products && products.panels ? products.panels.standard : null;
+      const inverter = products && products.inverter ? products.inverter : null;
+      const battery = products && products.batteries ? products.batteries[active.battery] : null;
+      const batteryName = (battery && battery.name) || BATTERY_NAME[active.battery];
+      const batteryCap = battery && battery.capacity_kwh ? battery.capacity_kwh : 0;
+      const whoFor = products && products.tiers && products.tiers[active.id] ? products.tiers[active.id].who_for : '';
+      const subtitle = isNone
+        ? active.panels + ' Panels with No Battery Storage'
+        : active.panels + ' Panels with ' + fmtCap(batteryCap) + ' Battery Storage';
+      const includes = [
+        active.panels + ' × ' + PANEL_WATT + 'W solar panels',
+        ...(!isNone ? [batteryName.replace(/\s*battery\s*$/i, '') + ' battery storage'] : []),
+        'Fox ESS H1 G2 hybrid inverter',
+        'Professional installation',
+        'Smart monitoring app',
+        'MCS certified installation',
+        'Manufacturer warranty',
+        'Scaffolding included',
+      ];
+      const dsLabel = BATTERY_DATASHEET[active.battery];   // undefined for 'none'
+
+      return (
+        <div className="lw-spec-card">
+          <div className="lw-spec-header">{TIER_TITLES[active.id] || active.name}</div>
+          <hr className="lw-spec-rule" />
+          <div className="lw-spec-subtitle">{subtitle}</div>
+
+          <div className="lw-comp-row lw-spec-comp-row">
+            <div className="lw-comp">
+              {panel && panel.image && <img className="lw-comp-img" src={panel.image} alt="" onError={hideImg} />}
+              <div className="lw-comp-text">
+                <div className="lw-comp-name">{active.panels} × 445W Solar Panels</div>
+                <div className="lw-comp-spec">{fmtKw(active.kw)}kW system</div>
+              </div>
+            </div>
+            <div className="lw-comp">
+              {inverter && inverter.image && <img className="lw-comp-img" src={inverter.image} alt="" onError={hideImg} />}
+              <div className="lw-comp-text">
+                <div className="lw-comp-name">Fox ESS H1 G2 Hybrid Inverter</div>
+                <div className="lw-comp-spec">Hybrid inverter, smart monitoring</div>
+              </div>
+            </div>
+            <div className="lw-comp">
+              {!isNone && battery && battery.image && <img className="lw-comp-img" src={battery.image} alt="" onError={hideImg} />}
+              <div className="lw-comp-text">
+                <div className="lw-comp-name">{isNone ? 'No Battery Storage' : batteryName}</div>
+                <div className="lw-comp-spec">{isNone ? 'Add storage anytime' : (batteryCap ? batteryCap + 'kWh storage' : 'Battery storage')}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="lw-spec-summary-label">Summary:</div>
+          <p className="lw-spec-summary">{whoFor}</p>
+
+          <div className="lw-spec-includes">
+            {includes.map((it, i) => (
+              <div className="lw-show-incl-row" key={i}>{ICONS.check}<span>{it}</span></div>
+            ))}
+          </div>
+
+          <div className="lw-spec-datasheets">
+            <span className="lw-spec-ds-label">Data Sheets:</span>
+            {dsLabel && <a className="lw-spec-ds-link" href="#">{dsLabel}</a>}
+            <a className="lw-spec-ds-link" href="#">Inverter</a>
+          </div>
+
+          <div className="lw-spec-price">
+            <div className="lw-spec-price-val">{gbp(active.price)}</div>
+            <div className="lw-spec-price-mo">or £{active.monthly}/mo</div>
           </div>
         </div>
       );
@@ -3156,15 +3277,7 @@
               <button type="button" className="lw-spec-toggle" onClick={() => setSpecOpen((o) => !o)}>
                 Full system specification {specOpen ? '∧' : '∨'}
               </button>
-              {specOpen && (
-                <div className="lw-incl">
-                  <div className="lw-incl-grid">
-                    {included.map((item, i) => (
-                      <div className="lw-incl-row" key={i}>{ICONS.check}<span>{item}</span></div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {specOpen && <FullSpec active={active} products={products} />}
             </div>
           </Reveal>
 
