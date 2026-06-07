@@ -1095,18 +1095,18 @@
       color: var(--color-body);
       margin: 0 0 18px;
     }
-    .lw-quote-price {
-      font-size: 3rem;
-      font-weight: 800;
-      line-height: 1.05;
-      color: var(--color-primary);
-      margin: 0;
-    }
-    .lw-quote-finance {
-      font-size: 1.1rem;
-      color: var(--color-body);
+    /* two prices side by side — monthly is the conversion hero (red) */
+    .lw-quote-prices {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
       margin: 6px 0 0;
     }
+    .lw-quote-cash { font-size: 2.5rem; font-weight: 700; color: var(--color-dark); line-height: 1.05; }
+    .lw-quote-or { font-size: 1rem; color: #999; margin: 0 12px; }
+    .lw-quote-monthly { font-size: 2.5rem; font-weight: 700; color: var(--color-primary); line-height: 1.05; }
+    .lw-quote-survey { font-size: 0.75rem; color: #999; font-style: italic; margin: 8px 0 0; text-align: center; }
     /* 2 — three savings figures */
     .lw-stat-row {
       display: grid;
@@ -1135,12 +1135,41 @@
     @media (max-width: 620px) {
       .lw-stat-row { grid-template-columns: 1fr; }
     }
+    /* monthly-saving hero box — full width, red gradient, white text */
+    .lw-hero-save {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      background: linear-gradient(135deg, #E8323A 0%, #c42830 100%);
+      color: #fff;
+      border-radius: 16px;
+      padding: 24px 32px;
+      margin: 28px 0 16px;
+      text-align: left;
+    }
+    .lw-hero-save-label { font-size: 0.875rem; color: rgba(255, 255, 255, 0.8); }
+    .lw-hero-save-value { font-size: 2.5rem; font-weight: 800; color: #fff; line-height: 1.1; }
+    .lw-hero-save-side {
+      padding-left: 24px;
+      border-left: 1px solid rgba(255, 255, 255, 0.3);
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .lw-hero-save-was { font-size: 0.875rem; color: rgba(255, 255, 255, 0.7); text-decoration: line-through; }
+    .lw-hero-save-after { font-size: 1.1rem; font-weight: 700; color: #fff; margin-top: 2px; }
+    /* bottom row — two smaller stat boxes */
+    .lw-stat-row--two { grid-template-columns: repeat(2, 1fr); margin: 0 0 36px; }
+    @media (max-width: 600px) {
+      .lw-hero-save { flex-direction: column; align-items: stretch; text-align: center; gap: 16px; }
+      .lw-hero-save-side { border-left: none; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-left: 0; padding-top: 16px; text-align: center; }
+    }
     /* 3 — tier cards (full answer-card interaction, no auto-advance) */
     .lw-tier-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
-      margin-bottom: 36px;
+      margin-bottom: 32px;
       text-align: left;
     }
     @media (max-width: 760px) {
@@ -1169,9 +1198,9 @@
       justify-content: space-between;
       gap: 10px;
     }
-    /* Essential/Custom are secondary: smaller heading (1rem), grey price.
-       Performance is the conversion target: 1.1rem heading, red price (overrides below). */
-    .lw-tier-name { font-size: 1rem; font-weight: 800; color: var(--color-dark); }
+    /* Essential/Custom are secondary: smaller, lighter heading, grey price.
+       Performance is the conversion target: larger bold heading, red price (overrides below). */
+    .lw-tier-name { font-size: 1rem; font-weight: 500; color: var(--color-dark); }
     .lw-tier-badge {
       background: var(--color-primary);
       color: #fff;
@@ -1187,15 +1216,16 @@
     .lw-tier-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
     .lw-tier-spec { color: var(--color-body); font-size: 0.95rem; line-height: 1.5; }
     .lw-tier-spec div { font-weight: 600; }
-    /* product shot (battery on Performance/Custom, panel on Essential) */
+    /* product shot — battery on Performance, panel on Essential; right side, vertically centred */
     .lw-tier-img {
       flex-shrink: 0;
       width: auto;
-      max-width: 104px;
-      max-height: 120px;
+      max-width: 160px;
       object-fit: contain;
       align-self: center;
     }
+    .lw-tier-card--performance .lw-tier-img { max-height: 160px; }
+    .lw-tier-card--essential .lw-tier-img { max-height: 140px; }
     .lw-tier-img--ph {
       width: 84px;
       height: 96px;
@@ -1210,14 +1240,17 @@
     .lw-tier-breakdown { font-size: 0.8rem; color: var(--color-body); margin-top: -2px; }
     .lw-tier-finance { font-size: 0.85rem; color: var(--color-body); }
     /* Performance — stronger visual weight */
-    .lw-tier-card--perf .lw-tier-name { font-size: 1.1rem; }
-    .lw-tier-card--perf .lw-tier-price { color: var(--color-primary); }
-    .lw-tier-card--perf.is-selected {
+    .lw-tier-card--performance .lw-tier-name { font-size: 1.15rem; font-weight: 700; }
+    .lw-tier-card--performance .lw-tier-price { color: var(--color-primary); }
+    .lw-tier-card--performance.is-selected {
       background: rgba(232, 50, 58, 0.03);
       border: 2px solid rgba(232, 50, 58, 0.9);
       box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.08),
                   inset 0 1px 3px rgba(0, 0, 0, 0.05);
     }
+    /* Essential/Custom selected — neutral border, not red */
+    .lw-tier-card--essential.is-selected,
+    .lw-tier-card--custom.is-selected { border: 1px solid var(--color-border); }
     /* custom-tier dropdowns — match the existing input style */
     .lw-tier-custom { display: flex; flex-direction: column; gap: 10px; }
     .lw-tier-field { display: flex; flex-direction: column; gap: 4px; }
@@ -1236,11 +1269,21 @@
       transition: border-color 150ms ease, box-shadow 150ms ease;
     }
     .lw-tier-field select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(232, 50, 58, 0.12); }
-    /* 4 — what's included */
-    .lw-incl { text-align: left; max-width: 560px; margin: 0 auto 32px; }
-    .lw-incl-title { font-size: var(--text-h2); font-weight: 700; color: var(--color-dark); margin: 0 0 16px; }
-    .lw-incl-row { display: flex; align-items: center; gap: 12px; padding: 7px 0; font-size: 1rem; color: var(--color-body); font-weight: 600; }
-    .lw-incl-row svg { color: var(--color-primary); flex-shrink: 0; }
+    /* 4 — what's included — card, two-column grid, flush below the tier cards */
+    .lw-incl {
+      text-align: left;
+      max-width: 860px;
+      margin: 0 auto 32px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 24px 32px;
+    }
+    .lw-incl-title { font-size: 1.25rem; font-weight: 600; color: var(--color-dark); margin: 0 0 16px; }
+    .lw-incl-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 32px; }
+    @media (max-width: 600px) { .lw-incl-grid { grid-template-columns: 1fr; } }
+    .lw-incl-row { display: flex; align-items: center; gap: 12px; padding: 7px 0; font-size: 1rem; color: var(--color-dark); font-weight: 600; }
+    .lw-incl-row svg { color: var(--color-primary); flex-shrink: 0; width: 16px; height: 16px; }
     /* 5 — trust signals */
     .lw-trust-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 32px; }
     .lw-trust-pill {
@@ -1256,8 +1299,18 @@
     }
     /* IMPROVEMENT 4 — headline price breakdown line */
     .lw-quote-breakdown { font-size: 0.85rem; color: var(--color-body); margin: 4px 0 0; }
-    /* IMPROVEMENT 3 — crossed-out "before" figure in the monthly-saving stat */
-    .lw-stat-was { font-size: 0.8rem; color: #999; text-decoration: line-through; margin-bottom: 2px; }
+    /* Quote-screen Continue button — narrower, centred (not full width) */
+    .lw-cta-quote {
+      display: block;
+      width: auto;
+      min-width: 320px;
+      max-width: 380px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media (max-width: 420px) {
+      .lw-cta-quote { min-width: 0; width: 100%; }
+    }
 
     /* Green CTA — same pill/shadow as .lw-cta, green fill (Step 6 → quote trigger) */
     .lw-cta-green {
@@ -1797,12 +1850,16 @@
       );
     }
 
-    function HelpModal({ onClose, caption }) {
+    function HelpModal({ onClose, caption, highlightField }) {
       React.useEffect(() => {
         const onKey = (e) => { if (e.key === 'Escape') onClose(); };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
       }, [onClose]);
+      // Only highlight the row relevant to whichever "Where do I find this?" link
+      // was clicked (FIX 7): 'usage' → the annual-usage row, 'rate' → the unit-rate row.
+      const usageHi = highlightField === 'usage';
+      const rateHi = highlightField === 'rate';
       return (
         <div className="lw-modal-overlay" onClick={onClose}>
           <div className="lw-modal" role="dialog" aria-modal="true"
@@ -1816,11 +1873,11 @@
               <div className="lw-bill-lines">
                 <div className="lw-bill-line"><span>Account number</span><span>•••• 4821</span></div>
                 <div className="lw-bill-line"><span>Billing period</span><span>1 Apr – 31 Mar</span></div>
-                <div className="lw-bill-line highlight"><span>Electricity used (annual)</span><span>4,100 kWh</span></div>
-                <div className="lw-bill-callout">↑ This is your annual usage in kWh</div>
+                <div className={'lw-bill-line' + (usageHi ? ' highlight' : '')}><span>Electricity used (annual)</span><span>4,100 kWh</span></div>
+                {usageHi && <div className="lw-bill-callout">↑ This is your annual usage in kWh</div>}
                 <div className="lw-bill-line"><span>Standing charge</span><span>53.4 p/day</span></div>
-                <div className="lw-bill-line highlight"><span>Unit rate</span><span>26.35 p/kWh</span></div>
-                <div className="lw-bill-callout">↑ This is your unit rate in p/kWh</div>
+                <div className={'lw-bill-line' + (rateHi ? ' highlight' : '')}><span>Unit rate</span><span>26.35 p/kWh</span></div>
+                {rateHi && <div className="lw-bill-callout">↑ This is your unit rate in p/kWh</div>}
               </div>
             </div>
             {caption && <p className="lw-modal-caption">{caption}</p>}
@@ -2653,8 +2710,7 @@
           el.classList.add('is-selected');
         }
       }, [selected, tick]);
-      const cls = 'lw-card lw-tier-card'
-        + (data.id === 'performance' ? ' lw-tier-card--perf' : '')
+      const cls = 'lw-card lw-tier-card lw-tier-card--' + data.id
         + (selected ? ' is-selected' : '')
         + (pressing ? ' is-pressing' : '');
       const isCustom = data.id === 'custom';
@@ -2719,9 +2775,10 @@
                 ? <div className="lw-tier-whofor-ph" />
                 : whoFor && <p className="lw-tier-whofor">{whoFor}</p>}
             </div>
-            {loading
+            {!isCustom && (loading
               ? <div className="lw-tier-img lw-tier-img--ph" />
-              : imgUrl && <img className="lw-tier-img" src={imgUrl} alt="" loading="lazy" />}
+              : imgUrl && <img className="lw-tier-img" src={imgUrl} alt="" loading="lazy"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }} />)}
           </div>
           <div className="lw-tier-gen">{fmtNum(data.gen)} kWh/year estimated</div>
           <div className="lw-tier-price">{gbp(data.price)}</div>
@@ -2768,10 +2825,13 @@
         ? gbp(activePanelsCost) + ' panels + ' + gbp(activeBatteryCost) + ' battery storage'
         : gbp(active.price) + ' panels only';
 
-      // IMPROVEMENT 3 — estimated monthly bill before solar.
+      // FIX 2 — current monthly bill (before solar) and the bill remaining after solar.
       const usageKwh = Number(String(answers.electricity_usage || '').replace(/[^0-9.]/g, '')) || 0;
       const rateP = Number(String(answers.day_unit_rate || '').replace(/[^0-9.]/g, '')) || 26.35;
-      const monthlyBillBefore = (usageKwh / 12) * (rateP / 100);
+      let currentBill = Math.round((usageKwh / 12) * (rateP / 100));
+      if (currentBill < 20) currentBill = 120;            // guard against missing/zero usage
+      const monthlySave = Math.round(active.monthlySaving);
+      const billAfterSolar = Math.max(0, currentBill - monthlySave);
 
       const choose = (id) => {
         setPressing(id);
@@ -2813,22 +2873,29 @@
 
       return (
         <div className="lw-fade-in lw-quote">
-          {/* 1 — price headline */}
+          {/* 1 — price headline: cash + monthly side by side (monthly is the hero) */}
           <h1 className="lw-quote-title">Your solar quote</h1>
           {addressLine && <p className="lw-quote-address">{addressLine}</p>}
-          <p className="lw-quote-price">{gbp(active.price)}</p>
-          <p className="lw-quote-finance">or from £{active.monthly}/month</p>
+          <div className="lw-quote-prices">
+            <span className="lw-quote-cash">{gbp(active.price)}</span>
+            <span className="lw-quote-or">or</span>
+            <span className="lw-quote-monthly">£{active.monthly}/mo</span>
+          </div>
+          <p className="lw-quote-survey">Subject to survey and final system confirmation</p>
           <p className="lw-quote-breakdown">{breakdownLine}</p>
 
-          {/* 2 — three savings figures */}
-          <div className="lw-stat-row">
-            <div className="lw-stat">
-              {monthlyBillBefore > 0 && (
-                <div className="lw-stat-was">Was ~{gbp(monthlyBillBefore)}/mo</div>
-              )}
-              <div className="lw-stat-value">Save ~{gbp(active.monthlySaving)}/mo</div>
-              <div className="lw-stat-label">Estimated monthly saving</div>
+          {/* 2 — savings: monthly hero box, then two smaller stat boxes */}
+          <div className="lw-hero-save">
+            <div className="lw-hero-save-main">
+              <div className="lw-hero-save-label">Your estimated monthly saving</div>
+              <div className="lw-hero-save-value">~{gbp(active.monthlySaving)}/mo</div>
             </div>
+            <div className="lw-hero-save-side">
+              <div className="lw-hero-save-was">Currently paying ~{gbp(currentBill)}/mo</div>
+              <div className="lw-hero-save-after">With solar: ~{gbp(billAfterSolar)}/mo</div>
+            </div>
+          </div>
+          <div className="lw-stat-row lw-stat-row--two">
             <div className="lw-stat">
               <div className="lw-stat-value">{gbp(active.saving20yr)}</div>
               <div className="lw-stat-label">20-year saving</div>
@@ -2854,23 +2921,18 @@
             ))}
           </div>
 
-          {/* 4 — what's included */}
+          {/* 4 — what's included (two-column card, flush below the tier cards) */}
           <div className="lw-incl">
             <h2 className="lw-incl-title">What's included</h2>
-            {included.map((item, i) => (
-              <div className="lw-incl-row" key={i}>{ICONS.check}<span>{item}</span></div>
-            ))}
+            <div className="lw-incl-grid">
+              {included.map((item, i) => (
+                <div className="lw-incl-row" key={i}>{ICONS.check}<span>{item}</span></div>
+              ))}
+            </div>
           </div>
 
-          {/* 5 — trust signals */}
-          <div className="lw-trust-pills">
-            <span className="lw-trust-pill">{ICONS.shield} MCS Certified</span>
-            <span className="lw-trust-pill">{ICONS.star} 4.9 Trustpilot</span>
-            <span className="lw-trust-pill">HIES Member</span>
-          </div>
-
-          {/* 6 — CTA */}
-          <button type="button" className="lw-cta" onClick={handleContinue}>
+          {/* 5 — CTA */}
+          <button type="button" className="lw-cta lw-cta-quote" onClick={handleContinue}>
             Continue with this system →
           </button>
         </div>
@@ -3411,7 +3473,7 @@
                       onChange={setElectricity}
                       onUseAverages={handleUsageAverages}
                       onContinue={handleUsageContinue}
-                      onShowHelp={() => setShowHelp({})}
+                      onShowHelp={() => setShowHelp({ highlightField: 'usage' })}
                     />
                   )}
                   {onTariff && (
@@ -3420,7 +3482,7 @@
                       onChange={setElectricity}
                       onUseAverages={handleTariffAverages}
                       onContinue={handleTariffContinue}
-                      onShowHelp={() => setShowHelp({ caption: "Your unit rate is shown in pence per kWh - look for 'unit rate' or 'rate' in the charges section of your bill." })}
+                      onShowHelp={() => setShowHelp({ highlightField: 'rate', caption: "Your unit rate is shown in pence per kWh - look for 'unit rate' or 'rate' in the charges section of your bill." })}
                     />
                   )}
                   {onBattery && (
@@ -3466,7 +3528,7 @@
             </div>
           </main>
           <Footer />
-          {showHelp && <HelpModal caption={showHelp.caption} onClose={() => setShowHelp(null)} />}
+          {showHelp && <HelpModal caption={showHelp.caption} highlightField={showHelp.highlightField} onClose={() => setShowHelp(null)} />}
           {preparing && (
             <PrepareOverlay
               onReveal={() => setCurrentIndex(QUOTE_INDEX)}
