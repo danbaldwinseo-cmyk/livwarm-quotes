@@ -1325,21 +1325,27 @@
     .lw-show-incl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; }
     .lw-show-incl-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--color-dark); }
     .lw-show-incl-row svg { color: var(--color-primary); width: 12px; height: 12px; flex-shrink: 0; }
-    .lw-show-gen { font-size: 0.875rem; color: var(--color-body); text-align: center; }
-    /* summary (left) + price (right) footer, side by side */
+    /* diagonal "Recommended" corner ribbon (Performance card only) */
+    .lw-show-ribbon {
+      position: absolute; top: 20px; right: -34px; width: 130px; z-index: 2;
+      transform: rotate(45deg); pointer-events: none;
+      background: var(--color-dark); color: #fff; text-align: center;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; padding: 5px 0;
+    }
+    /* summary + details (left) + monthly-price hero (right) */
     .lw-show-foot { display: flex; gap: 24px; align-items: flex-start; margin-top: 20px; }
     .lw-show-summary { flex: 1 1 60%; text-align: left; }
     .lw-show-summary-label { font-size: 0.85rem; font-weight: 600; color: var(--color-primary); margin-bottom: 6px; }
     .lw-show-summary-text { font-size: 0.9rem; color: var(--color-body); line-height: 1.6; margin: 0; }
-    .lw-show-price-block { flex: 1 1 40%; text-align: right; }
-    .lw-show-price { font-size: 2rem; font-weight: 700; color: var(--color-primary); line-height: 1.1; }
-    .lw-show-finance { font-size: 0.875rem; color: var(--color-body); margin-top: 2px; }
-    .lw-show-breakdown { font-size: 0.8rem; color: var(--color-body); margin-top: 2px; }
+    .lw-show-details { font-size: 0.85rem; color: var(--color-body); line-height: 1.5; margin-top: 10px; }
+    .lw-show-price-block { flex: 1 1 40%; text-align: right; align-self: center; }
+    .lw-show-price-hero { font-size: 2.25rem; font-weight: 700; color: var(--color-primary); line-height: 1.1; }
+    .lw-show-price-cash { font-size: 1rem; color: var(--color-dark); margin-top: 2px; }
     @media (max-width: 600px) {
       .lw-show-card { padding: 20px 18px; }
       .lw-show-incl { grid-template-columns: 1fr; }
       .lw-show-foot { flex-direction: column; gap: 14px; }
-      .lw-show-price-block { text-align: left; }
+      .lw-show-summary, .lw-show-price-block { text-align: center; }
     }
     /* Performance — stronger visual weight */
     .lw-tier-card--performance .lw-tier-name { font-size: 1.15rem; font-weight: 700; }
@@ -2921,11 +2927,11 @@
 
       return (
         <div className={cardCls}>
+          {data.badge && <div className="lw-show-ribbon">★ Recommended</div>}
           {/* header */}
           <div className="lw-show-head">
             <div className="lw-show-title">{head.title}</div>
             <div className="lw-show-sub">{head.sub}</div>
-            {data.badge && <div className="lw-show-bestmatch">★ Best match for your home</div>}
           </div>
 
           {/* three components — image left, text right */}
@@ -2934,7 +2940,7 @@
               {panel && panel.image && <img className="lw-comp-img" src={panel.image} alt="" onError={hideImg} />}
               <div className="lw-comp-text">
                 <div className="lw-comp-name">{data.panels} × 445W Solar Panels</div>
-                <div className="lw-comp-spec">{fmtKw(data.kw)}kW system</div>
+                <div className="lw-comp-spec">{fmtKw(data.kw)}kW · ~{fmtNum(data.gen)} kWh/yr</div>
               </div>
             </div>
             <div className="lw-comp">
@@ -2982,22 +2988,22 @@
             </div>
           </div>
 
-          <div className="lw-show-gen">{fmtNum(data.gen)} kWh/year estimated</div>
-
-          {/* summary (left) + price (right) */}
+          {/* summary + details (left) · monthly-price hero (right) */}
           <div className="lw-show-foot">
             <div className="lw-show-summary">
               <div className="lw-show-summary-label">Summary:</div>
               {whoFor && <p className="lw-show-summary-text">{whoFor}</p>}
+              <div className="lw-show-details">
+                {hasBattery ? (
+                  <React.Fragment>
+                    {gbp(panelsCost)} panels + {gbp(batteryCost)} battery · bill drops from <span className="lw-quote-strike">~{gbp(currentBill)}/mo</span> to ~{gbp(billAfterSolar)}/mo · pays for itself in {data.breakEvenYear.toFixed(1)} years
+                  </React.Fragment>
+                ) : 'No battery - add storage anytime'}
+              </div>
             </div>
             <div className="lw-show-price-block">
-              <div className="lw-show-price">{gbp(data.price)}</div>
-              <div className="lw-show-finance">or £{data.monthly}/mo</div>
-              {hasBattery && <div className="lw-show-breakdown">{gbp(panelsCost)} panels + {gbp(batteryCost)} battery</div>}
-              <div className="lw-show-payback">
-                Bill drops from <span className="lw-quote-strike">~{gbp(currentBill)}/mo</span> to ~{gbp(billAfterSolar)}/mo
-              </div>
-              <div className="lw-show-payback">Pays for itself in {data.breakEvenYear.toFixed(1)} years</div>
+              <div className="lw-show-price-hero">£{data.monthly}/mo</div>
+              <div className="lw-show-price-cash">or {gbp(data.price)} cash</div>
             </div>
           </div>
         </div>
