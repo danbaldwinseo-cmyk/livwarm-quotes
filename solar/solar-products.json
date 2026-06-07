@@ -1,0 +1,77 @@
+{
+  "batteries": {
+    "none": {
+      "wp_id": 510,
+      "name": "No battery storage",
+      "brand": null,
+      "capacity_kwh": 0,
+      "image": null,
+      "short_description": "Solar panels only - generate and use clean energy during daylight hours.",
+      "who_for": "A great starting point if you want to reduce your bills and carbon footprint without the upfront cost of a battery. You can add storage later as your needs change."
+    },
+    "5kw": {
+      "wp_id": 385,
+      "name": "Fox ESS EP6 Battery",
+      "brand": "Fox ESS",
+      "capacity_kwh": 6.0,
+      "image": "https://deals.livwarm.co.uk/wp-content/uploads/2025/10/Fox-ESS-6kw-Battery.webp",
+      "short_description": "6kWh scalable battery storage with 90% depth of discharge, floor or wall mounting, and 10-year warranty.",
+      "who_for": "Ideal for smaller households who want to store surplus solar energy for evenings and reduce grid dependency without over-investing in storage capacity."
+    },
+    "10kw": {
+      "wp_id": 387,
+      "name": "Fox ESS EP12 Battery",
+      "brand": "Fox ESS",
+      "capacity_kwh": 11.52,
+      "image": "https://deals.livwarm.co.uk/wp-content/uploads/2026/02/foxess-ep12-battery.webp",
+      "short_description": "High-performance 11.52kWh battery storage with 90% depth of discharge, smart battery warming, and 10-year warranty.",
+      "who_for": "The most popular choice for family homes. Stores enough solar energy to power your home through the evening and overnight, cutting your grid imports significantly."
+    },
+    "15kw": {
+      "wp_id": 508,
+      "name": "Fox ESS EP18 Battery",
+      "brand": "Fox ESS",
+      "capacity_kwh": 18.0,
+      "image": "https://deals.livwarm.co.uk/wp-content/uploads/2025/10/foxess-ep18-battery.webp",
+      "short_description": "Large-capacity 18kWh battery system (3 × EP6 units) with high voltage, high efficiency, and 10-year warranty.",
+      "who_for": "Built for larger homes and high energy users. With 18kWh of storage you can be almost entirely self-sufficient on sunny days, and significantly reduce grid imports year-round."
+    },
+    "powerwall": {
+      "wp_id": 509,
+      "name": "Tesla Powerwall 13.5kWh",
+      "brand": "Tesla",
+      "capacity_kwh": 13.5,
+      "image": "https://deals.livwarm.co.uk/wp-content/uploads/2025/10/tesla-powerwall-png-no-background.png",
+      "short_description": "13.5kWh whole-home backup battery with 89% round-trip efficiency, Tesla app monitoring, and 10-year warranty.",
+      "who_for": "For homeowners who want the best. The Powerwall delivers whole-home backup power, intelligent tariff-shifting, and seamless app control - the premium choice for maximum energy independence."
+    }
+  },
+  "tiers": {
+    "essential": {
+      "name": "Essential",
+      "tagline": "Solar panels, no storage",
+      "who_for": "The right choice if you want to start generating clean energy and cutting daytime bills straight away. No battery means lower upfront cost - and storage can always be added later.",
+      "highlight_colour": null
+    },
+    "performance": {
+      "name": "Performance",
+      "tagline": "Panels + battery storage",
+      "who_for": "Our most popular system. The battery stores the solar energy you don't use during the day so you can power your home in the evening without drawing from the grid. Most customers save enough to cover the cost of the battery within the payback period.",
+      "highlight_colour": "#E8323A"
+    },
+    "custom": {
+      "name": "Custom",
+      "tagline": "Build your own system",
+      "who_for": "Know exactly what you want? Choose your panel count and battery size and we'll price it up for you. All custom systems come with the same professional installation and MCS certification.",
+      "highlight_colour": null
+    }
+  },
+  "panels": {
+    "standard": {
+      "name": "445W Solar Panel",
+      "brand": "UKEM Partner",
+      "wattage": 445,
+      "image": "https://deals.livwarm.co.uk/wp-content/uploads/2025/10/12-Solar-Panels.webp"
+    }
+  }
+}
