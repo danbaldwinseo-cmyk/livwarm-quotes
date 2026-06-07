@@ -1325,22 +1325,22 @@
     .lw-show-incl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; }
     .lw-show-incl-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--color-dark); }
     .lw-show-incl-row svg { color: var(--color-primary); width: 12px; height: 12px; flex-shrink: 0; }
-    /* diagonal "Recommended" corner ribbon (Performance card only) */
+    /* diagonal gold "Recommended" corner ribbon (Performance card only) */
     .lw-show-ribbon {
-      position: absolute; top: 20px; right: -34px; width: 130px; z-index: 2;
+      position: absolute; top: 24px; right: -38px; width: 160px; z-index: 2;
       transform: rotate(45deg); pointer-events: none;
-      background: var(--color-dark); color: #fff; text-align: center;
-      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; padding: 5px 0;
+      background: linear-gradient(135deg, #C9A84C 0%, #B8962E 100%);
+      color: #fff; text-align: center;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.03em; padding: 8px 0;
     }
-    /* summary + details (left) + monthly-price hero (right) */
-    .lw-show-foot { display: flex; gap: 24px; align-items: flex-start; margin-top: 20px; }
+    /* summary (left) + monthly-price hero (right), bottom-aligned */
+    .lw-show-foot { display: flex; gap: 24px; align-items: flex-end; margin-top: 20px; }
     .lw-show-summary { flex: 1 1 60%; text-align: left; }
     .lw-show-summary-label { font-size: 0.85rem; font-weight: 600; color: var(--color-primary); margin-bottom: 6px; }
     .lw-show-summary-text { font-size: 0.9rem; color: var(--color-body); line-height: 1.6; margin: 0; }
-    .lw-show-details { font-size: 0.85rem; color: var(--color-body); line-height: 1.5; margin-top: 10px; }
-    .lw-show-price-block { flex: 1 1 40%; text-align: right; align-self: center; }
-    .lw-show-price-hero { font-size: 2.25rem; font-weight: 700; color: var(--color-primary); line-height: 1.1; }
-    .lw-show-price-cash { font-size: 1rem; color: var(--color-dark); margin-top: 2px; }
+    .lw-show-price-block { flex: 1 1 40%; text-align: right; }
+    .lw-show-price-hero { font-size: 2.5rem; font-weight: 700; color: var(--color-primary); line-height: 1.1; }
+    .lw-show-price-cash { font-size: 1.25rem; font-weight: 500; color: var(--color-dark); margin-top: 2px; }
     @media (max-width: 600px) {
       .lw-show-card { padding: 20px 18px; }
       .lw-show-incl { grid-template-columns: 1fr; }
@@ -2993,13 +2993,6 @@
             <div className="lw-show-summary">
               <div className="lw-show-summary-label">Summary:</div>
               {whoFor && <p className="lw-show-summary-text">{whoFor}</p>}
-              <div className="lw-show-details">
-                {hasBattery ? (
-                  <React.Fragment>
-                    {gbp(panelsCost)} panels + {gbp(batteryCost)} battery · bill drops from <span className="lw-quote-strike">~{gbp(currentBill)}/mo</span> to ~{gbp(billAfterSolar)}/mo · pays for itself in {data.breakEvenYear.toFixed(1)} years
-                  </React.Fragment>
-                ) : 'No battery - add storage anytime'}
-              </div>
             </div>
             <div className="lw-show-price-block">
               <div className="lw-show-price-hero">£{data.monthly}/mo</div>
