@@ -936,6 +936,12 @@
       pointer-events: none;
       z-index: 3;
     }
+    /* Responsive instruction wording: compass sits to the right ≥768px, below under that */
+    .lw-map-label .lw-instr-narrow { display: none; }
+    @media (max-width: 767px) {
+      .lw-map-label .lw-instr-wide { display: none; }
+      .lw-map-label .lw-instr-narrow { display: inline; }
+    }
 
     /* Orientation screen — compass overlaid on the right half of the map.
        Frosted-glass disc; a ring of eight tappable direction segments. */
@@ -1119,7 +1125,16 @@
     .lw-quote-monthly { font-size: 2.5rem; font-weight: 700; color: var(--color-primary); line-height: 1.05; }
     .lw-quote-survey { font-size: 0.75rem; color: #999; font-style: italic; margin: 8px 0 0; text-align: center; }
     /* system summary line under the address */
-    .lw-quote-summary { font-size: 0.95rem; color: var(--color-body); margin: 8px 0 0; text-align: center; }
+    .lw-quote-summary { font-size: 0.95rem; color: var(--color-body); margin: 4px 0 0; text-align: center; }
+    /* savings folded into the headline block (no separate red box) */
+    .lw-quote-save { font-size: 1rem; color: var(--color-primary); font-weight: 500; text-align: center; margin: 12px 0 0; line-height: 1.5; }
+    .lw-quote-strike { text-decoration: line-through; }
+    .lw-quote-longterm { font-size: 0.875rem; color: var(--color-body); text-align: center; margin: 6px 0 0; }
+    .lw-quote-sep { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 24px 0; }
+    /* section heading above the tier cards */
+    .lw-tier-heading-wrap { text-align: center; margin-bottom: 24px; }
+    .lw-tier-heading { font-size: 1.5rem; font-weight: 700; color: var(--color-dark); margin: 0; }
+    .lw-tier-subheading { font-size: 0.9rem; color: var(--color-body); margin: 6px 0 0; }
     /* staged reveal — each block rises 12px (hero: 20px) and fades in on first mount */
     .lw-reveal { opacity: 0; transform: translateY(12px); transition: opacity 400ms ease-out, transform 400ms ease-out; }
     .lw-reveal--hero { transform: translateY(20px); }
@@ -1127,53 +1142,6 @@
     /* keep tier cards stretched to equal height when wrapped in a reveal */
     .lw-tier-grid > .lw-reveal { display: flex; }
     .lw-tier-grid > .lw-reveal > .lw-card { flex: 1; }
-    /* 2 — savings figures */
-    .lw-stat-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin: 28px 0 36px;
-    }
-    .lw-stat {
-      background: #fff;
-      border: 1px solid var(--color-border);
-      border-radius: 12px;
-      padding: 20px 24px;
-      text-align: center;
-    }
-    .lw-stat-value {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--color-dark);
-      line-height: 1.1;
-    }
-    .lw-stat-label {
-      font-size: 0.875rem;
-      color: var(--color-body);
-      margin-top: 6px;
-    }
-    .lw-stat-l1 { font-size: 1rem; font-weight: 600; color: var(--color-dark); margin-top: 6px; }
-    .lw-stat-l2 { font-size: 0.8rem; color: var(--color-body); margin-top: 2px; }
-    @media (max-width: 620px) {
-      .lw-stat-row { grid-template-columns: 1fr; }
-    }
-    /* monthly-saving box — constrained width, red gradient, content stacked */
-    .lw-save-box {
-      max-width: 860px;
-      margin: 28px auto 16px;
-      background: linear-gradient(135deg, #E8323A 0%, #c42830 100%);
-      color: #fff;
-      border-radius: 16px;
-      padding: 32px 40px;
-      text-align: center;
-    }
-    .lw-save-eyebrow { font-size: 0.8rem; color: rgba(255, 255, 255, 0.7); }
-    .lw-save-statement { font-size: 1.25rem; color: #fff; font-weight: 600; margin-top: 8px; line-height: 1.4; }
-    .lw-save-from { text-decoration: line-through; }
-    .lw-save-to { font-weight: 800; }
-    .lw-save-big { font-size: 2.75rem; font-weight: 800; color: #fff; margin-top: 12px; line-height: 1.1; }
-    /* two stat boxes below the red box */
-    .lw-stat-row--two { grid-template-columns: repeat(2, 1fr); max-width: 860px; margin: 0 auto 36px; }
     /* 3 — tier cards (full answer-card interaction, no auto-advance) */
     .lw-tier-grid {
       display: grid;
@@ -1226,16 +1194,14 @@
     .lw-tier-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
     .lw-tier-spec { color: var(--color-body); font-size: 0.95rem; line-height: 1.5; }
     .lw-tier-spec div { font-weight: 600; }
-    /* product shot — battery on Performance, panel on Essential; right side, vertically centred */
+    /* product shot — battery on Performance, panel on Essential; right side, vertically centred.
+       Explicit width/height attrs in the markup set the box; object-fit contain preserves aspect. */
     .lw-tier-img {
       flex-shrink: 0;
-      width: auto;
       max-width: 160px;
       object-fit: contain;
       align-self: center;
     }
-    .lw-tier-card--performance .lw-tier-img { max-height: 140px; }
-    .lw-tier-card--essential .lw-tier-img { max-height: 120px; }
     .lw-tier-img--ph {
       width: 84px;
       height: 96px;
@@ -2610,7 +2576,10 @@
             {/* Compass rose overlaid on the right half; left half stays clear */}
             <CompassDial value={value} onChange={onChange} />
             {/* Instruction as a frosted overlay label at the map's lower edge */}
-            <div className="lw-map-label">Tap your direction on the compass below</div>
+            <div className="lw-map-label">
+              <span className="lw-instr-wide">Tap your direction on the compass to the right</span>
+              <span className="lw-instr-narrow">Tap your direction on the compass below</span>
+            </div>
           </div>
           {value && <p className="lw-orient-facing">Facing: {DIR_WORDS[value]}</p>}
           <div className="lw-orient-actions">
@@ -2850,9 +2819,13 @@
                 ? <div className="lw-tier-whofor-ph" />
                 : whoFor && <p className="lw-tier-whofor">{whoFor}</p>}
             </div>
+            {/* Explicit width/height attrs force space allocation; onError hides cleanly
+                (no broken-image icon) if the URL fails. */}
             {!isCustom && (loading
               ? <div className="lw-tier-img lw-tier-img--ph" />
-              : imgUrl && <img className="lw-tier-img" src={imgUrl} alt="" loading="lazy"
+              : imgUrl && <img className="lw-tier-img" src={imgUrl} alt=""
+                  width={data.id === 'performance' ? 130 : 160}
+                  height={data.id === 'performance' ? 140 : 120}
                   onError={(e) => { e.currentTarget.style.display = 'none'; }} />)}
           </div>
           <div className="lw-tier-incl">
@@ -2923,22 +2896,12 @@
         : active.panels + ' panels (' + fmtKw(active.kw) + 'kW system) · ' + sumBatteryName
           + (sumBatteryCap ? ' · ' + fmtCap(sumBatteryCap) : '');
 
-      // FIX 4 — count-up figures fire together when the savings section scrolls into view.
-      const savingsRef = useRef(null);
-      const [savingsInView, setSavingsInView] = useState(false);
-      React.useEffect(() => {
-        const el = savingsRef.current;
-        if (!el || savingsInView) return;
-        if (!('IntersectionObserver' in window)) { setSavingsInView(true); return; }
-        const io = new IntersectionObserver((entries) => {
-          if (entries[0].isIntersecting) { setSavingsInView(true); io.disconnect(); }
-        }, { threshold: 0.2 });
-        io.observe(el);
-        return () => io.disconnect();
-      }, []);
-      const countMonthly = useCountUp(active.monthlySaving, savingsInView);
-      const count20yr = useCountUp(active.saving20yr, savingsInView);
-      const countBreak = useCountUp(active.breakEvenYear, savingsInView);
+      // FIX 3 — savings figures count up together on mount (once).
+      const [counting, setCounting] = useState(false);
+      React.useEffect(() => { setCounting(true); }, []);
+      const countMonthly = useCountUp(active.monthlySaving, counting);
+      const count20yr = useCountUp(active.saving20yr, counting);
+      const countBreak = useCountUp(active.breakEvenYear, counting);
 
       // FIX 5 — full specification expandable (collapsed by default).
       const [specOpen, setSpecOpen] = useState(false);
@@ -2983,53 +2946,41 @@
 
       return (
         <div className="lw-quote">
-          {/* 1 — headline (staged reveal) */}
+          {/* Heading + address + system summary (staged reveal) */}
           <Reveal delay={0}><h1 className="lw-quote-title">Your solar quote</h1></Reveal>
           {addressLine && <Reveal delay={150}><p className="lw-quote-address">{addressLine}</p></Reveal>}
           <Reveal delay={300}><p className="lw-quote-summary">{summaryLine}</p></Reveal>
+
+          {/* Unified price + savings block (hero) */}
           <Reveal delay={500} hero>
             <div className="lw-quote-prices">
               <span className="lw-quote-cash">{gbp(active.price)}</span>
               <span className="lw-quote-or">or</span>
               <span className="lw-quote-monthly">£{active.monthly}/mo</span>
             </div>
-          </Reveal>
-          <Reveal delay={650}>
             <p className="lw-quote-survey">Subject to survey and final system confirmation</p>
             <p className="lw-quote-breakdown">{breakdownLine}</p>
+            <p className="lw-quote-save">
+              Estimated monthly saving: ~{gbp(countMonthly)}/mo · your bill could drop from <span className="lw-quote-strike">~{gbp(currentBill)}/mo</span> to ~{gbp(billAfterSolar)}/mo
+            </p>
+            <p className="lw-quote-longterm">
+              {gbp(count20yr)} estimated over 20 years · pays for itself in {countBreak.toFixed(1)} years
+            </p>
+            <hr className="lw-quote-sep" />
           </Reveal>
 
-          {/* 2 — savings: red box + two stat boxes, count-up on scroll into view */}
-          <div ref={savingsRef}>
-            <Reveal delay={850} hero>
-              <div className="lw-save-box">
-                <div className="lw-save-eyebrow">Based on your current energy use</div>
-                <div className="lw-save-statement">
-                  Your bill could drop from <span className="lw-save-from">~{gbp(currentBill)}/mo</span> to just <span className="lw-save-to">~{gbp(billAfterSolar)}/mo</span>
-                </div>
-                <div className="lw-save-big">saving you ~{gbp(countMonthly)} every month</div>
-              </div>
-            </Reveal>
-            <Reveal delay={1050}>
-              <div className="lw-stat-row lw-stat-row--two">
-                <div className="lw-stat">
-                  <div className="lw-stat-value">{gbp(count20yr)}</div>
-                  <div className="lw-stat-l1">You could save {gbp(count20yr)} over 20 years</div>
-                  <div className="lw-stat-l2">Based on current energy rates</div>
-                </div>
-                <div className="lw-stat">
-                  <div className="lw-stat-value">{countBreak.toFixed(1)} years</div>
-                  <div className="lw-stat-l1">Your system pays for itself in {countBreak.toFixed(1)} years</div>
-                  <div className="lw-stat-l2">Then it's pure saving from there</div>
-                </div>
-              </div>
-            </Reveal>
-          </div>
+          {/* Section heading above tier cards */}
+          <Reveal delay={1050}>
+            <div className="lw-tier-heading-wrap">
+              <h2 className="lw-tier-heading">Choose your system</h2>
+              <p className="lw-tier-subheading">All systems include professional installation and MCS certification</p>
+            </div>
+          </Reveal>
 
-          {/* 3 — tier cards (stagger left → right, 80ms apart) */}
+          {/* Tier cards (stagger left → right, 80ms apart) */}
           <div className={'lw-tier-grid' + (selected ? ' has-selection' : '')}>
             {order.map((id, i) => (
-              <Reveal key={id} delay={1200 + i * 80}>
+              <Reveal key={id} delay={1100 + i * 80}>
                 <TierCard data={tiers[id]}
                   selected={selected === id}
                   pressing={pressing === id}
@@ -3043,8 +2994,8 @@
             ))}
           </div>
 
-          {/* 4 — full specification (expandable, collapsed by default) */}
-          <Reveal delay={1400}>
+          {/* Full specification (expandable, collapsed by default) */}
+          <Reveal delay={1350}>
             <div className="lw-spec-toggle-wrap">
               <button type="button" className="lw-spec-toggle" onClick={() => setSpecOpen((o) => !o)}>
                 Full system specification {specOpen ? '∧' : '∨'}
@@ -3061,8 +3012,8 @@
             </div>
           </Reveal>
 
-          {/* 5 — CTA */}
-          <Reveal delay={1600}>
+          {/* CTA */}
+          <Reveal delay={1500}>
             <button type="button" className="lw-cta lw-cta-quote" onClick={handleContinue}>
               Continue with this system →
             </button>
