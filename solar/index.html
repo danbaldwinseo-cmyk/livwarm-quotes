@@ -1276,9 +1276,13 @@
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22), 0 1px 4px rgba(0, 0, 0, 0.12);
     }
     /* dot indicators */
-    .lw-carousel-dots { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 16px 0 8px; }
-    .lw-dot { width: 8px; height: 8px; border-radius: 50%; background: #D0D0D0; transition: width 200ms ease, height 200ms ease, background 200ms ease; }
-    .lw-dot.is-active { width: 10px; height: 10px; background: var(--color-primary); }
+    /* labelled navigation indicators above the carousel */
+    .lw-carousel-nav { display: flex; justify-content: center; align-items: flex-start; gap: 32px; margin: 16px 0 20px; }
+    .lw-carousel-ind { background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .lw-ind-dot { width: 8px; height: 8px; border-radius: 50%; background: #D0D0D0; transition: width 200ms ease, height 200ms ease, background 200ms ease; }
+    .lw-carousel-ind.is-active .lw-ind-dot { width: 10px; height: 10px; background: var(--color-primary); }
+    .lw-ind-label { font-size: 0.75rem; font-weight: 500; color: #999; transition: color 200ms ease; }
+    .lw-carousel-ind.is-active .lw-ind-label { color: var(--color-primary); }
 
     /* ---------- Step 7 — product-showcase card ---------- */
     .lw-show-card {
@@ -1325,7 +1329,7 @@
     .lw-show-incl-head { font-size: 0.875rem; font-weight: 600; color: var(--color-dark); margin-bottom: 6px; text-align: left; }
     .lw-show-incl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; }
     .lw-show-incl-row { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--color-dark); }
-    .lw-show-incl-row svg { color: var(--color-cta-green); width: 16px; height: 16px; flex-shrink: 0; }
+    .lw-show-incl-row svg { color: var(--color-cta-green); width: 18px; height: 18px; stroke-width: 2.5; flex-shrink: 0; }
     /* diagonal gold "Recommended" corner ribbon (Performance card only) */
     .lw-show-ribbon {
       position: absolute; top: 24px; right: -38px; width: 160px; z-index: 2;
@@ -3163,6 +3167,16 @@
 
           {/* Tier carousel (Performance centred on load) */}
           <Reveal delay={1100}>
+            <div className="lw-carousel-nav">
+              {order.map((id, i) => (
+                <button key={id} type="button"
+                  className={'lw-carousel-ind' + (i === activeCard ? ' is-active' : '')}
+                  aria-label={tiers[id].name} onClick={() => setActiveCard(i)}>
+                  <span className="lw-ind-dot" />
+                  <span className="lw-ind-label">{tiers[id].name}</span>
+                </button>
+              ))}
+            </div>
             <div className="lw-carousel-wrap">
               <div className="lw-carousel" ref={carRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
                 <div className="lw-carousel-track" style={{ transform: 'translateX(' + trackX + 'px)' }}>
@@ -3194,11 +3208,6 @@
                          strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                   </button>
                 )}
-              </div>
-              <div className="lw-carousel-dots">
-                {order.map((id, i) => (
-                  <span key={id} className={'lw-dot' + (i === activeCard ? ' is-active' : '')} />
-                ))}
               </div>
             </div>
           </Reveal>
