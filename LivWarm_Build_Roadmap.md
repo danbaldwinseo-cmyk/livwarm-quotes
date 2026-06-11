@@ -35,11 +35,17 @@ The prompts in this document reflect the build as it actually exists. Key differ
 - Two-card layouts max-width 860px, content block max-width 1100px
 - All session prompts include a full context block - do not strip this out
 - Product content (images, descriptions) lives in solar-products.json - not hardcoded
-- Finance APR is 6.9% over 10 years - no VAT shown anywhere
+- Finance APR is 9.9% (not 6.9% - that figure was incorrect)
+- Default finance term shown to user is 180 months / 15 years (lowest monthly figure as headline)
+- Available loan terms: 36 / 48 / 60 / 84 / 120 / 180 months
+- Deposit cap: 30% (matches UKEM quote engine)
+- VAT: all prices are VAT-inclusive, shown with "All prices include VAT" footnote (matches UKEM)
+- Finance calculator is an inline expanded section within the payment step - not a separate modal
+- Shermin confirmed provider (platform: Stax). Integration method TBC - `// SHERMIN_INTEGRATION_POINT` in code.
 - "Prepare my quote" green button at end of Step 6, triggers loading overlay
 - Quote screen uses a carousel (not three-column tier cards) - Performance centred by default
 - Session 7 was split into 7A (upsell + micro-commitment) and 7B (contact details + finance modal)
-- Finance modal uses a self-contained calculator placeholder - Shermin embed drops in later
+- Finance calculator uses a self-contained placeholder - Shermin embed drops in once credentials confirmed
 
 ---
 
@@ -135,7 +141,7 @@ Spec and roadmap in Project Knowledge. Project instructions set.
 - CTA: "Continue with this system" - auto width, centred, max 380px
 - Footer trust bar only - no trust badge pills above CTA
 - solar-products.json sourced from WordPress media library via Claude in Chrome
-- Finance calculation at 6.9% APR confirmed from UKEM pricing
+- Finance APR corrected to 9.9% (was incorrectly noted as 6.9%) - confirmed from UKEM Stax/Shermin calculator
 
 **Polish pass prompt (paste into Claude Code when session tokens reset):**
 
@@ -321,7 +327,7 @@ Context from previous sessions (do not rebuild, just match):
 - Continue button: solid red pill, auto width, max 380px, centred, no red glow
 - Content block max-width 1100px, two-card layouts max-width 860px
 - Total steps: 9
-- Finance APR: 6.9%, 10-year term, no VAT shown anywhere
+- Finance APR: 9.9%, terms 36/48/60/84/120/180 months, default 180 months. All prices VAT-inclusive - "All prices include VAT" footnote on booking and payment screens
 - Quote screen uses a carousel - Performance centred by default, Essential left peek,
   Custom right peek. Each card has a three-component image row, what's included list,
   who_for summary, and price block.
@@ -396,7 +402,7 @@ Design:
   - If warranty was added: "5-Year Workmanship Guarantee included" with green tick - 0.875rem
   - Horizontal divider
   - Cash price: "£{total}" - 1.5rem, bold, #2D2D2D
-  - Monthly price: "or £{monthly}/mo est. at 6.9% APR" - 0.95rem, #E8323A
+  - Monthly price: "or £{monthly}/mo est. at 9.9% APR" - 0.95rem, #E8323A
   - If warranty added: prices reflect the +£199 addition
 - Below card: "Prices subject to survey and final system confirmation." - 0.75rem, #999, italic, centred
 
@@ -417,7 +423,7 @@ IMPORTANT NOTES:
 - Monthly figures: Math.round. Monthly payment: Math.ceil.
 - warrantyAdded state must persist into subsequent steps so it can be included
   in the Payaca payload and shown in the booking summary
-- No VAT shown anywhere
+- All prices VAT-inclusive - show "All prices include VAT" footnote on booking and payment screens
 - Match all existing CSS variables, spacing, and animation patterns exactly
 ```
 
@@ -449,7 +455,7 @@ Context from previous sessions (do not rebuild, just match):
 - Continue button: solid red pill, auto width, max 380px, centred, no red glow
 - Content block max-width 1100px
 - Total steps: 9
-- Finance APR: 6.9%, 10-year term, Math.ceil on monthly payment, no VAT shown anywhere
+- Finance APR: 9.9%, terms 36/48/60/84/120/180 months, default 180 months, Math.ceil on monthly payment. All prices VAT-inclusive - "All prices include VAT" footnote on booking and payment screens
 - warrantyAdded state is in app state from Session 7A - use it in the booking summary
 
 Session 7B goal - build Step 8 (contact details) only.
@@ -524,7 +530,7 @@ Price section:
 - "System price" label + "£{total}" value - label 0.875rem #4A4A4A, value 1rem bold #2D2D2D
 - If warrantyAdded: show "+£199 warranty" as a separate line item in small grey text
 - Monthly finance line: "or £{monthly}/mo" in red (#E8323A), 0.95rem
-- "at 6.9% APR, 10-year term" below monthly line - 0.75rem, #999
+- "at 9.9% APR, 15-year term" below monthly line - 0.75rem, #999
 - "Explore finance options" link - 0.875rem, red underlined, opens finance modal
 
 Horizontal divider
@@ -575,13 +581,13 @@ Deposit slider:
 
 Loan term selector:
 - Label: "Loan term"
-- Segmented control (not a dropdown): 5yr / 7yr / 10yr / 12yr / 15yr
-- Default: 10yr
+- Dropdown (matching UKEM pattern): 36 months / 48 months / 60 months / 84 months / 120 months / 180 months
+- Default: 15yr (180 months - shows lowest monthly figure as headline)
 - Active: red background, white text
 
 Live monthly payment:
 - Updates immediately on any change to slider or term
-- Formula: monthlyRate = APR / 12, where APR = 0.069
+- Formula: monthlyRate = APR / 12, where APR = 0.099
   monthlyPayment = Math.ceil(financeAmount × (monthlyRate × (1 + monthlyRate)^months)
   / ((1 + monthlyRate)^months - 1))
 - Display: "£{monthlyPayment} per month" - 2.25rem, bold, #E8323A, centred
@@ -590,7 +596,7 @@ Live monthly payment:
 FCA representative example (required - must be present and legible):
 - Small text block, 0.75rem, #666, border-top 1px solid #E5E5E5, padding-top 12px
 - "Representative example: Borrowing £{financeAmount} over {term} years
-  at 6.9% APR (fixed). Monthly repayments of £{monthlyPayment}.
+  at 9.9% APR (fixed). Monthly repayments of £{monthlyPayment}.
   Total amount repayable: £{totalRepayable}.
   Credit is subject to status and affordability."
 - All values update live with the calculator
@@ -606,10 +612,10 @@ FCA representative example (required - must be present and legible):
 
 Pay in full section (shown when "Pay in full" is active):
 - "Full system price" - large, bold, #2D2D2D: "£{total}"
-- Savings vs finance note: "Save £{financeSavingVsTotal} vs paying monthly over 10 years"
+- Savings vs finance note: "Save £{financeSavingVsTotal} vs paying monthly over 15 years"
   in small green text (#4CAF50)
-  (financeSavingVsTotal = (monthlyPayment10yr × 120) - total, where monthlyPayment10yr
-  uses 0 deposit and 10 years)
+  (financeSavingVsTotal = (monthlyPayment15yr × 180) - total, where monthlyPayment10yr
+  uses 0 deposit and 180 months)
 - "Proceed to payment →" red pill button - closes modal and advances to Step 9
 
 ---
@@ -617,7 +623,7 @@ Pay in full section (shown when "Pay in full" is active):
 IMPORTANT NOTES:
 - All currency: £X,XXX with commas, no decimals
 - Monthly figures: Math.round. Monthly payment: Math.ceil.
-- No VAT shown anywhere
+- All prices VAT-inclusive - show "All prices include VAT" footnote on booking and payment screens
 - preferred_date stored in ISO format YYYY-MM-DD
 - full_name, email, phone stored in app state for Payaca payload
 - Finance modal does NOT advance to Step 9 - only the "Confirm my booking" button
@@ -650,7 +656,7 @@ Context from previous sessions (do not rebuild, just match):
 - Continue button: solid red pill, auto width, max 380px, centred, no red glow
 - Content block max-width 1100px
 - Total steps: 9
-- Finance APR: 6.9%, 10-year term, no VAT shown anywhere
+- Finance APR: 9.9%, terms 36/48/60/84/120/180 months, default 180 months. All prices VAT-inclusive - "All prices include VAT" footnote on booking and payment screens
 - warrantyAdded, full_name, email, phone, preferred_date, product_selection,
   solar_panel_number, payment_total all in app state from previous steps
 
@@ -672,7 +678,7 @@ Session 8 goal - build Step 9 (payment) only:
 - On successful payment: POST all app state to WordPress AJAX endpoint
   (use placeholder URL /wp-admin/admin-ajax.php?action=livwarm_solar_lead for now)
 - On payment failure: show inline error, do not advance
-- No VAT shown anywhere
+- All prices VAT-inclusive - show "All prices include VAT" footnote on booking and payment screens
 ```
 
 **Done when:** Test card processes a payment in Stripe test mode and the success handler fires.

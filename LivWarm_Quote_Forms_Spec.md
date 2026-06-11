@@ -204,7 +204,7 @@ Lives at `/solar/solar-products.json`. Fetched by the React SPA on quote screen 
 | Google Maps JavaScript API | Satellite map display - visual confirmation only | Already licensed on LivWarm. No data extracted from map. |
 | Ideal Postcodes API | Postcode/address lookup dropdown | This is what UKEM uses - not Google Places. Confirm whether LivWarm has an account or needs one. |
 | Stripe | Payment processing | Card, Klarna, Revolut Pay. New account needed for LivWarm. |
-| Shermin Finance | Finance calculator | TBC: embed/API or link-out. Confirm with Shermin before build. APR confirmed at 6.9% over 10 years based on UKEM example (£9,095 = £97.18/mo). |
+| Shermin Finance (Stax) | Finance calculator | Confirmed finance provider. Platform is Stax (staxpay.co.uk). Integration method TBC - build self-contained calculator placeholder for now; Shermin embed drops in once credentials confirmed. APR: 9.9% fixed. Loan terms: 36/48/60/84/120/180 months. Deposit cap: 30%. Max loan: £25,000. |
 | Payaca | CRM / lead management | Direct API call via WordPress AJAX handler (PHP) on same WP install. Credentials and field maps already in existing PHP. No Zapier needed. |
 
 ### Google Solar API - NOT USED
@@ -222,14 +222,24 @@ UKEM uses Ideal Postcodes (api.ideal-postcodes.co.uk), not Google Places. Confir
 
 ### Finance calculation
 
-APR: 6.9% fixed. Term: 10 years (120 months). No VAT shown anywhere in the flow - UKEM does not show VAT and LivWarm follows the same approach.
+APR: 9.9% fixed (confirmed from UKEM Stax/Shermin calculator and UKEM quote engine).
+Available terms: 36 / 48 / 60 / 84 / 120 / 180 months.
+Default term shown to user: 180 months (15 years) - displays the lowest monthly figure as the headline number, matching UKEM approach.
+Deposit cap: 30% of system price (matches UKEM quote engine - not the 50% shown on the standalone Vercel calculator).
+Max loan amount: £25,000.
 
 ```javascript
-monthlyRate = 0.069 / 12
-months = 120
+monthlyRate = 0.099 / 12
+// Default display uses 180 months to show lowest monthly figure
 monthlyPayment = systemCost × (monthlyRate × (1 + monthlyRate)^months) / ((1 + monthlyRate)^months - 1)
 // Round up to nearest £ using Math.ceil
 ```
+
+### VAT treatment
+
+All prices are shown VAT-inclusive throughout the flow. A footnote "All prices include VAT" appears below the price breakdown on the booking summary and payment screens. This matches UKEM exactly. The prices in the PRICING constant are treated as VAT-inclusive - no multiplication applied.
+
+Note: VAT on solar PV and battery storage is 5% (reduced rate for energy-saving materials), not 20%. The spreadsheet prices are assumed to already include this 5% VAT. Awaiting confirmation from UKEM account manager - see Section 10 TBC items.
 
 ---
 
@@ -439,8 +449,8 @@ saving20yr = (annualSaving × 20) - systemCost
 monthlySaving = annualSaving / 12
 currentBill = (electricity_usage / 12) × gridImportRate
 billAfterSolar = Math.max(0, currentBill - monthlySaving)
-monthlyPayment = Math.ceil(systemCost × (monthlyRate × (1+monthlyRate)^120) / ((1+monthlyRate)^120 - 1))
-// monthlyRate = 0.069 / 12
+monthlyPayment = Math.ceil(systemCost × (monthlyRate × (1+monthlyRate)^180) / ((1+monthlyRate)^180 - 1))
+// monthlyRate = 0.099 / 12 (9.9% APR, default 180 months / 15 years for headline figure)
 ```
 
 #### Quote screen layout (reading order - top to bottom)
@@ -507,8 +517,8 @@ Left side:
 
 Right side - Booking Summary:
 - System selected, price breakdown, savings estimates, trust badges
-- "Explore finance options" → finance modal
-- Finance modal: 6.9% APR, up to 15 years, deposit slider 0-30%, FCA compliant representative example
+- "Explore finance options" → finance calculator (inline expanded section, matching UKEM pattern)
+- Finance calculator: 9.9% APR, terms 36/48/60/84/120/180 months, default 180 months, deposit slider 0-30%, live monthly payment, FCA compliant representative example, Shermin integration point clearly marked in code
 
 Data collected: `full_name`, `email`, `phone`, `preferred_date`, `payment_method`
 
@@ -607,7 +617,10 @@ Payload for Solar (form ID 3):
 
 | Item | Action needed |
 |------|--------------|
-| Shermin Finance integration | Call Shermin - confirm embed widget, API, or link-out. APR confirmed at 6.9% from UKEM example. |
+| Shermin Finance integration method | Confirmed provider (Stax). Integration method TBC - confirm embed widget, redirect, or API. `// SHERMIN_INTEGRATION_POINT` marked in Session 7B code. |
+| VAT - are spreadsheet prices inclusive? | Email sent to UKEM account manager. Assumption: prices are VAT-inclusive at 5%. Confirm before launch. |
+| LivWarm vs UKEM pricing discrepancy | £194 gap between spreadsheet (£9,342) and UKEM app (£9,148) for 11-panel + 10kW system. Email sent to UKEM account manager. |
+| Panel wattage - 445W vs 450W | Spreadsheet uses 445W, UKEM app uses 450W JA Solar. Confirm which applies to LivWarm installs. Email sent to UKEM account manager. |
 | Panel count lookup table | Confirm numbers with UKEM before launch |
 | Stripe account | Set up new Stripe account for LivWarm, obtain publishable key |
 | lbrand font licence | Confirm web embedding is covered by existing licence |
@@ -658,11 +671,11 @@ Payload for Solar (form ID 3):
 - No WooCommerce on site - custom post type with media library images
 - Battery products confirmed: Fox ESS EP6 (6kWh), EP12 (11.52kWh), EP18 (18kWh), Tesla Powerwall 13.5kWh
 - Panel image confirmed: 12-Solar-Panels.webp in media library
-- Finance APR confirmed at 6.9% from UKEM pricing example (£9,095 = £97.18/mo)
+- Finance APR was noted as 6.9% from UKEM pricing example - THIS WAS INCORRECT, see pre-session 7A notes below
 - "Preparing your quote" loading overlay designed and built - 5 messages, 1,200ms each, 6.8s total
 - Loading overlay uses labour illusion psychology - no actual processing, pure UX
 - Trust badge pills removed from above CTA - footer bar only
-- VAT: not shown anywhere in flow (matches UKEM approach)
+- VAT: not shown anywhere in flow - THIS WAS INCORRECT, see pre-session 7A notes below
 
 ### Quote Screen Polish Pass - PENDING (next session)
 
@@ -677,3 +690,24 @@ The following fixes are queued and ready to paste into Claude Code when session 
 - FIX 7: "Continue with this system" button - auto width, centred, not full width
 - FIX 8: Remove trust badge pills above CTA entirely
 - FIX 9: Help modal dynamic highlighting - `highlightField` prop, only relevant row highlighted
+
+### Pre-session 7A (June 2026) - Confirmed corrections, roadmap updated
+
+This session compared the UKEM quote engine and Stax/Shermin calculator via Claude in Chrome and corrected several errors in the spec. All prompts in the roadmap have been updated to reflect these corrections. Do NOT use the 6.9% or 10-year figures from earlier sessions.
+
+**Confirmed corrections:**
+
+- APR: **9.9%** (was 6.9% - the 6.9% figure was incorrect)
+- Default term shown to user: **180 months / 15 years** (displays lowest monthly figure as headline - matches UKEM)
+- Available terms: **36 / 48 / 60 / 84 / 120 / 180 months**
+- Deposit cap: **30%** (matches UKEM quote engine)
+- VAT: **"All prices include VAT"** footnote shown on booking summary and payment screens - prices treated as VAT-inclusive throughout (matches UKEM exactly)
+- Finance calculator style: **inline expanded section** within the payment step, not a separate modal (matches UKEM pattern)
+- Shermin is confirmed provider, platform is **Stax** (staxpay.co.uk). Integration method still TBC.
+
+**Three items pending UKEM account manager reply (email sent):**
+1. Are spreadsheet prices VAT-inclusive?
+2. Why is there a £194 gap between spreadsheet (£9,342) and UKEM app (£9,148) for 11 panels + 10kW?
+3. Spreadsheet uses 445W panels, UKEM app uses 450W - which applies to LivWarm?
+
+**Next action:** Session 7A in Claude Code - upsell modal and micro-commitment screen. Prompt is in roadmap. Run the quote screen polish pass first if not already done.

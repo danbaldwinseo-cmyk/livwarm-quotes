@@ -1476,6 +1476,107 @@
     .lw-cta-green:active:not(:disabled) { background: #388E3C; }
 
     /* ============================================================
+       Step 7A — Upsell modal + micro-commitment screen
+       ============================================================ */
+    /* Upsell modal — reuses .lw-modal-overlay / .lw-modal / .lw-modal-close,
+       just a touch wider than the help modal. */
+    .lw-modal--upsell { max-width: 560px; }
+    .lw-upsell-title { font-size: 1.5rem; font-weight: 800; color: var(--color-dark); margin: 0 0 4px; padding-right: 36px; }
+    .lw-upsell-sub { font-size: 0.9rem; color: var(--color-body); margin: 0 0 20px; }
+
+    /* Add-on row (toggle items) */
+    .lw-addon-row {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 16px; border: 1px solid var(--color-border);
+      border-radius: 12px; background: #fff; cursor: pointer; text-align: left;
+      transition: border-color 150ms ease, background 150ms ease;
+      margin-bottom: 12px; width: 100%; font-family: inherit;
+    }
+    .lw-addon-row:hover { border-color: rgba(232, 50, 58, 0.35); }
+    .lw-addon-row.is-on { border-color: var(--color-primary); background: rgba(232, 50, 58, 0.03); }
+    .lw-addon-main { flex: 1; min-width: 0; }
+    .lw-addon-label { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
+    .lw-addon-desc { font-size: 0.85rem; color: var(--color-body); margin-top: 2px; line-height: 1.4; }
+    .lw-addon-detail { font-size: 0.85rem; color: var(--color-body); margin-top: 8px; line-height: 1.45; }
+    .lw-addon-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0; }
+    .lw-addon-price { font-size: 0.95rem; font-weight: 800; color: var(--color-dark); white-space: nowrap; }
+    .lw-addon-price--enquire { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.04em; color: var(--color-body); }
+    .lw-addon-price--grant { color: #F57C00; }
+
+    /* BUS grant card */
+    .lw-addon-bus { background: rgba(255, 152, 0, 0.08); border: 1.5px solid rgba(255, 152, 0, 0.6); }
+    .lw-addon-bus:hover { border-color: rgba(255, 152, 0, 0.85); }
+    .lw-addon-bus.is-on { background: rgba(255, 152, 0, 0.14); border-color: rgba(255, 152, 0, 0.85); }
+    .lw-bus-badge {
+      display: inline-block; background: #F57C00; color: #fff;
+      font-size: 0.65rem; font-weight: 800; letter-spacing: 0.04em;
+      padding: 3px 8px; border-radius: 999px; margin-left: 8px; vertical-align: middle;
+    }
+
+    /* Toggle switch */
+    .lw-switch {
+      position: relative; width: 46px; height: 26px; border-radius: 999px;
+      background: #CFCFCF; border: none; flex-shrink: 0; padding: 0; cursor: pointer;
+      transition: background 160ms ease;
+    }
+    .lw-switch.is-on { background: var(--color-primary); }
+    .lw-switch::after {
+      content: ''; position: absolute; top: 3px; left: 3px;
+      width: 20px; height: 20px; border-radius: 50%; background: #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); transition: transform 160ms ease;
+    }
+    .lw-switch.is-on::after { transform: translateX(20px); }
+
+    /* Modal button row */
+    .lw-upsell-btns { display: flex; gap: 12px; margin-top: 24px; }
+    .lw-upsell-decline {
+      flex: 0 0 auto; padding: 14px 22px; background: #fff;
+      color: var(--color-body); border: 1.5px solid var(--color-body);
+      border-radius: 999px; font-family: inherit; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: background 150ms ease;
+    }
+    .lw-upsell-decline:hover { background: #F5F5F5; }
+    .lw-upsell-go {
+      flex: 1; padding: 14px 22px; background: var(--color-primary); color: #fff;
+      border: none; border-radius: 999px; font-family: inherit; font-size: 15px; font-weight: 800;
+      cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+    }
+    .lw-upsell-go:hover { background: #C8232B; transform: translateY(1px); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10); }
+    .lw-upsell-go:active { background: #B01E24; transform: translateY(2px); box-shadow: none; }
+
+    /* Micro-commitment screen */
+    .lw-micro { max-width: 600px; margin: 0 auto; text-align: center; }
+    .lw-micro-tick { color: var(--color-cta-green); display: block; margin: 8px auto 16px; }
+    .lw-micro-title { font-size: 1.75rem; font-weight: 800; color: var(--color-dark); margin: 0 0 24px; }
+    .lw-micro-card {
+      background: #fff; border: 1px solid var(--color-border); border-radius: 12px;
+      padding: 24px 32px; text-align: left; max-width: 600px; margin: 0 auto;
+    }
+    .lw-micro-tier { font-size: 1.1rem; font-weight: 700; color: var(--color-dark); }
+    .lw-micro-spec { font-size: 0.9rem; color: var(--color-body); margin-top: 4px; line-height: 1.4; }
+    .lw-micro-addon { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--color-dark); margin-top: 10px; }
+    .lw-micro-addon svg { flex-shrink: 0; }
+    .lw-micro-addon--green svg { color: var(--color-cta-green); }
+    .lw-micro-addon--orange svg { color: #F57C00; }
+    .lw-micro-div { border: none; border-top: 1px solid var(--color-border); margin: 18px 0; }
+    .lw-micro-cash { font-size: 1.5rem; font-weight: 800; color: var(--color-dark); line-height: 1.1; }
+    .lw-micro-monthly { font-size: 0.95rem; color: var(--color-primary); margin-top: 4px; font-weight: 600; }
+    .lw-micro-vat { font-size: 0.75rem; color: #999; margin-top: 6px; }
+    .lw-micro-note { font-size: 0.75rem; color: #999; font-style: italic; margin: 16px auto 0; }
+    .lw-micro-cta {
+      width: auto; min-width: 320px; max-width: 440px;
+      margin: 28px auto 0;
+    }
+    @media (max-width: 420px) { .lw-micro-cta { min-width: 0; width: 100%; } }
+    .lw-micro-edit {
+      display: block; margin: 16px auto 0; background: none; border: none;
+      color: var(--color-primary); font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    .lw-micro-edit:hover { color: var(--color-primary-light); }
+
+    /* ============================================================
        "Preparing your quote" transition overlay (Step 6 → Step 7)
        ============================================================ */
     .lw-prep {
@@ -3025,7 +3126,6 @@
       });
       const order = ['essential', 'performance', 'custom'];
       const [activeCard, setActiveCard] = useState(1);   // 0 Essential · 1 Performance · 2 Custom
-      const [busy, setBusy] = useState(false);
 
       // IMPROVEMENT 1 — product data (brand names, capacities, images, who_for).
       // Silent fallback to the hardcoded values if the fetch fails.
@@ -3116,14 +3216,27 @@
         'Manufacturer warranty',
       ];
 
+      // Panel + battery summary line for the micro-commitment screen
+      // (e.g. "10 × 445W panels + Fox ESS EP12 battery").
+      const microBatteryName = active.battery === 'none' ? null : (() => {
+        let bn = sumBatteryName;
+        if (!/battery|powerwall/i.test(bn)) bn += ' battery';
+        return bn;
+      })();
+      const panelBatteryLine = active.panels + ' × ' + PANEL_WATT + 'W panels'
+        + (microBatteryName ? ' + ' + microBatteryName : '');
+
       const handleContinue = () => {
-        if (busy) return;
-        setBusy(true);
+        // Opens the upsell modal (handled by the parent) — does not advance the step.
         onContinue({
           product_selection: `${active.name} Solar PV System`,
           solar_panel_number: String(active.panels),
-          payment_total: active.price.toFixed(2),
           battery: BATTERY_NAME[active.battery],
+          // extra fields the upsell modal + micro-commitment screen need
+          tierTitle: TIER_TITLES[active.id] || active.name,
+          panelBatteryLine,
+          price: active.price,        // base cash price (number, ex any add-ons)
+          monthly: active.monthly,    // finance monthly (number)
         });
       };
 
@@ -3218,6 +3331,145 @@
               Continue with this system →
             </button>
           </Reveal>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       STEP 7A — Upsell modal (overlay; does NOT advance the step)
+       ============================================================ */
+    function UpsellModal({ answers, sel, warrantyAdded, evChargerInterest, busGrantInterest,
+                           onToggleWarranty, onToggleEv, onToggleBus, onClose, onContinue }) {
+      // EV row only shows if they have an EV, or plan one within 5 years.
+      const showEv = answers.has_ev === 'Yes'
+        || answers.ev_plans === 'within_2_years'
+        || answers.ev_plans === 'maybe_2_5_years';
+      const propertyName = answers.address_line1 || 'Your property';
+      const anySelected = warrantyAdded || evChargerInterest || busGrantInterest;
+
+      return (
+        <div className="lw-modal-overlay" onClick={onClose}>
+          <div className="lw-modal lw-modal--upsell" role="dialog" aria-modal="true"
+               aria-label="Enhance Your System" onClick={(e) => e.stopPropagation()}>
+            <button className="lw-modal-close" onClick={onClose} aria-label="Close">×</button>
+            <h2 className="lw-upsell-title">Enhance Your System</h2>
+            <p className="lw-upsell-sub">Optional add-ons for your installation</p>
+
+            {/* 1 — EV Charger (conditional) */}
+            {showEv && (
+              <button type="button"
+                className={'lw-addon-row' + (evChargerInterest ? ' is-on' : '')}
+                onClick={onToggleEv} aria-pressed={evChargerInterest}>
+                <div className="lw-addon-main">
+                  <div className="lw-addon-label">EV Charger &amp; Installation</div>
+                  <div className="lw-addon-desc">Home charging added alongside your solar install.</div>
+                  {evChargerInterest && (
+                    <div className="lw-addon-detail">No more public charging queues. Wake up to a full battery every morning, powered by your own solar panels.</div>
+                  )}
+                </div>
+                <div className="lw-addon-right">
+                  <span className="lw-addon-price lw-addon-price--enquire">ENQUIRE</span>
+                  <span className={'lw-switch' + (evChargerInterest ? ' is-on' : '')} aria-hidden="true" />
+                </div>
+              </button>
+            )}
+
+            {/* 2 — Extended Warranty */}
+            <button type="button"
+              className={'lw-addon-row' + (warrantyAdded ? ' is-on' : '')}
+              onClick={onToggleWarranty} aria-pressed={warrantyAdded}>
+              <div className="lw-addon-main">
+                <div className="lw-addon-label">Extended Warranty</div>
+                <div className="lw-addon-desc">5-year workmanship guarantee</div>
+                {warrantyAdded && (
+                  <div className="lw-addon-detail">Extend your workmanship warranty from 2 years to 5 years for complete peace of mind.</div>
+                )}
+              </div>
+              <div className="lw-addon-right">
+                <span className="lw-addon-price">+£199</span>
+                <span className={'lw-switch' + (warrantyAdded ? ' is-on' : '')} aria-hidden="true" />
+              </div>
+            </button>
+
+            {/* 3 — BUS Heat Pump Grant */}
+            <button type="button"
+              className={'lw-addon-row lw-addon-bus' + (busGrantInterest ? ' is-on' : '')}
+              onClick={onToggleBus} aria-pressed={busGrantInterest}>
+              <div className="lw-addon-main">
+                <div className="lw-addon-label">Heat Pump Grant Eligible<span className="lw-bus-badge">£7,500 GRANT</span></div>
+                <div className="lw-addon-desc">{propertyName} could receive BUS grant — register interest</div>
+                {busGrantInterest && (
+                  <div className="lw-addon-detail">Receive a £7,500 grant towards a heat pump and have it work alongside your new solar installation. Select this option if you are interested — our team will contact you with further details.</div>
+                )}
+              </div>
+              <div className="lw-addon-right">
+                <span className="lw-addon-price lw-addon-price--grant">£7,500 GRANT</span>
+                <span className={'lw-switch' + (busGrantInterest ? ' is-on' : '')} aria-hidden="true" />
+              </div>
+            </button>
+
+            <div className="lw-upsell-btns">
+              <button type="button" className="lw-upsell-decline" onClick={onContinue}>Not this time</button>
+              <button type="button" className="lw-upsell-go" onClick={onContinue}>
+                {anySelected ? 'Continue: Add Selected →' : 'Continue →'}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       STEP 7A — Micro-commitment screen (system summary; no progress increment)
+       ============================================================ */
+    function MicroCommitment({ sel, warrantyAdded, evChargerInterest, busGrantInterest, onContinue, onEdit }) {
+      const total = sel.price + (warrantyAdded ? 199 : 0);
+      return (
+        <div className="lw-micro lw-fade-in">
+          <svg className="lw-micro-tick" width="48" height="48" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" /><path d="M8 12l3 3 5-6" />
+          </svg>
+          <h2 className="lw-micro-title">Here's your system summary</h2>
+
+          <div className="lw-micro-card">
+            <div className="lw-micro-tier">{sel.tierTitle}</div>
+            <div className="lw-micro-spec">{sel.panelBatteryLine}</div>
+
+            {warrantyAdded && (
+              <div className="lw-micro-addon lw-micro-addon--green">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                Extended Warranty (5-year)
+              </div>
+            )}
+            {evChargerInterest && (
+              <div className="lw-micro-addon lw-micro-addon--green">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                EV Charger &amp; Installation — subject to survey
+              </div>
+            )}
+            {busGrantInterest && (
+              <div className="lw-micro-addon lw-micro-addon--orange">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                BUS Heat Pump Grant — we'll be in touch
+              </div>
+            )}
+
+            <hr className="lw-micro-div" />
+            <div className="lw-micro-cash">{gbp(total)}</div>
+            <div className="lw-micro-monthly">or £{sel.monthly}/mo est. at 9.9% APR</div>
+            <div className="lw-micro-vat">All prices include VAT</div>
+          </div>
+
+          <p className="lw-micro-note">Prices subject to survey and final system confirmation.</p>
+
+          <button type="button" className="lw-cta lw-micro-cta" onClick={onContinue}>
+            This looks right - continue to booking →
+          </button>
+          <button type="button" className="lw-micro-edit" onClick={onEdit}>← Change system</button>
         </div>
       );
     }
@@ -3411,6 +3663,11 @@
       const frontierRef = useRef(0);
       // Step 6 → Step 7 "Preparing your quote" transition overlay (Improvement 5).
       const [preparing, setPreparing] = useState(false);
+      // Step 7A — upsell modal + micro-commitment screen (both overlay Step 7,
+      // no progress increment). quoteSel holds the chosen system for both.
+      const [quoteSel, setQuoteSel] = useState(null);
+      const [upsellOpen, setUpsellOpen] = useState(false);
+      const [microCommit, setMicroCommit] = useState(false);
       React.useEffect(() => {
         if (currentIndex >= frontierRef.current) {
           frontierRef.current = currentIndex;   // at/forward of the frontier → collapse
@@ -3472,6 +3729,13 @@
       // previous question/step (answers persist).
       const PREV_PHASE = { occupancy: 'orientation', orientation: 'map', map: 'address' };
       const handleBack = useCallback(() => {
+        // On the micro-commitment screen, back returns to the quote carousel (Step 7),
+        // not to Step 6.
+        if (currentIndex === QUOTE_INDEX && microCommit) {
+          setMicroCommit(false);
+          setUpsellOpen(false);
+          return;
+        }
         if (currentIndex === STEP6_INDEX && step6.phase !== 'address') {
           setStep6((s) => ({ ...s, phase: PREV_PHASE[s.phase] || 'address' }));
           return;
@@ -3479,7 +3743,7 @@
         setCurrentIndex((i) => Math.max(0, i - 1));
         setPressing(null);
         setBusy(false);
-      }, [currentIndex, step6.phase]);
+      }, [currentIndex, step6.phase, microCommit]);
 
       const handleRestart = useCallback(() => {
         setAnswers({});
@@ -3492,6 +3756,9 @@
         setStep6({ phase: 'address', postcode: '', address_line1: '', town: '', lat: null, lng: null, manual: false, looking: false, lookupError: '', suggestedDir: null, roof_orientation: '', occupants: '' });
         setBcExpanded(false);
         setPreparing(false);
+        setQuoteSel(null);
+        setUpsellOpen(false);
+        setMicroCommit(false);
         frontierRef.current = 0;
       }, []);
 
@@ -3617,20 +3884,56 @@
       // End of Step 6 — show the transition overlay; it reveals Step 7 itself.
       const handleStep6Complete = useCallback(() => setPreparing(true), []);
 
-      // Step 7 (quote) — store the chosen system (Payaca field names) and advance to
-      // Step 8 (placeholder for now).
+      // Step 7 (quote) — "Continue with this system" commits the chosen system
+      // (Payaca field names) and opens the upsell modal. The progress bar does NOT
+      // increment here; the modal is an overlay on Step 7.
       const handleQuoteContinue = useCallback((sel) => {
+        setQuoteSel(sel);
         setAnswers((prev) => {
           const next = {
             ...prev,
             product_selection: sel.product_selection,
             solar_panel_number: sel.solar_panel_number,
-            payment_total: sel.payment_total,
+            // base cash price + warranty add-on (£199) if it was previously toggled on
+            payment_total: (sel.price + (prev.warrantyAdded ? 199 : 0)).toFixed(2),
           };
           console.log('[LivWarm] Step 7 selection committed:', next);
           return next;
         });
+        setUpsellOpen(true);
+      }, []);
+
+      // Upsell toggles — warranty affects the cash total; EV charger + BUS grant are
+      // interest flags only. All three persist into answers (Payaca payload).
+      const handleToggleWarranty = useCallback(() => {
+        setAnswers((prev) => {
+          const on = !prev.warrantyAdded;
+          const base = quoteSel ? quoteSel.price : (Number(prev.payment_total) || 0);
+          return { ...prev, warrantyAdded: on, payment_total: (base + (on ? 199 : 0)).toFixed(2) };
+        });
+      }, [quoteSel]);
+      const handleToggleEvCharger = useCallback(() => {
+        setAnswers((prev) => ({ ...prev, evChargerInterest: !prev.evChargerInterest }));
+      }, []);
+      const handleToggleBusGrant = useCallback(() => {
+        setAnswers((prev) => ({ ...prev, busGrantInterest: !prev.busGrantInterest }));
+      }, []);
+
+      // Both modal buttons close the modal and show the micro-commitment screen.
+      const handleUpsellDone = useCallback(() => {
+        setUpsellOpen(false);
+        setMicroCommit(true);
+      }, []);
+
+      // Micro-commitment — "This looks right" advances to Step 8 (progress increments).
+      const handleMicroContinue = useCallback(() => {
+        setMicroCommit(false);
         setCurrentIndex(QUOTE_INDEX + 1);
+      }, []);
+      // "← Change system" returns to the quote carousel.
+      const handleMicroEdit = useCallback(() => {
+        setMicroCommit(false);
+        setUpsellOpen(false);
       }, []);
 
       // Screen routing across steps.
@@ -3802,8 +4105,18 @@
                       onComplete={handleStep6Complete}
                     />
                   )}
-                  {onQuote && (
+                  {onQuote && !microCommit && (
                     <QuoteStep answers={answers} onContinue={handleQuoteContinue} />
+                  )}
+                  {onQuote && microCommit && quoteSel && (
+                    <MicroCommitment
+                      sel={quoteSel}
+                      warrantyAdded={!!answers.warrantyAdded}
+                      evChargerInterest={!!answers.evChargerInterest}
+                      busGrantInterest={!!answers.busGrantInterest}
+                      onContinue={handleMicroContinue}
+                      onEdit={handleMicroEdit}
+                    />
                   )}
                   {isComplete && <StepComplete answers={answers} onRestart={handleRestart} />}
                 </React.Fragment>
@@ -3812,6 +4125,20 @@
           </main>
           <Footer />
           {showHelp && <HelpModal caption={showHelp.caption} highlightField={showHelp.highlightField} onClose={() => setShowHelp(null)} />}
+          {upsellOpen && quoteSel && (
+            <UpsellModal
+              answers={answers}
+              sel={quoteSel}
+              warrantyAdded={!!answers.warrantyAdded}
+              evChargerInterest={!!answers.evChargerInterest}
+              busGrantInterest={!!answers.busGrantInterest}
+              onToggleWarranty={handleToggleWarranty}
+              onToggleEv={handleToggleEvCharger}
+              onToggleBus={handleToggleBusGrant}
+              onClose={() => setUpsellOpen(false)}
+              onContinue={handleUpsellDone}
+            />
+          )}
           {preparing && (
             <PrepareOverlay
               onReveal={() => setCurrentIndex(QUOTE_INDEX)}
