@@ -1484,29 +1484,88 @@
     .lw-upsell-title { font-size: 1.5rem; font-weight: 800; color: var(--color-dark); margin: 0 0 4px; padding-right: 36px; }
     .lw-upsell-sub { font-size: 0.9rem; color: var(--color-body); margin: 0 0 20px; }
 
-    /* Add-on row (toggle items) */
+    /* Add-on card — same three-state visual language as the form answer cards
+       (raised default → sinking hover w/ shimmer → depressed selected). */
     .lw-addon-row {
-      display: flex; align-items: flex-start; gap: 16px;
-      padding: 16px; border: 1px solid var(--color-border);
-      border-radius: 12px; background: #fff; cursor: pointer; text-align: left;
-      transition: border-color 150ms ease, background 150ms ease;
-      margin-bottom: 12px; width: 100%; font-family: inherit;
+      position: relative;
+      overflow: hidden;                              /* clip shimmer + dot texture to edges */
+      display: grid;
+      grid-template-columns: 1fr auto;
+      column-gap: 16px;
+      padding: 20px 24px;
+      width: 100%;
+      margin-bottom: 12px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09);   /* DEFAULT */
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, border-color 150ms ease;
     }
-    .lw-addon-row:hover { border-color: rgba(232, 50, 58, 0.35); }
-    .lw-addon-row.is-on { border-color: var(--color-primary); background: rgba(232, 50, 58, 0.03); }
-    .lw-addon-main { flex: 1; min-width: 0; }
-    .lw-addon-label { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
-    .lw-addon-desc { font-size: 0.85rem; color: var(--color-body); margin-top: 2px; line-height: 1.4; }
-    .lw-addon-detail { font-size: 0.85rem; color: var(--color-body); margin-top: 8px; line-height: 1.45; }
-    .lw-addon-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0; }
-    .lw-addon-price { font-size: 0.95rem; font-weight: 800; color: var(--color-dark); white-space: nowrap; }
-    .lw-addon-price--enquire { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.04em; color: var(--color-body); }
-    .lw-addon-price--grant { color: #F57C00; }
+    /* Dot texture, lower-right corner */
+    .lw-addon-row::before {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 65%; height: 65%;
+      background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
+      background-size: 10px 10px;
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      pointer-events: none;
+      border-radius: inherit;
+      z-index: 0;
+      transition: opacity 150ms ease;
+    }
+    /* Hover shimmer sweep (single pass, plays once on enter) */
+    .lw-addon-row::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.65) 50%, transparent 80%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .lw-addon-row:not(.is-on):hover::after { animation: shimmer-sweep 500ms ease-out forwards; }
+    /* keep all card content above the texture/shimmer layers */
+    .lw-addon-row > * { position: relative; z-index: 1; }
+    /* HOVER (not selected) — sinks slightly, shadow reduces */
+    .lw-addon-row:not(.is-on):hover {
+      transform: translateY(1px);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    }
+    /* SELECTED — depressed feel, red wash + border, red dot texture */
+    .lw-addon-row.is-on {
+      background: rgba(232, 50, 58, 0.03);
+      border: 2px solid rgba(232, 50, 58, 0.9);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13);
+    }
+    .lw-addon-row.is-on::before { background-image: radial-gradient(circle, rgba(232, 50, 58, 0.25) 1px, transparent 1px); }
 
-    /* BUS grant card */
-    .lw-addon-bus { background: rgba(255, 152, 0, 0.08); border: 1.5px solid rgba(255, 152, 0, 0.6); }
-    .lw-addon-bus:hover { border-color: rgba(255, 152, 0, 0.85); }
-    .lw-addon-bus.is-on { background: rgba(255, 152, 0, 0.14); border-color: rgba(255, 152, 0, 0.85); }
+    /* Card layout — label/price top row, desc/toggle second row, selling copy full-width */
+    .lw-addon-label { grid-column: 1; grid-row: 1; font-size: 1rem; font-weight: 700; color: var(--color-dark); }
+    .lw-addon-pricearea { grid-column: 2; grid-row: 1; justify-self: end; text-align: right; white-space: nowrap; }
+    .lw-addon-desc { grid-column: 1; grid-row: 2; font-size: 0.875rem; color: var(--color-body); margin-top: 2px; line-height: 1.4; }
+    .lw-addon-row .lw-switch { grid-column: 2; grid-row: 2; justify-self: end; align-self: start; margin-top: 8px; }
+    .lw-addon-sell { grid-column: 1 / -1; grid-row: 3; font-size: 0.875rem; color: var(--color-body); margin-top: 10px; line-height: 1.45; }
+
+    /* Price/badge variants */
+    .lw-addon-price { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
+    .lw-addon-price--enquire { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-body); }
+    .lw-addon-grant-val { font-size: 1rem; font-weight: 800; color: #F57C00; line-height: 1.1; }
+    .lw-addon-grant-sub { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #F57C00; }
+
+    /* BUS grant card — orange tint retained in every state */
+    .lw-addon-bus { background: rgba(255, 152, 0, 0.05); border: 1.5px solid rgba(255, 152, 0, 0.5); }
+    .lw-addon-bus.is-on {
+      background: rgba(255, 152, 0, 0.08);
+      border: 2px solid rgba(255, 152, 0, 0.8);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13);
+    }
+    .lw-addon-bus.is-on::before { background-image: radial-gradient(circle, rgba(255, 152, 0, 0.25) 1px, transparent 1px); }
     .lw-bus-badge {
       display: inline-block; background: #F57C00; color: #fff;
       font-size: 0.65rem; font-weight: 800; letter-spacing: 0.04em;
@@ -3344,7 +3403,6 @@
       const showEv = answers.has_ev === 'Yes'
         || answers.ev_plans === 'within_2_years'
         || answers.ev_plans === 'maybe_2_5_years';
-      const propertyName = answers.address_line1 || 'Your property';
       const anySelected = warrantyAdded || evChargerInterest || busGrantInterest;
 
       return (
@@ -3355,57 +3413,42 @@
             <h2 className="lw-upsell-title">Enhance Your System</h2>
             <p className="lw-upsell-sub">Optional add-ons for your installation</p>
 
-            {/* 1 — EV Charger (conditional) */}
+            {/* 1 - EV Charger (conditional) */}
             {showEv && (
               <button type="button"
                 className={'lw-addon-row' + (evChargerInterest ? ' is-on' : '')}
                 onClick={onToggleEv} aria-pressed={evChargerInterest}>
-                <div className="lw-addon-main">
-                  <div className="lw-addon-label">EV Charger &amp; Installation</div>
-                  <div className="lw-addon-desc">Home charging added alongside your solar install.</div>
-                  {evChargerInterest && (
-                    <div className="lw-addon-detail">No more public charging queues. Wake up to a full battery every morning, powered by your own solar panels.</div>
-                  )}
-                </div>
-                <div className="lw-addon-right">
-                  <span className="lw-addon-price lw-addon-price--enquire">ENQUIRE</span>
-                  <span className={'lw-switch' + (evChargerInterest ? ' is-on' : '')} aria-hidden="true" />
-                </div>
+                <div className="lw-addon-label">EV Charger &amp; Installation</div>
+                <div className="lw-addon-pricearea"><span className="lw-addon-price--enquire">Enquire</span></div>
+                <div className="lw-addon-desc">Home charging added alongside your solar install.</div>
+                <span className={'lw-switch' + (evChargerInterest ? ' is-on' : '')} aria-hidden="true" />
+                <div className="lw-addon-sell">No more public charging queues. Wake up to a full battery every morning, powered by your own solar panels. Added alongside your solar install with no extra disruption.</div>
               </button>
             )}
 
-            {/* 2 — Extended Warranty */}
+            {/* 2 - Extended Warranty */}
             <button type="button"
               className={'lw-addon-row' + (warrantyAdded ? ' is-on' : '')}
               onClick={onToggleWarranty} aria-pressed={warrantyAdded}>
-              <div className="lw-addon-main">
-                <div className="lw-addon-label">Extended Warranty</div>
-                <div className="lw-addon-desc">5-year workmanship guarantee</div>
-                {warrantyAdded && (
-                  <div className="lw-addon-detail">Extend your workmanship warranty from 2 years to 5 years for complete peace of mind.</div>
-                )}
-              </div>
-              <div className="lw-addon-right">
-                <span className="lw-addon-price">+£199</span>
-                <span className={'lw-switch' + (warrantyAdded ? ' is-on' : '')} aria-hidden="true" />
-              </div>
+              <div className="lw-addon-label">Extended Warranty</div>
+              <div className="lw-addon-pricearea"><span className="lw-addon-price">+£199</span></div>
+              <div className="lw-addon-desc">5-year workmanship guarantee</div>
+              <span className={'lw-switch' + (warrantyAdded ? ' is-on' : '')} aria-hidden="true" />
+              <div className="lw-addon-sell">Extend your workmanship warranty from 2 years to 5 years for complete peace of mind. Covers all labour and installation work - included in your finance payments if you choose to spread the cost.</div>
             </button>
 
-            {/* 3 — BUS Heat Pump Grant */}
+            {/* 3 - Heat Pump Government Grant */}
             <button type="button"
               className={'lw-addon-row lw-addon-bus' + (busGrantInterest ? ' is-on' : '')}
               onClick={onToggleBus} aria-pressed={busGrantInterest}>
-              <div className="lw-addon-main">
-                <div className="lw-addon-label">Heat Pump Grant Eligible<span className="lw-bus-badge">£7,500 GRANT</span></div>
-                <div className="lw-addon-desc">{propertyName} could receive BUS grant — register interest</div>
-                {busGrantInterest && (
-                  <div className="lw-addon-detail">Receive a £7,500 grant towards a heat pump and have it work alongside your new solar installation. Select this option if you are interested — our team will contact you with further details.</div>
-                )}
+              <div className="lw-addon-label">Heat Pump Government Grant<span className="lw-bus-badge">£7,500 GRANT</span></div>
+              <div className="lw-addon-pricearea">
+                <div className="lw-addon-grant-val">£7,500</div>
+                <div className="lw-addon-grant-sub">Grant</div>
               </div>
-              <div className="lw-addon-right">
-                <span className="lw-addon-price lw-addon-price--grant">£7,500 GRANT</span>
-                <span className={'lw-switch' + (busGrantInterest ? ' is-on' : '')} aria-hidden="true" />
-              </div>
+              <div className="lw-addon-desc">You could get a £7,500 government grant towards a heat pump - want to know more?</div>
+              <span className={'lw-switch' + (busGrantInterest ? ' is-on' : '')} aria-hidden="true" />
+              <div className="lw-addon-sell">Replace your boiler with a heat pump and get up to £7,500 back from the government. Many solar customers qualify - our team will check your eligibility after your solar booking.</div>
             </button>
 
             <div className="lw-upsell-btns">
