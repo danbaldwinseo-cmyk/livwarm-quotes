@@ -1588,6 +1588,8 @@
     .lw-addon-price--enquire { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-body); }
     .lw-addon-grant-val { font-size: 1rem; font-weight: 800; color: #4CAF50; line-height: 1.1; }
     .lw-addon-grant-sub { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #4CAF50; }
+    /* green "Get £7,500" suffix in the grant card heading (inherits bold + size from .lw-addon-label) */
+    .lw-addon-label-grant { color: #4CAF50; }
 
     /* Heat Pump Government Grant card — green tint + green dot texture in every state */
     .lw-addon-bus { background: rgba(76, 175, 80, 0.06); border: 1.5px solid rgba(76, 175, 80, 0.5); }
@@ -3488,7 +3490,7 @@
               className={'lw-addon-row lw-addon-bus' + (busGrantInterest ? ' is-on' : '')}
               onClick={onToggleBus} aria-pressed={busGrantInterest}>
               <div className="lw-addon-text">
-                <div className="lw-addon-label">Heat Pump Government Grant<span className="lw-bus-badge">Get £7,500</span></div>
+                <div className="lw-addon-label">Heat Pump Government Grant<span className="lw-addon-label-grant"> – Get £7,500</span></div>
                 <div className="lw-addon-desc">You could get a £7,500 government grant towards a heat pump - want to know more?</div>
               </div>
               <div className="lw-addon-right">
