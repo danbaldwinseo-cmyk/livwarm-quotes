@@ -1580,11 +1580,12 @@
     }
     .lw-addon-bus.is-on::before { background-image: radial-gradient(circle, rgba(255, 152, 0, 0.5) 1px, transparent 1px); }
     .lw-bus-badge {
-      display: inline-flex; align-items: center; background: #F57C00; color: #fff;
-      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; line-height: 1.4;
-      padding: 4px 12px; border-radius: 20px; margin-left: 10px;
+      display: inline-flex; flex-direction: column; align-items: center; background: #F57C00; color: #fff;
+      padding: 5px 12px; border-radius: 20px; margin-left: 10px;
       white-space: nowrap; vertical-align: middle;
     }
+    .lw-bus-badge-num { font-weight: 800; font-size: 0.85rem; line-height: 1.2; display: block; }
+    .lw-bus-badge-lbl { font-weight: 600; font-size: 0.65rem; letter-spacing: 0.05em; line-height: 1.2; display: block; opacity: 0.9; }
 
     /* Toggle switch */
     .lw-switch {
@@ -3464,7 +3465,7 @@
               className={'lw-addon-row lw-addon-bus' + (busGrantInterest ? ' is-on' : '')}
               onClick={onToggleBus} aria-pressed={busGrantInterest}>
               <div className="lw-addon-text">
-                <div className="lw-addon-label">Heat Pump Government Grant<span className="lw-bus-badge">£7,500 GRANT</span></div>
+                <div className="lw-addon-label">Heat Pump Government Grant<span className="lw-bus-badge"><span className="lw-bus-badge-num">£7,500</span><span className="lw-bus-badge-lbl">GRANT</span></span></div>
                 <div className="lw-addon-desc">You could get a £7,500 government grant towards a heat pump - want to know more?</div>
               </div>
               <div className="lw-addon-right">
