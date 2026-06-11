@@ -337,7 +337,7 @@
       padding: 40px 32px;
       cursor: pointer;
       text-align: center;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 0 22px 10px rgba(255, 255, 255, 0.92);   /* DEFAULT */
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 0 22px 12px rgba(255, 255, 255, 0.95);   /* DEFAULT */
       transition: transform var(--transition),
                   box-shadow var(--transition),
                   background var(--transition),
@@ -364,6 +364,10 @@
       height: 65%;
       background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
       background-size: 10px 10px;
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
       pointer-events: none;
       border-radius: inherit;
       z-index: 0;
@@ -424,7 +428,7 @@
     .lw-card:not(.is-selected):not(.is-pressing):hover {
       background: #EAEAEA;
       transform: translateY(2px);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22), inset 0 0 16px 6px rgba(255, 255, 255, 0.75);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22), inset 0 0 18px 8px rgba(255, 255, 255, 0.80);
       transition: all 150ms ease;
     }
     /* PRESS — :active (mouse held) and .is-pressing (JS-held min 80ms for touch) */
@@ -439,9 +443,8 @@
     .lw-card.is-selected {
       background: #ebebeb;
       border: 1px solid rgba(0, 0, 0, 0.12);
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.10),
-                  inset 0 1px 3px rgba(0, 0, 0, 0.06),
-                  inset 0 0 22px 10px rgba(232, 50, 58, 0.07);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
+                  inset 0 0 22px 12px rgba(232, 50, 58, 0.07);
       transform: translateY(1px);
       animation: card-press 350ms ease-out forwards;
     }
@@ -461,9 +464,8 @@
       100% {
         transform: translateY(1px);
         background: #ebebeb;
-        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.10),
-                    inset 0 1px 3px rgba(0, 0, 0, 0.06),
-                    inset 0 0 22px 10px rgba(232, 50, 58, 0.07);
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
+                    inset 0 0 22px 12px rgba(232, 50, 58, 0.07);
       }
     }
     .lw-card.is-selected .lw-card-icon,
@@ -680,7 +682,7 @@
       transition: all 150ms ease;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04), inset 0 0 22px 10px rgba(255, 255, 255, 0.92);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04), inset 0 0 22px 12px rgba(255, 255, 255, 0.95);
     }
     .lw-toggle-opt::before {
       content: '';
@@ -691,6 +693,10 @@
       height: 65%;
       background-image: radial-gradient(circle, #d8d8d8 1px, transparent 1px);
       background-size: 10px 10px;
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
       pointer-events: none;
       border-radius: inherit;
       z-index: 0;
@@ -705,10 +711,8 @@
       color: #E8323A;
       font-weight: 700;
       box-shadow:
-        0 0 0 3px rgba(232, 50, 58, 0.08),
-        0 0 16px rgba(232, 50, 58, 0.12),
-        inset 0 0 20px rgba(232, 50, 58, 0.04),
-        inset 0 0 22px 10px rgba(232, 50, 58, 0.07);
+        inset 0 2px 8px rgba(0, 0, 0, 0.13),
+        inset 0 0 22px 12px rgba(232, 50, 58, 0.07);
     }
     .lw-toggle-opt.selected::before {
       background-image: radial-gradient(circle, rgba(232, 50, 58, 0.25) 1px, transparent 1px);
@@ -718,7 +722,7 @@
       border-color: #bbb;
       background: #f9f9f9;
       color: #222;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04), inset 0 0 16px 6px rgba(255, 255, 255, 0.75);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04), inset 0 0 18px 8px rgba(255, 255, 255, 0.80);
     }
     /* full-width solid red pill CTA */
     .lw-cta {
@@ -1289,7 +1293,7 @@
       background: var(--color-card-bg); border: 1px solid var(--color-border);
       border-radius: var(--radius-card); padding: 24px 28px;
       display: flex; flex-direction: column; gap: 14px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 0 22px 10px rgba(255, 255, 255, 0.92);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 0 22px 12px rgba(255, 255, 255, 0.95);
       transition: box-shadow 200ms ease, border-color 200ms ease;
     }
     /* dot texture lower-right — identical to the answer cards throughout the form */
@@ -1297,11 +1301,15 @@
       content: ''; position: absolute; bottom: 0; right: 0; width: 65%; height: 65%;
       background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
       background-size: 10px 10px;
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
       pointer-events: none; border-radius: inherit; z-index: 0;
     }
     .lw-show-card > * { position: relative; z-index: 1; }
     /* Performance active — red border + soft red elevation (no background tint) */
-    .lw-show-card--performance.is-active { border: 2px solid var(--color-primary); box-shadow: 0 8px 32px rgba(232, 50, 58, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08), inset 0 0 22px 10px rgba(232, 50, 58, 0.07); }
+    .lw-show-card--performance.is-active { border: 2px solid var(--color-primary); box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 22px 12px rgba(232, 50, 58, 0.07); }
     /* header (left-aligned) */
     .lw-show-head { text-align: left; }
     .lw-show-title { font-size: 1.4rem; font-weight: 700; color: var(--color-dark); line-height: 1.2; }
@@ -1495,7 +1503,7 @@
       background: #fff;
       border: 1px solid var(--color-border);
       border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 0 22px 10px rgba(255, 255, 255, 0.92);   /* DEFAULT */
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 0 22px 12px rgba(255, 255, 255, 0.95);   /* DEFAULT */
       cursor: pointer;
       text-align: left;
       font-family: inherit;
@@ -1509,35 +1517,28 @@
       width: 65%; height: 65%;
       background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
       background-size: 10px 10px;
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
       pointer-events: none;
       border-radius: inherit;
       z-index: 0;
       transition: opacity 150ms ease;
     }
-    /* Hover shimmer sweep (single pass, plays once on enter) */
-    .lw-addon-row::after {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 60%; height: 100%;
-      background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.65) 50%, transparent 80%);
-      pointer-events: none;
-      z-index: 0;
-    }
-    .lw-addon-row:not(.is-on):hover::after { animation: shimmer-sweep 500ms ease-out forwards; }
-    /* keep all card content above the texture/shimmer layers */
+    /* keep all card content above the texture layer */
     .lw-addon-row > * { position: relative; z-index: 1; }
     /* HOVER (not selected) — surface darkens slightly + shadow reduces */
     .lw-addon-row:not(.is-on):hover {
       background: rgba(0, 0, 0, 0.025);
       transform: translateY(1px);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), inset 0 0 16px 6px rgba(255, 255, 255, 0.75);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), inset 0 0 18px 8px rgba(255, 255, 255, 0.80);
     }
     /* SELECTED — depressed feel, red wash + border, red dot texture */
     .lw-addon-row.is-on {
       background: rgba(232, 50, 58, 0.03);
       border: 2px solid rgba(232, 50, 58, 0.9);
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 22px 10px rgba(232, 50, 58, 0.07);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 22px 12px rgba(232, 50, 58, 0.07);
     }
     .lw-addon-row.is-on::before { background-image: radial-gradient(circle, rgba(232, 50, 58, 0.25) 1px, transparent 1px); }
 
@@ -1558,12 +1559,12 @@
 
     /* BUS grant card — orange tint + orange dot texture retained in every state */
     .lw-addon-bus { background: rgba(255, 152, 0, 0.05); border: 1.5px solid rgba(255, 152, 0, 0.5); }
-    .lw-addon-bus::before { background-image: radial-gradient(circle, rgba(255, 152, 0, 0.35) 1px, transparent 1px); }
+    .lw-addon-bus::before { background-image: radial-gradient(circle, rgba(255, 152, 0, 0.3) 1px, transparent 1px); }
     .lw-addon-bus:not(.is-on):hover { background: rgba(255, 152, 0, 0.09); }
     .lw-addon-bus.is-on {
       background: rgba(255, 152, 0, 0.08);
       border: 2px solid rgba(255, 152, 0, 0.8);
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 22px 10px rgba(255, 152, 0, 0.07);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.10), inset 0 0 22px 12px rgba(255, 152, 0, 0.08);
     }
     .lw-addon-bus.is-on::before { background-image: radial-gradient(circle, rgba(255, 152, 0, 0.5) 1px, transparent 1px); }
     .lw-bus-badge {
