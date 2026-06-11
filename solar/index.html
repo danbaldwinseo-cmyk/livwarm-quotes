@@ -364,8 +364,8 @@
       height: 65%;
       background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
       background-size: 10px 10px;
-      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
-      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 35%, rgba(0, 0, 0, 0.08) 60%, transparent 75%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 35%, rgba(0, 0, 0, 0.08) 60%, transparent 75%);
       pointer-events: none;
       border-radius: inherit;
       z-index: 0;
@@ -691,8 +691,8 @@
       height: 65%;
       background-image: radial-gradient(circle, #d8d8d8 1px, transparent 1px);
       background-size: 10px 10px;
-      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
-      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 35%, rgba(0, 0, 0, 0.08) 60%, transparent 75%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 35%, rgba(0, 0, 0, 0.08) 60%, transparent 75%);
       pointer-events: none;
       border-radius: inherit;
       z-index: 0;
@@ -1298,8 +1298,8 @@
       content: ''; position: absolute; bottom: 0; right: 0; width: 65%; height: 65%;
       background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
       background-size: 10px 10px;
-      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
-      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 35%, rgba(0, 0, 0, 0.08) 60%, transparent 75%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 35%, rgba(0, 0, 0, 0.08) 60%, transparent 75%);
       pointer-events: none; border-radius: inherit; z-index: 0;
     }
     .lw-show-card > * { position: relative; z-index: 1; }
@@ -1480,9 +1480,9 @@
        ============================================================ */
     /* Upsell modal — reuses .lw-modal-overlay / .lw-modal / .lw-modal-close,
        just a touch wider than the help modal. */
-    .lw-modal--upsell { max-width: 560px; }
-    .lw-upsell-title { font-size: 1.5rem; font-weight: 800; color: var(--color-dark); margin: 0 0 4px; padding-right: 36px; }
-    .lw-upsell-sub { font-size: 0.9rem; color: var(--color-body); margin: 0 0 20px; }
+    .lw-modal--upsell { max-width: 620px; padding: 32px; }
+    .lw-upsell-title { font-size: 1.75rem; font-weight: 700; color: var(--color-dark); margin: 0 0 4px; padding-right: 36px; }
+    .lw-upsell-sub { font-size: 0.95rem; color: var(--color-body); margin: 0 0 24px; }
 
     /* Add-on card — same three-state visual language as the form answer cards
        (raised default → sinking hover w/ shimmer → depressed selected). */
@@ -1494,7 +1494,7 @@
       column-gap: 16px;
       padding: 20px 24px;
       width: 100%;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       background: #fff;
       border: 1px solid var(--color-border);
       border-radius: 12px;
@@ -1512,8 +1512,8 @@
       width: 65%; height: 65%;
       background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
       background-size: 10px 10px;
-      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
-      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 35%, rgba(0, 0, 0, 0.08) 60%, transparent 75%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 35%, rgba(0, 0, 0, 0.08) 60%, transparent 75%);
       pointer-events: none;
       border-radius: inherit;
       z-index: 0;
@@ -1532,8 +1532,9 @@
     .lw-addon-row:not(.is-on):hover::after { animation: shimmer-sweep 500ms ease-out forwards; }
     /* keep all card content above the texture/shimmer layers */
     .lw-addon-row > * { position: relative; z-index: 1; }
-    /* HOVER (not selected) — sinks slightly, shadow reduces */
+    /* HOVER (not selected) — surface darkens slightly + shadow reduces */
     .lw-addon-row:not(.is-on):hover {
+      background: rgba(0, 0, 0, 0.025);
       transform: translateY(1px);
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
     }
@@ -1545,12 +1546,14 @@
     }
     .lw-addon-row.is-on::before { background-image: radial-gradient(circle, rgba(232, 50, 58, 0.25) 1px, transparent 1px); }
 
-    /* Card layout — label/price top row, desc/toggle second row, selling copy full-width */
-    .lw-addon-label { grid-column: 1; grid-row: 1; font-size: 1rem; font-weight: 700; color: var(--color-dark); }
-    .lw-addon-pricearea { grid-column: 2; grid-row: 1; justify-self: end; text-align: right; white-space: nowrap; }
-    .lw-addon-desc { grid-column: 1; grid-row: 2; font-size: 0.875rem; color: var(--color-body); margin-top: 2px; line-height: 1.4; }
-    .lw-addon-row .lw-switch { grid-column: 2; grid-row: 2; justify-self: end; align-self: start; margin-top: 8px; }
-    .lw-addon-sell { grid-column: 1 / -1; grid-row: 3; font-size: 0.875rem; color: var(--color-body); margin-top: 10px; line-height: 1.45; }
+    /* Card layout — label+desc stacked left, price+toggle a tight pair top-right,
+       selling copy full-width below both columns. */
+    .lw-addon-text { grid-column: 1; grid-row: 1; min-width: 0; }
+    .lw-addon-right { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .lw-addon-label { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
+    .lw-addon-desc { font-size: 0.875rem; color: var(--color-body); margin-top: 2px; line-height: 1.4; }
+    .lw-addon-pricearea { text-align: right; white-space: nowrap; }
+    .lw-addon-sell { grid-column: 1 / -1; grid-row: 2; font-size: 0.875rem; color: var(--color-body); margin-top: 10px; line-height: 1.45; }
 
     /* Price/badge variants */
     .lw-addon-price { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
@@ -1558,14 +1561,16 @@
     .lw-addon-grant-val { font-size: 1rem; font-weight: 800; color: #F57C00; line-height: 1.1; }
     .lw-addon-grant-sub { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #F57C00; }
 
-    /* BUS grant card — orange tint retained in every state */
+    /* BUS grant card — orange tint + orange dot texture retained in every state */
     .lw-addon-bus { background: rgba(255, 152, 0, 0.05); border: 1.5px solid rgba(255, 152, 0, 0.5); }
+    .lw-addon-bus::before { background-image: radial-gradient(circle, rgba(255, 152, 0, 0.35) 1px, transparent 1px); }
+    .lw-addon-bus:not(.is-on):hover { background: rgba(255, 152, 0, 0.09); }
     .lw-addon-bus.is-on {
       background: rgba(255, 152, 0, 0.08);
       border: 2px solid rgba(255, 152, 0, 0.8);
       box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13);
     }
-    .lw-addon-bus.is-on::before { background-image: radial-gradient(circle, rgba(255, 152, 0, 0.25) 1px, transparent 1px); }
+    .lw-addon-bus.is-on::before { background-image: radial-gradient(circle, rgba(255, 152, 0, 0.5) 1px, transparent 1px); }
     .lw-bus-badge {
       display: inline-block; background: #F57C00; color: #fff;
       font-size: 0.65rem; font-weight: 800; letter-spacing: 0.04em;
@@ -3418,10 +3423,14 @@
               <button type="button"
                 className={'lw-addon-row' + (evChargerInterest ? ' is-on' : '')}
                 onClick={onToggleEv} aria-pressed={evChargerInterest}>
-                <div className="lw-addon-label">EV Charger &amp; Installation</div>
-                <div className="lw-addon-pricearea"><span className="lw-addon-price--enquire">Enquire</span></div>
-                <div className="lw-addon-desc">Home charging added alongside your solar install.</div>
-                <span className={'lw-switch' + (evChargerInterest ? ' is-on' : '')} aria-hidden="true" />
+                <div className="lw-addon-text">
+                  <div className="lw-addon-label">EV Charger &amp; Installation</div>
+                  <div className="lw-addon-desc">Home charging added alongside your solar install.</div>
+                </div>
+                <div className="lw-addon-right">
+                  <div className="lw-addon-pricearea"><span className="lw-addon-price--enquire">Enquire</span></div>
+                  <span className={'lw-switch' + (evChargerInterest ? ' is-on' : '')} aria-hidden="true" />
+                </div>
                 <div className="lw-addon-sell">No more public charging queues. Wake up to a full battery every morning, powered by your own solar panels. Added alongside your solar install with no extra disruption.</div>
               </button>
             )}
@@ -3430,10 +3439,14 @@
             <button type="button"
               className={'lw-addon-row' + (warrantyAdded ? ' is-on' : '')}
               onClick={onToggleWarranty} aria-pressed={warrantyAdded}>
-              <div className="lw-addon-label">Extended Warranty</div>
-              <div className="lw-addon-pricearea"><span className="lw-addon-price">+£199</span></div>
-              <div className="lw-addon-desc">5-year workmanship guarantee</div>
-              <span className={'lw-switch' + (warrantyAdded ? ' is-on' : '')} aria-hidden="true" />
+              <div className="lw-addon-text">
+                <div className="lw-addon-label">Extended Warranty</div>
+                <div className="lw-addon-desc">5-year workmanship guarantee</div>
+              </div>
+              <div className="lw-addon-right">
+                <div className="lw-addon-pricearea"><span className="lw-addon-price">+£199</span></div>
+                <span className={'lw-switch' + (warrantyAdded ? ' is-on' : '')} aria-hidden="true" />
+              </div>
               <div className="lw-addon-sell">Extend your workmanship warranty from 2 years to 5 years for complete peace of mind. Covers all labour and installation work - included in your finance payments if you choose to spread the cost.</div>
             </button>
 
@@ -3441,13 +3454,17 @@
             <button type="button"
               className={'lw-addon-row lw-addon-bus' + (busGrantInterest ? ' is-on' : '')}
               onClick={onToggleBus} aria-pressed={busGrantInterest}>
-              <div className="lw-addon-label">Heat Pump Government Grant<span className="lw-bus-badge">£7,500 GRANT</span></div>
-              <div className="lw-addon-pricearea">
-                <div className="lw-addon-grant-val">£7,500</div>
-                <div className="lw-addon-grant-sub">Grant</div>
+              <div className="lw-addon-text">
+                <div className="lw-addon-label">Heat Pump Government Grant<span className="lw-bus-badge">£7,500 GRANT</span></div>
+                <div className="lw-addon-desc">You could get a £7,500 government grant towards a heat pump - want to know more?</div>
               </div>
-              <div className="lw-addon-desc">You could get a £7,500 government grant towards a heat pump - want to know more?</div>
-              <span className={'lw-switch' + (busGrantInterest ? ' is-on' : '')} aria-hidden="true" />
+              <div className="lw-addon-right">
+                <div className="lw-addon-pricearea">
+                  <div className="lw-addon-grant-val">£7,500</div>
+                  <div className="lw-addon-grant-sub">Grant</div>
+                </div>
+                <span className={'lw-switch' + (busGrantInterest ? ' is-on' : '')} aria-hidden="true" />
+              </div>
               <div className="lw-addon-sell">Replace your boiler with a heat pump and get up to £7,500 back from the government. Many solar customers qualify - our team will check your eligibility after your solar booking.</div>
             </button>
 
