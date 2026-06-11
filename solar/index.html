@@ -364,10 +364,18 @@
       height: 65%;
       background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
       background-size: 10px 10px;
-      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
-      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%;
+      mask-size: 100% 100%, 100% 100%, 100% 100%;
+      -webkit-mask-composite: destination-in, destination-in, destination-in;
+      mask-composite: intersect;
       pointer-events: none;
       border-radius: inherit;
       z-index: 0;
@@ -693,10 +701,18 @@
       height: 65%;
       background-image: radial-gradient(circle, #d8d8d8 1px, transparent 1px);
       background-size: 10px 10px;
-      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
-      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%;
+      mask-size: 100% 100%, 100% 100%, 100% 100%;
+      -webkit-mask-composite: destination-in, destination-in, destination-in;
+      mask-composite: intersect;
       pointer-events: none;
       border-radius: inherit;
       z-index: 0;
@@ -1301,10 +1317,18 @@
       content: ''; position: absolute; bottom: 0; right: 0; width: 65%; height: 65%;
       background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
       background-size: 10px 10px;
-      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
-      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%;
+      mask-size: 100% 100%, 100% 100%, 100% 100%;
+      -webkit-mask-composite: destination-in, destination-in, destination-in;
+      mask-composite: intersect;
       pointer-events: none; border-radius: inherit; z-index: 0;
     }
     .lw-show-card > * { position: relative; z-index: 1; }
@@ -1517,10 +1541,18 @@
       width: 65%; height: 65%;
       background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
       background-size: 10px 10px;
-      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
-      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%;
+      mask-size: 100% 100%, 100% 100%, 100% 100%;
+      -webkit-mask-composite: destination-in, destination-in, destination-in;
+      mask-composite: intersect;
       pointer-events: none;
       border-radius: inherit;
       z-index: 0;
