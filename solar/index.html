@@ -410,9 +410,6 @@
       pointer-events: none;
       transition: none;
     }
-    .lw-card:hover::after {
-      animation: shimmer-sweep 500ms ease-out forwards;
-    }
     /* Non-selected cards dim/desaturate only AFTER a selection is made in the group,
        so cards start at full brightness on load (no dimming before any choice). */
     .lw-card-grid.has-selection .lw-card:not(.is-selected) {
@@ -504,10 +501,6 @@
       );
       animation: shimmer-sweep-click 400ms ease-out forwards;
       pointer-events: none;
-    }
-    @keyframes shimmer-sweep {
-      0%   { left: -60%; }
-      100% { left: 130%; }
     }
     @keyframes shimmer-sweep-click {
       0%   { left: -60%; }
