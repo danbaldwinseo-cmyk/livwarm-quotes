@@ -465,9 +465,10 @@
       }
       35% {
         transform: translateY(4px);
-        background: #4CAF50;                        /* green "good choice" flash on click */
-        box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.18),
-                    inset 0 2px 6px rgba(0, 0, 0, 0.12);
+        background: #ffffff;                        /* stays light — no green fill */
+        /* green rim lighting: backlit button pressed into a recess with green LEDs */
+        box-shadow: inset 0 0 12px 2px rgba(76, 175, 80, 0.5),
+                    inset 0 2px 6px rgba(0, 0, 0, 0.15);
       }
       100% {
         transform: translateY(1px);
@@ -1183,12 +1184,13 @@
     .lw-quote-top { display: flex; gap: 40px; max-width: 1100px; margin: 0 auto; align-items: flex-start; text-align: left; }
     .lw-quote-top-left { flex: 6; min-width: 0; }
     .lw-quote-top-right { flex: 4; min-width: 0; }
-    .lw-qt-address { font-size: 0.9rem; color: var(--color-body); margin: 0 0 8px; }
+    .lw-qt-address { font-size: 0.9rem; color: var(--color-body); margin: 0 0 4px; }
     .lw-qt-summary { font-size: 0.9rem; color: var(--color-body); margin: 0; }
-    .lw-qt-cash { font-size: 3rem; font-weight: 800; color: var(--color-dark); line-height: 1.05; margin-top: 10px; }
-    .lw-qt-monthly { font-size: 1.4rem; font-weight: 600; color: var(--color-primary); margin-top: 4px; }
-    .lw-qt-survey { font-size: 0.75rem; color: #999; font-style: italic; margin: 6px 0 0; }
-    .lw-qt-breakdown { font-size: 0.85rem; color: var(--color-body); margin: 4px 0 0; }
+    .lw-qt-heading { font-size: 1.25rem; font-weight: 500; color: var(--color-body); margin: 12px 0 2px; }
+    .lw-qt-cash { font-size: 3rem; font-weight: 800; color: var(--color-dark); line-height: 1.05; margin-top: 0; }
+    .lw-qt-monthly { font-size: 1.4rem; font-weight: 600; color: var(--color-primary); margin-top: 2px; }
+    .lw-qt-survey { font-size: 0.75rem; color: #999; font-style: italic; margin: 4px 0 0; }
+    .lw-qt-breakdown { font-size: 0.85rem; color: var(--color-body); margin: 2px 0 0; }
     .lw-qt-savings-heading { font-size: 0.875rem; font-weight: 600; color: var(--color-body); margin-bottom: 12px; }
     .lw-qt-boxes { display: flex; flex-direction: column; gap: 12px; }
     .lw-qt-box { background: #fff; border: 1px solid var(--color-border); border-radius: 12px; padding: 16px 20px; }
@@ -3311,10 +3313,19 @@
       const carRef = useRef(null);
       const [carW, setCarW] = useState(0);
       useLayoutEffect(() => {
-        const measure = () => { if (carRef.current) setCarW(carRef.current.clientWidth); };
+        const el = carRef.current;
+        if (!el) return;
+        const measure = () => setCarW(el.clientWidth);
         measure();
+        // Re-measure once the real width settles (the carousel mounts inside a staged
+        // Reveal / behind the prepare overlay, so the first measure can be premature).
+        let ro;
+        if (typeof ResizeObserver !== 'undefined') {
+          ro = new ResizeObserver(measure);
+          ro.observe(el);
+        }
         window.addEventListener('resize', measure);
-        return () => window.removeEventListener('resize', measure);
+        return () => { window.removeEventListener('resize', measure); if (ro) ro.disconnect(); };
       }, []);
       const CAR_GAP = 16;
       const peek = carW && carW < 560 ? 32 : 120;
@@ -3377,6 +3388,7 @@
               <div className="lw-quote-top-left">
                 {addressLine && <p className="lw-qt-address">{addressLine}</p>}
                 <p className="lw-qt-summary">{summaryLine}</p>
+                <div className="lw-qt-heading">Your instant quote</div>
                 <div className="lw-qt-cash">{gbp(active.price)}</div>
                 <div className="lw-qt-monthly">or £{active.monthly}/mo</div>
                 <p className="lw-qt-survey">Subject to survey and final system confirmation</p>
@@ -3402,7 +3414,6 @@
           <Reveal delay={400}>
             <div className="lw-tier-heading-wrap">
               <h2 className="lw-tier-heading">Choose your system</h2>
-              <p className="lw-tier-subheading">All systems include professional installation and MCS certification</p>
             </div>
           </Reveal>
 
@@ -3414,7 +3425,6 @@
                   className={'lw-carousel-ind' + (i === activeCard ? ' is-active' : '')}
                   aria-label={tiers[id].name} onClick={() => setActiveCard(i)}>
                   <span className="lw-ind-dot" />
-                  <span className="lw-ind-label">{tiers[id].name}</span>
                 </button>
               ))}
             </div>
