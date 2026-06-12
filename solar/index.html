@@ -340,8 +340,8 @@
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13),
                   0 2px 6px rgba(0, 0, 0, 0.09),
                   inset 0 0 18px 8px rgba(255, 255, 255, 0.92),
-                  inset 0 2px 8px rgba(0, 0, 0, 0),
-                  inset 0 1px 3px rgba(0, 0, 0, 0);   /* DEFAULT */
+                  inset 0 3px 0px rgba(0, 0, 0, 0),
+                  inset 0 0 0px rgba(0, 0, 0, 0);   /* DEFAULT */
       transition: box-shadow 300ms ease,
                   transform 300ms ease,
                   background-color 300ms ease,
@@ -434,13 +434,13 @@
     }
     /* HOVER — clearly sinks: darker fill, drops 2px, shadow compresses + darkens */
     .lw-card:not(.is-selected):not(.is-pressing):hover {
-      background: #ebebeb;
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: #e8e8e8;
+      border: 1px solid rgba(0, 0, 0, 0.10);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
                   0 2px 6px rgba(0, 0, 0, 0),
                   inset 0 0 18px 8px rgba(255, 255, 255, 0),
-                  inset 0 2px 8px rgba(0, 0, 0, 0.13),
-                  inset 0 1px 3px rgba(0, 0, 0, 0.08);
+                  inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                  inset 0 2px 4px rgba(0, 0, 0, 0.14);
       transform: translateY(1px);
       transition: box-shadow 300ms ease,
                   transform 300ms ease,
@@ -457,10 +457,13 @@
        red border (via box-shadow). No hard red fill, no thick border.
        Keeps the 1.02 scale pulse; the shimmer sweep is on ::after below. */
     .lw-card.is-selected {
-      background: #ebebeb;
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
-                  inset 0 1px 3px rgba(0, 0, 0, 0.08);
+      background: #e8e8e8;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                  0 2px 6px rgba(0, 0, 0, 0),
+                  inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                  inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                  inset 0 2px 4px rgba(0, 0, 0, 0.14);
       transform: translateY(1px);
       animation: card-press 350ms ease-out forwards;
     }
@@ -469,19 +472,29 @@
       0% {
         transform: translateY(0px);
         background: #ffffff;
-        box-shadow: inset 0 0 0 rgba(0, 0, 0, 0);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13),
+                    0 2px 6px rgba(0, 0, 0, 0.09),
+                    inset 0 0 18px 8px rgba(255, 255, 255, 0.92),
+                    inset 0 3px 0px rgba(0, 0, 0, 0),
+                    inset 0 0 0px rgba(0, 0, 0, 0);
       }
       35% {
-        transform: translateY(4px);
-        background: #e0e0e0;
-        box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.18),
-                    inset 0 2px 6px rgba(0, 0, 0, 0.12);
+        transform: translateY(5px);
+        background: #dcdcdc;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                    0 2px 6px rgba(0, 0, 0, 0),
+                    inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                    inset 0 8px 20px rgba(0, 0, 0, 0.28),
+                    inset 0 3px 6px rgba(0, 0, 0, 0.18);
       }
       100% {
         transform: translateY(1px);
-        background: #ebebeb;
-        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
-                    inset 0 1px 3px rgba(0, 0, 0, 0.08);
+        background: #e8e8e8;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                    0 2px 6px rgba(0, 0, 0, 0),
+                    inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                    inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                    inset 0 2px 4px rgba(0, 0, 0, 0.14);
       }
     }
     .lw-card.is-selected .lw-card-icon,
