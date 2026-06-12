@@ -382,7 +382,7 @@
       transition: opacity 150ms ease;
     }
     .lw-card.is-selected::before {
-      background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
+      background-image: radial-gradient(circle, rgba(232, 50, 58, 0.25) 1px, transparent 1px);
       background-size: 10px 10px;
       opacity: 1;
     }
@@ -436,7 +436,7 @@
     .lw-card:not(.is-selected):not(.is-pressing):hover {
       background: #EAEAEA;
       transform: translateY(2px);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22), inset 0 0 18px 8px rgba(195, 195, 195, 0.60);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25), 0 4px 16px rgba(0, 0, 0, 0.13);
       transition: all 150ms ease, box-shadow 200ms ease;
     }
     /* PRESS — :active (mouse held) and .is-pressing (JS-held min 80ms for touch) */
@@ -449,8 +449,8 @@
        red border (via box-shadow). No hard red fill, no thick border.
        Keeps the 1.02 scale pulse; the shimmer sweep is on ::after below. */
     .lw-card.is-selected {
-      background: #ebebeb;
-      border: 1px solid rgba(0, 0, 0, 0.12);
+      background: rgba(232, 50, 58, 0.04);
+      border: 1.5px solid var(--color-primary);
       box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
                   inset 0 0 18px 8px rgba(232, 50, 58, 0.06);
       transform: translateY(1px);
@@ -467,12 +467,12 @@
         transform: translateY(4px);
         background: #ffffff;                        /* stays light — no green fill */
         /* green rim lighting: backlit button pressed into a recess with green LEDs */
-        box-shadow: inset 0 0 12px 2px rgba(76, 175, 80, 0.5),
+        box-shadow: inset 0 0 16px 3px rgba(76, 175, 80, 0.45),
                     inset 0 2px 6px rgba(0, 0, 0, 0.15);
       }
       100% {
         transform: translateY(1px);
-        background: #ebebeb;
+        background: rgba(232, 50, 58, 0.04);
         box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
                     inset 0 0 18px 8px rgba(232, 50, 58, 0.06);
       }
@@ -1180,29 +1180,17 @@
     /* bill drop + payback, shown on each carousel card */
     .lw-show-payback { font-size: 0.8rem; color: var(--color-body); margin-top: 4px; }
     .lw-quote-sep { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 24px 0; }
-    /* IMPROVEMENT 3 — quote top section: two-column (price left, savings right) */
-    .lw-quote-top { display: flex; gap: 40px; max-width: 1100px; margin: 0 auto; align-items: flex-start; text-align: left; }
-    .lw-quote-top-left { flex: 6; min-width: 0; }
-    .lw-quote-top-right { flex: 4; min-width: 0; }
-    .lw-qt-address { font-size: 0.9rem; color: var(--color-body); margin: 0 0 4px; }
-    .lw-qt-summary { font-size: 0.9rem; color: var(--color-body); margin: 0; }
-    .lw-qt-heading { font-size: 1.25rem; font-weight: 500; color: var(--color-body); margin: 12px 0 2px; }
-    .lw-qt-cash { font-size: 3rem; font-weight: 800; color: var(--color-dark); line-height: 1.05; margin-top: 0; }
-    .lw-qt-monthly { font-size: 1.4rem; font-weight: 600; color: var(--color-primary); margin-top: 2px; }
+    /* Quote top — compact centred price/summary block */
+    .lw-quote-top { max-width: 680px; margin: 0 auto; text-align: center; }
+    .lw-qt-heading { font-size: 0.875rem; font-weight: 500; color: var(--color-body); margin: 0 0 4px; }
+    .lw-qt-priceline { display: flex; justify-content: center; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .lw-qt-cash { font-size: 2.5rem; font-weight: 800; color: var(--color-dark); line-height: 1.05; }
+    .lw-qt-monthly { font-size: 2.5rem; font-weight: 700; color: var(--color-primary); line-height: 1.05; }
+    .lw-qt-or { font-size: 1rem; font-weight: 500; }
+    .lw-qt-summary { font-size: 0.875rem; color: var(--color-body); margin: 8px 0 0; }
     .lw-qt-survey { font-size: 0.75rem; color: #999; font-style: italic; margin: 4px 0 0; }
-    .lw-qt-breakdown { font-size: 0.85rem; color: var(--color-body); margin: 2px 0 0; }
-    .lw-qt-savings-heading { font-size: 0.875rem; font-weight: 600; color: var(--color-body); margin-bottom: 12px; }
-    .lw-qt-boxes { display: flex; flex-direction: column; gap: 12px; }
-    .lw-qt-box { background: #fff; border: 1px solid var(--color-border); border-radius: 12px; padding: 16px 20px; }
-    .lw-qt-box-val { font-size: 1.5rem; font-weight: 700; color: var(--color-dark); line-height: 1.1; }
-    .lw-qt-box-val--red { color: var(--color-primary); }
-    .lw-qt-box-label { font-size: 0.8rem; color: var(--color-body); margin-top: 4px; }
-    @media (max-width: 768px) {
-      .lw-quote-top { flex-direction: column; gap: 24px; }
-      .lw-quote-top-left, .lw-quote-top-right { flex: 1 1 auto; width: 100%; }
-    }
     /* section heading above the tier cards */
-    .lw-tier-heading-wrap { text-align: center; margin: 32px 0 24px; }
+    .lw-tier-heading-wrap { text-align: center; margin: 16px 0 12px; }
     .lw-tier-heading { font-size: 1.5rem; font-weight: 700; color: var(--color-dark); margin: 0; }
     .lw-tier-subheading { font-size: 0.9rem; color: var(--color-body); margin: 6px 0 0; }
     /* staged reveal — each block rises 12px (hero: 20px) and fades in on first mount */
@@ -1326,7 +1314,7 @@
     }
     /* dot indicators */
     /* labelled navigation indicators above the carousel */
-    .lw-carousel-nav { display: flex; justify-content: center; align-items: flex-start; gap: 32px; margin: 16px 0 20px; }
+    .lw-carousel-nav { display: flex; justify-content: center; align-items: flex-start; gap: 32px; margin: 6px 0 8px; }
     .lw-carousel-ind { background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .lw-ind-dot { width: 8px; height: 8px; border-radius: 50%; background: #D0D0D0; transition: width 200ms ease, height 200ms ease, background 200ms ease; }
     .lw-carousel-ind.is-active .lw-ind-dot { width: 10px; height: 10px; background: var(--color-primary); }
@@ -1378,6 +1366,24 @@
     .lw-comp-name { font-size: 0.9rem; font-weight: 600; color: var(--color-primary); margin-top: 10px; line-height: 1.3; }
     .lw-comp-spec { font-size: 0.8rem; color: var(--color-body); }
     .lw-show-div { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 20px 0; }
+    /* FIX 3 — branded savings bar inside Essential & Performance tier cards */
+    .lw-show-savings {
+      position: relative; overflow: hidden;
+      display: flex;
+      background: linear-gradient(115deg, #E8323A 45%, #d44a2a 100%);
+      border-radius: 8px; padding: 16px 20px;
+    }
+    .lw-show-savings::before {
+      content: ''; position: absolute; bottom: 0; right: 0; width: 60%; height: 100%;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+      background-size: 10px 10px;
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.9) 0%, transparent 70%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.9) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .lw-show-saving-fig { flex: 1; position: relative; z-index: 1; }
+    .lw-show-saving-val { font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1.1; }
+    .lw-show-saving-label { font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); margin-top: 2px; }
     @media (max-width: 600px) {
       .lw-comp-row { flex-direction: column; }
       .lw-comp { padding: 12px 0; }
@@ -3201,6 +3207,20 @@
 
           <hr className="lw-show-div" />
 
+          {/* FIX 3 — branded savings bar (Essential & Performance only; Custom shows dropdowns) */}
+          {!isCustom && (
+            <div className="lw-show-savings">
+              <div className="lw-show-saving-fig">
+                <div className="lw-show-saving-val">~{gbp(data.monthlySaving)}/mo</div>
+                <div className="lw-show-saving-label">Monthly bill reduction</div>
+              </div>
+              <div className="lw-show-saving-fig">
+                <div className="lw-show-saving-val">~{gbp(data.saving20yr)}</div>
+                <div className="lw-show-saving-label">Estimated over 20 years</div>
+              </div>
+            </div>
+          )}
+
           {/* custom dropdowns */}
           {isCustom && (
             <div className="lw-tier-custom" onClick={(e) => e.stopPropagation()}>
@@ -3382,31 +3402,16 @@
 
       return (
         <div className="lw-quote">
-          {/* IMPROVEMENT 3 — two-column top: price dominant left, savings boxes right */}
+          {/* Compact price/summary block (savings moved into the tier cards below) */}
           <Reveal delay={0}>
             <div className="lw-quote-top">
-              <div className="lw-quote-top-left">
-                {addressLine && <p className="lw-qt-address">{addressLine}</p>}
-                <p className="lw-qt-summary">{summaryLine}</p>
-                <div className="lw-qt-heading">Your instant quote</div>
-                <div className="lw-qt-cash">{gbp(active.price)}</div>
-                <div className="lw-qt-monthly">or £{active.monthly}/mo</div>
-                <p className="lw-qt-survey">Subject to survey and final system confirmation</p>
-                <p className="lw-qt-breakdown">{breakdownLine}</p>
+              <div className="lw-qt-heading">Your instant quote</div>
+              <div className="lw-qt-priceline">
+                <span className="lw-qt-cash">{gbp(active.price)}</span>
+                <span className="lw-qt-monthly"><span className="lw-qt-or">or</span> £{active.monthly}/mo</span>
               </div>
-              <div className="lw-quote-top-right">
-                <div className="lw-qt-savings-heading">Your estimated savings</div>
-                <div className="lw-qt-boxes">
-                  <div className="lw-qt-box">
-                    <div className="lw-qt-box-val lw-qt-box-val--red">{gbp(countMonthly)}/mo<span className="lw-est"> est.</span></div>
-                    <div className="lw-qt-box-label">Monthly bill reduction</div>
-                  </div>
-                  <div className="lw-qt-box">
-                    <div className="lw-qt-box-val">{gbp(count20yr)}<span className="lw-est"> est.</span></div>
-                    <div className="lw-qt-box-label">Estimated over 20 years</div>
-                  </div>
-                </div>
-              </div>
+              <p className="lw-qt-summary">{summaryLine}</p>
+              <p className="lw-qt-survey">Subject to survey and final system confirmation</p>
             </div>
           </Reveal>
 
@@ -4178,7 +4183,7 @@
                     canGoBack={!isComplete && currentIndex > 0}
                     onBack={handleBack}
                   />
-                  {!isComplete && <Breadcrumbs answered={breadcrumbItems} onEdit={handleEdit}
+                  {!isComplete && !onQuote && <Breadcrumbs answered={breadcrumbItems} onEdit={handleEdit}
                     expanded={bcExpanded} onToggle={handleToggleBreadcrumbs} />}
                   {inQualifier && (
                     <Question
