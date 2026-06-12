@@ -332,7 +332,7 @@
       position: relative;
       overflow: hidden;                          /* clip the shimmer pseudo-element to the card edges */
       background: var(--color-card-bg);
-      border: 1.5px solid var(--color-border);
+      border: 1.5px solid transparent;
       border-radius: 16px;
       padding: 40px 32px;
       cursor: pointer;
@@ -436,7 +436,7 @@
     .lw-card:not(.is-selected):not(.is-pressing):hover {
       background: #EAEAEA;
       transform: translateY(2px);
-      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25), 0 4px 16px rgba(0, 0, 0, 0.13);
+      box-shadow: inset 0 0 12px 2px rgba(76, 175, 80, 0.3);
       transition: all 150ms ease, box-shadow 200ms ease;
     }
     /* PRESS — :active (mouse held) and .is-pressing (JS-held min 80ms for touch) */
@@ -450,9 +450,8 @@
        Keeps the 1.02 scale pulse; the shimmer sweep is on ::after below. */
     .lw-card.is-selected {
       background: rgba(232, 50, 58, 0.04);
-      border: 1.5px solid var(--color-primary);
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
-                  inset 0 0 18px 8px rgba(232, 50, 58, 0.06);
+      border: 1.5px solid rgba(232, 50, 58, 0.9);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13);
       transform: translateY(1px);
       animation: card-press 350ms ease-out forwards;
     }
@@ -473,8 +472,7 @@
       100% {
         transform: translateY(1px);
         background: rgba(232, 50, 58, 0.04);
-        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
-                    inset 0 0 18px 8px rgba(232, 50, 58, 0.06);
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13);
       }
     }
     .lw-card.is-selected .lw-card-icon,
