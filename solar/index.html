@@ -338,10 +338,10 @@
       cursor: pointer;
       text-align: center;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 0 18px 8px rgba(255, 255, 255, 0.92);   /* DEFAULT */
-      transition: box-shadow 200ms ease,
-                  transform 150ms ease,
-                  background-color 150ms ease,
-                  border-color var(--transition),
+      transition: box-shadow 280ms ease,
+                  transform 280ms ease,
+                  background-color 280ms ease,
+                  border-color 280ms ease,
                   opacity 200ms ease,
                   filter 200ms ease;     /* smooth fade for the hover/selection dimming */
       font-family: inherit;
@@ -435,7 +435,10 @@
       box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
                   inset 0 1px 3px rgba(0, 0, 0, 0.08);
       transform: translateY(1px);
-      transition: all 150ms ease, box-shadow 200ms ease;
+      transition: background 280ms ease,
+                  box-shadow 280ms ease,
+                  transform 280ms ease,
+                  border-color 280ms ease;
     }
     /* PRESS — :active (mouse held) and .is-pressing (JS-held min 80ms for touch) */
     .lw-card:not(.is-selected):active,
@@ -2341,8 +2344,11 @@
 
     // Step 4 — Battery installation location (+ conditional "where inside" sub-question)
     function BatteryStep({ location, inside, outside, onSelectLocation, onSelectInside, onSelectOutside, onContinue }) {
-      const showInside = location === 'Inside';
-      const showOutside = location === 'Outside';
+      // Sub-question reveals only after the press animation settles (onSettle), not on the
+      // initial click. Initialise from the committed answer so back-navigation shows it.
+      const [settledLocation, setSettledLocation] = React.useState(location);
+      const showInside = settledLocation === 'Inside';
+      const showOutside = settledLocation === 'Outside';
       // No Continue button: a no-sub option ("I'm not sure") auto-advances; Inside/Outside
       // reveal a sub-question, and selecting a sub-card auto-advances.
       return (
@@ -2351,7 +2357,7 @@
           <p className="lw-question-sub">Don't worry if you're not sure - our team will confirm the best location with you.</p>
           <CardChoice options={BATTERY_OPTIONS} value={location}
             onSelect={onSelectLocation}
-            onSettle={(v) => { if (v !== 'Inside' && v !== 'Outside') onContinue(); }} />
+            onSettle={(v) => { setSettledLocation(v); if (v !== 'Inside' && v !== 'Outside') onContinue(); }} />
           {showInside && (
             <div className="lw-subq">
               <h2 className="lw-subq-title">Where inside your home?</h2>
@@ -2374,14 +2380,18 @@
 
     // Step 5 — EV ownership (+ conditional "planning to get one" sub-question)
     function EvStep({ hasEv, plans, charging, onSelectHasEv, onSelectPlans, onSelectCharging, onContinue }) {
-      const showCharging = hasEv === 'Yes';
-      const showPlans = hasEv === 'No';
+      // Sub-question reveals only after the press animation settles (onSettle), not on the
+      // initial click. Initialise from the committed answer so back-navigation shows it.
+      const [settledHasEv, setSettledHasEv] = React.useState(hasEv);
+      const showCharging = settledHasEv === 'Yes';
+      const showPlans = settledHasEv === 'No';
       // No Continue button. Both primary options reveal a sub-question; selecting a
       // sub-card auto-advances. (Yes → charging method, No → planning to get one.)
       return (
         <div className="lw-fade-in">
           <h1 className="lw-question">Do you have an electric vehicle?</h1>
-          <CardChoice options={EV_OPTIONS} value={hasEv} onSelect={onSelectHasEv} />
+          <CardChoice options={EV_OPTIONS} value={hasEv} onSelect={onSelectHasEv}
+            onSettle={(v) => setSettledHasEv(v)} />
           {showCharging && (
             <div className="lw-subq">
               <h2 className="lw-subq-title">How do you currently charge your EV?</h2>
