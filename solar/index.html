@@ -465,7 +465,7 @@
       }
       35% {
         transform: translateY(4px);
-        background: #e0e0e0;
+        background: #4CAF50;                        /* green "good choice" flash on click */
         box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.18),
                     inset 0 2px 6px rgba(0, 0, 0, 0.12);
       }
@@ -790,11 +790,18 @@
     .lw-cta-outline:hover { background: rgba(232, 50, 58, 0.05); }
 
     /* ---------- Steps 4 & 5 — card question + same-screen sub-question ---------- */
-    .lw-subq { animation: lwSubIn 200ms ease both; }
+    .lw-subq { animation: lwSubFade 200ms ease both; }
     @keyframes lwSubIn {
       from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    @keyframes lwSubFade {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    /* IMPROVEMENT 1 — staged entry: heading fades first (250ms), card row 50ms later (300ms) */
+    .lw-subq .lw-question-sub { animation: lwSubIn 250ms ease-out both; }
+    .lw-subq .lw-card-grid { animation: lwSubIn 300ms ease-out 50ms both; }
     .lw-subq-title {
       font-size: clamp(26px, 3vw, 38px);
       font-weight: 800;
@@ -802,6 +809,7 @@
       color: #1a1a1a;
       text-align: center;
       margin: 36px 0 18px;
+      animation: lwSubIn 250ms ease-out both;
     }
     .lw-step-continue { max-width: 420px; margin: 36px auto 0; }
 
@@ -1171,8 +1179,28 @@
     /* bill drop + payback, shown on each carousel card */
     .lw-show-payback { font-size: 0.8rem; color: var(--color-body); margin-top: 4px; }
     .lw-quote-sep { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 24px 0; }
+    /* IMPROVEMENT 3 — quote top section: two-column (price left, savings right) */
+    .lw-quote-top { display: flex; gap: 40px; max-width: 1100px; margin: 0 auto; align-items: flex-start; text-align: left; }
+    .lw-quote-top-left { flex: 6; min-width: 0; }
+    .lw-quote-top-right { flex: 4; min-width: 0; }
+    .lw-qt-address { font-size: 0.9rem; color: var(--color-body); margin: 0 0 8px; }
+    .lw-qt-summary { font-size: 0.9rem; color: var(--color-body); margin: 0; }
+    .lw-qt-cash { font-size: 3rem; font-weight: 800; color: var(--color-dark); line-height: 1.05; margin-top: 10px; }
+    .lw-qt-monthly { font-size: 1.4rem; font-weight: 600; color: var(--color-primary); margin-top: 4px; }
+    .lw-qt-survey { font-size: 0.75rem; color: #999; font-style: italic; margin: 6px 0 0; }
+    .lw-qt-breakdown { font-size: 0.85rem; color: var(--color-body); margin: 4px 0 0; }
+    .lw-qt-savings-heading { font-size: 0.875rem; font-weight: 600; color: var(--color-body); margin-bottom: 12px; }
+    .lw-qt-boxes { display: flex; flex-direction: column; gap: 12px; }
+    .lw-qt-box { background: #fff; border: 1px solid var(--color-border); border-radius: 12px; padding: 16px 20px; }
+    .lw-qt-box-val { font-size: 1.5rem; font-weight: 700; color: var(--color-dark); line-height: 1.1; }
+    .lw-qt-box-val--red { color: var(--color-primary); }
+    .lw-qt-box-label { font-size: 0.8rem; color: var(--color-body); margin-top: 4px; }
+    @media (max-width: 768px) {
+      .lw-quote-top { flex-direction: column; gap: 24px; }
+      .lw-quote-top-left, .lw-quote-top-right { flex: 1 1 auto; width: 100%; }
+    }
     /* section heading above the tier cards */
-    .lw-tier-heading-wrap { text-align: center; margin-bottom: 24px; }
+    .lw-tier-heading-wrap { text-align: center; margin: 32px 0 24px; }
     .lw-tier-heading { font-size: 1.5rem; font-weight: 700; color: var(--color-dark); margin: 0; }
     .lw-tier-subheading { font-size: 0.9rem; color: var(--color-body); margin: 6px 0 0; }
     /* staged reveal — each block rises 12px (hero: 20px) and fades in on first mount */
@@ -2901,7 +2929,7 @@
     }
 
     /* ---- Part C: orientation compass screen — compass overlaid on the map ---- */
-    function CompassScreen({ lat, lng, value, onChange, onContinue }) {
+    function CompassScreen({ lat, lng, value, onChange, onContinue, isFinal }) {
       const ref = useRef(null);
       const [status, setStatus] = React.useState('loading');
       React.useEffect(() => {
@@ -2945,8 +2973,8 @@
           </div>
           {value && <p className="lw-orient-facing">Facing: {DIR_WORDS[value]}</p>}
           <div className="lw-orient-actions">
-            <button type="button" className="lw-cta" disabled={!value} onClick={onContinue}>
-              Continue
+            <button type="button" className={isFinal ? 'lw-cta lw-cta-green' : 'lw-cta'} disabled={!value} onClick={onContinue}>
+              {isFinal ? 'Prepare my quote →' : 'Continue'}
             </button>
           </div>
         </div>
@@ -2954,7 +2982,7 @@
     }
 
     /* ---- Part C: orientation — auto-suggestion (if any) then compass ---- */
-    function OrientationStep({ lat, lng, suggestedDir, value, onChange, onContinue }) {
+    function OrientationStep({ lat, lng, suggestedDir, value, onChange, onContinue, isFinal }) {
       // Show the Yes/No confirmation only when a bearing was derived; otherwise
       // (the usual case in-browser — see suggestFrontDoorDir) go straight to the compass.
       const [mode, setMode] = React.useState(suggestedDir ? 'confirm' : 'compass');
@@ -2969,7 +2997,7 @@
           </div>
         );
       }
-      return <CompassScreen lat={lat} lng={lng} value={value} onChange={onChange} onContinue={onContinue} />;
+      return <CompassScreen lat={lat} lng={lng} value={value} onChange={onChange} onContinue={onContinue} isFinal={isFinal} />;
     }
 
     /* ---- Part D: occupancy ---- */
@@ -3034,7 +3062,7 @@
 
     /* ---- Step 6 orchestrator — routes the four phases ---- */
     function Step6({ state, setState, onAddressContinue, onPinMove, onConfirmPin,
-                     onSetOrientation, onSetOccupants, onComplete }) {
+                     onSetOrientation, onSetOccupants, onComplete, usedKwhFallback }) {
       const s = state;
       if (s.phase === 'address') {
         return <AddressStep state={s} setState={setState} onContinue={onAddressContinue} />;
@@ -3043,9 +3071,11 @@
         return <MapConfirm lat={s.lat} lng={s.lng} onPinMove={onPinMove} onConfirm={onConfirmPin} />;
       }
       if (s.phase === 'orientation') {
+        // IMPROVEMENT 2 — occupancy only for national-average kWh users; otherwise
+        // orientation is the final action (its button becomes "Prepare my quote").
         return <OrientationStep lat={s.lat} lng={s.lng} suggestedDir={s.suggestedDir}
-                 value={s.roof_orientation} onChange={onSetOrientation}
-                 onContinue={() => setState({ ...s, phase: 'occupancy' })} />;
+                 value={s.roof_orientation} onChange={onSetOrientation} isFinal={!usedKwhFallback}
+                 onContinue={() => { if (usedKwhFallback) setState({ ...s, phase: 'occupancy' }); else onComplete(); }} />;
       }
       return <OccupancyStep value={s.occupants} onSelect={onSetOccupants} onContinue={onComplete} />;
     }
@@ -3341,36 +3371,35 @@
 
       return (
         <div className="lw-quote">
-          {/* Heading + address + system summary (staged reveal) */}
-          <Reveal delay={0}><h1 className="lw-quote-title">Your solar quote</h1></Reveal>
-          {addressLine && <Reveal delay={150}><p className="lw-quote-address">{addressLine}</p></Reveal>}
-          <Reveal delay={300}><p className="lw-quote-summary">{summaryLine}</p></Reveal>
-
-          {/* Unified price + savings block (hero) */}
-          <Reveal delay={500} hero>
-            <div className="lw-quote-prices">
-              <span className="lw-quote-cash">{gbp(active.price)}</span>
-              <span className="lw-quote-or">or</span>
-              <span className="lw-quote-monthly">£{active.monthly}/mo</span>
-            </div>
-            <p className="lw-quote-survey">Subject to survey and final system confirmation</p>
-            <p className="lw-quote-breakdown">{breakdownLine}</p>
-            <div className="lw-savings-label">Potential Savings</div>
-            <div className="lw-savings-boxes">
-              <div className="lw-savings-box">
-                <div className="lw-savings-box-label">Monthly bill reduction</div>
-                <div className="lw-savings-box-val lw-savings-box-val--red">{gbp(countMonthly)}/mo<span className="lw-est"> est.</span></div>
+          {/* IMPROVEMENT 3 — two-column top: price dominant left, savings boxes right */}
+          <Reveal delay={0}>
+            <div className="lw-quote-top">
+              <div className="lw-quote-top-left">
+                {addressLine && <p className="lw-qt-address">{addressLine}</p>}
+                <p className="lw-qt-summary">{summaryLine}</p>
+                <div className="lw-qt-cash">{gbp(active.price)}</div>
+                <div className="lw-qt-monthly">or £{active.monthly}/mo</div>
+                <p className="lw-qt-survey">Subject to survey and final system confirmation</p>
+                <p className="lw-qt-breakdown">{breakdownLine}</p>
               </div>
-              <div className="lw-savings-box">
-                <div className="lw-savings-box-label">Estimated over 20 years</div>
-                <div className="lw-savings-box-val">{gbp(count20yr)}<span className="lw-est"> est.</span></div>
+              <div className="lw-quote-top-right">
+                <div className="lw-qt-savings-heading">Your estimated savings</div>
+                <div className="lw-qt-boxes">
+                  <div className="lw-qt-box">
+                    <div className="lw-qt-box-val lw-qt-box-val--red">{gbp(countMonthly)}/mo<span className="lw-est"> est.</span></div>
+                    <div className="lw-qt-box-label">Monthly bill reduction</div>
+                  </div>
+                  <div className="lw-qt-box">
+                    <div className="lw-qt-box-val">{gbp(count20yr)}<span className="lw-est"> est.</span></div>
+                    <div className="lw-qt-box-label">Estimated over 20 years</div>
+                  </div>
+                </div>
               </div>
             </div>
-            <hr className="lw-quote-sep" />
           </Reveal>
 
           {/* Section heading above tier cards */}
-          <Reveal delay={1050}>
+          <Reveal delay={400}>
             <div className="lw-tier-heading-wrap">
               <h2 className="lw-tier-heading">Choose your system</h2>
               <p className="lw-tier-subheading">All systems include professional installation and MCS certification</p>
@@ -3378,7 +3407,7 @@
           </Reveal>
 
           {/* Tier carousel (Performance centred on load) */}
-          <Reveal delay={1100}>
+          <Reveal delay={500}>
             <div className="lw-carousel-nav">
               {order.map((id, i) => (
                 <button key={id} type="button"
@@ -3425,7 +3454,7 @@
           </Reveal>
 
           {/* CTA */}
-          <Reveal delay={1500}>
+          <Reveal delay={900}>
             <button type="button" className="lw-cta lw-cta-quote" onClick={handleContinue}>
               Continue with this system →
             </button>
@@ -3868,6 +3897,8 @@
           ...prev,
           electricity_usage: String(electricity.usage).replace(/[^0-9.]/g, ''),
           used_national_average_kwh: !!electricity.used_national_average_kwh,
+          // IMPROVEMENT 2 — drives whether the occupancy sub-question appears in Step 6
+          usedKwhFallback: !!electricity.used_national_average_kwh,
         }));
         setCurrentIndex(TARIFF_INDEX);
       }, [electricity]);
@@ -4198,6 +4229,7 @@
                       onSetOrientation={handleSetOrientation}
                       onSetOccupants={handleSetOccupants}
                       onComplete={handleStep6Complete}
+                      usedKwhFallback={!!answers.usedKwhFallback}
                     />
                   )}
                   {onQuote && !microCommit && (
