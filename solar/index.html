@@ -382,6 +382,7 @@
       transition: opacity 150ms ease;
     }
     .lw-card.is-selected::before {
+      background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
       opacity: 1;
     }
     /* Card content sits above the corner texture */
@@ -434,8 +435,7 @@
     .lw-card:not(.is-selected):not(.is-pressing):hover {
       background: #EAEAEA;
       transform: translateY(2px);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22),
-                  inset 0 0 18px 6px rgba(76, 175, 80, 0.35);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22), inset 0 0 18px 8px rgba(195, 195, 195, 0.60);
       transition: all 150ms ease, box-shadow 200ms ease;
     }
     /* PRESS — :active (mouse held) and .is-pressing (JS-held min 80ms for touch) */
@@ -450,8 +450,8 @@
     .lw-card.is-selected {
       background: #ebebeb;
       border: 1px solid rgba(0, 0, 0, 0.08);
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.10),
-                  inset 0 0 18px 6px rgba(76, 175, 80, 0.35);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
+                  inset 0 1px 3px rgba(0, 0, 0, 0.08);
       transform: translateY(1px);
       animation: card-press 350ms ease-out forwards;
     }
@@ -465,16 +465,14 @@
       35% {
         transform: translateY(4px);
         background: #e0e0e0;
-        /* bright green flash at the deepest press, then settles back to faint */
         box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.18),
-                    inset 0 2px 6px rgba(0, 0, 0, 0.12),
-                    inset 0 0 22px 8px rgba(76, 175, 80, 0.75);
+                    inset 0 2px 6px rgba(0, 0, 0, 0.12);
       }
       100% {
         transform: translateY(1px);
         background: #ebebeb;
-        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.10),
-                    inset 0 0 18px 6px rgba(76, 175, 80, 0.35);
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
+                    inset 0 1px 3px rgba(0, 0, 0, 0.08);
       }
     }
     .lw-card.is-selected .lw-card-icon,
@@ -1371,7 +1369,7 @@
       position: relative; overflow: hidden;
       display: flex; flex-direction: column;
       background: linear-gradient(115deg, #E8323A 45%, #d44a2a 100%);
-      border-radius: 8px; padding: 16px 20px;
+      border-radius: 8px; padding: 12px 20px;
     }
     .lw-show-savings::before {
       content: ''; position: absolute; bottom: 0; right: 0; width: 60%; height: 100%;
@@ -1381,10 +1379,10 @@
       mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.9) 0%, transparent 70%);
       pointer-events: none;
     }
-    .lw-show-savings-head { position: relative; z-index: 1; font-size: 0.75rem; font-weight: 600; color: #fff; opacity: 0.85; margin-bottom: 10px; text-align: center; }
+    .lw-show-savings-head { position: relative; z-index: 1; font-size: 0.95rem; font-weight: 700; color: #fff; opacity: 1; margin-bottom: 12px; text-align: center; }
     .lw-show-savings-figs { position: relative; z-index: 1; display: flex; }
     .lw-show-saving-fig { flex: 1; }
-    .lw-show-saving-val { font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1.1; }
+    .lw-show-saving-val { font-size: 1.4rem; font-weight: 800; color: #fff; line-height: 1.1; }
     .lw-show-saving-est { font-size: 0.75rem; font-weight: 400; opacity: 0.8; }
     .lw-show-saving-label { font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); margin-top: 2px; }
     @media (max-width: 600px) {
