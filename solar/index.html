@@ -436,7 +436,7 @@
     .lw-card:not(.is-selected):not(.is-pressing):hover {
       background: #EAEAEA;
       transform: translateY(2px);
-      box-shadow: inset 0 0 12px 2px rgba(76, 175, 80, 0.3);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22), inset 0 0 18px 8px rgba(195, 195, 195, 0.60);
       transition: all 150ms ease, box-shadow 200ms ease;
     }
     /* PRESS — :active (mouse held) and .is-pressing (JS-held min 80ms for touch) */
@@ -449,9 +449,10 @@
        red border (via box-shadow). No hard red fill, no thick border.
        Keeps the 1.02 scale pulse; the shimmer sweep is on ::after below. */
     .lw-card.is-selected {
-      background: rgba(232, 50, 58, 0.04);
-      border: 1.5px solid rgba(232, 50, 58, 0.9);
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13);
+      background: #ebebeb;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
+                  inset 0 0 18px 8px rgba(232, 50, 58, 0.06);
       transform: translateY(1px);
       animation: card-press 350ms ease-out forwards;
     }
@@ -464,15 +465,17 @@
       }
       35% {
         transform: translateY(4px);
-        background: #ffffff;                        /* stays light — no green fill */
-        /* green rim lighting: backlit button pressed into a recess with green LEDs */
-        box-shadow: inset 0 0 16px 3px rgba(76, 175, 80, 0.45),
-                    inset 0 2px 6px rgba(0, 0, 0, 0.15);
+        background: #e0e0e0;
+        /* brief green rim glow at the deepest press moment, before settling to grey */
+        box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.18),
+                    inset 0 2px 6px rgba(0, 0, 0, 0.12),
+                    inset 0 0 14px 3px rgba(76, 175, 80, 0.35);
       }
       100% {
         transform: translateY(1px);
-        background: rgba(232, 50, 58, 0.04);
-        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13);
+        background: #ebebeb;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
+                    inset 0 0 18px 8px rgba(232, 50, 58, 0.06);
       }
     }
     .lw-card.is-selected .lw-card-icon,
