@@ -1344,7 +1344,7 @@
     }
     .lw-show-card > * { position: relative; z-index: 1; }
     /* Performance active — red border + soft red elevation (no background tint) */
-    .lw-show-card--performance.is-active { border: 2px solid var(--color-primary); box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 18px 8px rgba(232, 50, 58, 0.06); }
+    .lw-show-card--performance.is-active { border: 1.5px solid rgba(232, 50, 58, 0.55); box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 18px 8px rgba(232, 50, 58, 0.06); }
     /* header (left-aligned) */
     .lw-show-head { text-align: left; }
     .lw-show-title { font-size: 1.4rem; font-weight: 700; color: var(--color-dark); line-height: 1.2; }
@@ -3301,6 +3301,14 @@
               </div>
             </div>
             <div className="lw-show-price-block">
+              <div style={{
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: 'var(--color-primary)',
+                marginBottom: '4px'
+              }}>
+                Your price
+              </div>
               <div className="lw-show-price-hero">£{data.monthly}/mo</div>
               <div className="lw-show-price-cash">or {gbp(data.price)} cash</div>
             </div>
