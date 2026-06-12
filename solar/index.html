@@ -433,9 +433,11 @@
     }
     /* HOVER — clearly sinks: darker fill, drops 2px, shadow compresses + darkens */
     .lw-card:not(.is-selected):not(.is-pressing):hover {
-      background: #EAEAEA;
-      transform: translateY(2px);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22), inset 0 0 18px 8px rgba(195, 195, 195, 0.60);
+      background: #ebebeb;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
+                  inset 0 1px 3px rgba(0, 0, 0, 0.08);
+      transform: translateY(1px);
       transition: all 150ms ease, box-shadow 200ms ease;
     }
     /* PRESS — :active (mouse held) and .is-pressing (JS-held min 80ms for touch) */
@@ -3209,17 +3211,59 @@
           <hr className="lw-show-div" />
 
           {/* FIX 3 — branded savings bar (Essential & Performance only; Custom shows dropdowns) */}
-          {!isCustom && (
-            <div className="lw-show-savings">
-              <div className="lw-show-savings-head">Your estimated savings</div>
-              <div className="lw-show-savings-figs">
-                <div className="lw-show-saving-fig">
-                  <div className="lw-show-saving-val">{gbp(data.monthlySaving)}/mo<span className="lw-show-saving-est"> est.</span></div>
-                  <div className="lw-show-saving-label">Monthly bill reduction</div>
+          {data.id !== 'custom' && (
+            <div style={{
+              background: 'linear-gradient(115deg, #E8323A 45%, #d44a2a 100%)',
+              borderRadius: '8px',
+              padding: '12px 20px',
+              position: 'relative',
+              overflow: 'hidden',
+              marginBottom: '4px'
+            }}>
+              <div style={{
+                position: 'absolute', bottom: 0, right: 0,
+                width: '65%', height: '65%',
+                backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)',
+                backgroundSize: '10px 10px',
+                WebkitMaskImage: 'radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.5) 0%, transparent 100%)',
+                maskImage: 'radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.5) 0%, transparent 100%)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                fontSize: '0.95rem', fontWeight: 700, color: '#fff',
+                textAlign: 'center', marginBottom: '10px',
+                position: 'relative', zIndex: 1
+              }}>
+                Your estimated savings
+              </div>
+              <div style={{
+                display: 'flex', gap: '0', position: 'relative', zIndex: 1
+              }}>
+                <div style={{ flex: 1, textAlign: 'center', padding: '0 8px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>
+                    {gbp(data.monthlySaving)}/mo <span style={{ fontSize: '0.75rem', fontWeight: 400, opacity: 0.85 }}>est.</span>
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.85)', marginTop: '4px' }}>
+                    Monthly bill reduction
+                  </div>
                 </div>
-                <div className="lw-show-saving-fig">
-                  <div className="lw-show-saving-val">{gbp(data.saving20yr)}<span className="lw-show-saving-est"> est.</span></div>
-                  <div className="lw-show-saving-label">Estimated over 20 years</div>
+                <div style={{ width: '1px', background: 'rgba(255,255,255,0.25)', flexShrink: 0, margin: '4px 0' }} />
+                <div style={{ flex: 1, textAlign: 'center', padding: '0 8px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>
+                    {gbp(data.saving20yr)} <span style={{ fontSize: '0.75rem', fontWeight: 400, opacity: 0.85 }}>est.</span>
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.85)', marginTop: '4px' }}>
+                    Estimated over 20 years
+                  </div>
+                </div>
+                <div style={{ width: '1px', background: 'rgba(255,255,255,0.25)', flexShrink: 0, margin: '4px 0' }} />
+                <div style={{ flex: 1, textAlign: 'center', padding: '0 8px' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>
+                    {Math.round(data.breakEvenYear)} yrs <span style={{ fontSize: '0.75rem', fontWeight: 400, opacity: 0.85 }}>est.</span>
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.85)', marginTop: '4px' }}>
+                    Estimated break-even
+                  </div>
                 </div>
               </div>
             </div>
