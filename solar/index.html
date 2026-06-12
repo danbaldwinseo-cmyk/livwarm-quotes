@@ -1615,16 +1615,25 @@
     }
     /* keep all card content above the texture layer */
     .lw-addon-row > * { position: relative; z-index: 1; }
-    /* HOVER (not selected) — surface darkens slightly + shadow reduces */
-    .lw-addon-row:not(.is-on):hover {
-      background: rgba(0, 0, 0, 0.025);
+    /* HOVER (not selected, non-green cards) — sinks to the selected depth */
+    .lw-addon-row:not(.is-on):not(.lw-addon-bus):hover {
+      background: #e8e8e8;
+      border: 1px solid rgba(0, 0, 0, 0.10);
       transform: translateY(1px);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), inset 0 0 18px 8px rgba(195, 195, 195, 0.60);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                  0 2px 6px rgba(0, 0, 0, 0),
+                  inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                  inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                  inset 0 2px 4px rgba(0, 0, 0, 0.14);
+      transition: box-shadow 300ms ease,
+                  transform 300ms ease,
+                  background-color 300ms ease,
+                  border-color 300ms ease;
     }
-    /* SELECTED — depressed feel, red wash + border, red dot texture */
+    /* SELECTED — neutral grey depression */
     .lw-addon-row.is-on {
       background: #e8e8e8;
-      border: 1.5px solid rgba(232, 50, 58, 0.55);
+      border: 1px solid rgba(0, 0, 0, 0.10);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
                   0 2px 6px rgba(0, 0, 0, 0),
                   inset 0 0 18px 8px rgba(255, 255, 255, 0),
