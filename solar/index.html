@@ -382,8 +382,6 @@
       transition: opacity 150ms ease;
     }
     .lw-card.is-selected::before {
-      background-image: radial-gradient(circle, rgba(232, 50, 58, 0.25) 1px, transparent 1px);
-      background-size: 10px 10px;
       opacity: 1;
     }
     /* Card content sits above the corner texture */
@@ -436,7 +434,8 @@
     .lw-card:not(.is-selected):not(.is-pressing):hover {
       background: #EAEAEA;
       transform: translateY(2px);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22), inset 0 0 18px 8px rgba(195, 195, 195, 0.60);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22),
+                  inset 0 0 18px 6px rgba(76, 175, 80, 0.35);
       transition: all 150ms ease, box-shadow 200ms ease;
     }
     /* PRESS — :active (mouse held) and .is-pressing (JS-held min 80ms for touch) */
@@ -450,9 +449,9 @@
        Keeps the 1.02 scale pulse; the shimmer sweep is on ::after below. */
     .lw-card.is-selected {
       background: #ebebeb;
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
-                  inset 0 0 18px 8px rgba(232, 50, 58, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.10),
+                  inset 0 0 18px 6px rgba(76, 175, 80, 0.35);
       transform: translateY(1px);
       animation: card-press 350ms ease-out forwards;
     }
@@ -466,16 +465,16 @@
       35% {
         transform: translateY(4px);
         background: #e0e0e0;
-        /* brief green rim glow at the deepest press moment, before settling to grey */
+        /* bright green flash at the deepest press, then settles back to faint */
         box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.18),
                     inset 0 2px 6px rgba(0, 0, 0, 0.12),
-                    inset 0 0 14px 3px rgba(76, 175, 80, 0.35);
+                    inset 0 0 22px 8px rgba(76, 175, 80, 0.75);
       }
       100% {
         transform: translateY(1px);
         background: #ebebeb;
-        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13),
-                    inset 0 0 18px 8px rgba(232, 50, 58, 0.06);
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.10),
+                    inset 0 0 18px 6px rgba(76, 175, 80, 0.35);
       }
     }
     .lw-card.is-selected .lw-card-icon,
@@ -1370,7 +1369,7 @@
     /* FIX 3 — branded savings bar inside Essential & Performance tier cards */
     .lw-show-savings {
       position: relative; overflow: hidden;
-      display: flex;
+      display: flex; flex-direction: column;
       background: linear-gradient(115deg, #E8323A 45%, #d44a2a 100%);
       border-radius: 8px; padding: 16px 20px;
     }
@@ -1382,8 +1381,11 @@
       mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.9) 0%, transparent 70%);
       pointer-events: none;
     }
-    .lw-show-saving-fig { flex: 1; position: relative; z-index: 1; }
+    .lw-show-savings-head { position: relative; z-index: 1; font-size: 0.75rem; font-weight: 600; color: #fff; opacity: 0.85; margin-bottom: 10px; text-align: center; }
+    .lw-show-savings-figs { position: relative; z-index: 1; display: flex; }
+    .lw-show-saving-fig { flex: 1; }
     .lw-show-saving-val { font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1.1; }
+    .lw-show-saving-est { font-size: 0.75rem; font-weight: 400; opacity: 0.8; }
     .lw-show-saving-label { font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); margin-top: 2px; }
     @media (max-width: 600px) {
       .lw-comp-row { flex-direction: column; }
@@ -3211,13 +3213,16 @@
           {/* FIX 3 — branded savings bar (Essential & Performance only; Custom shows dropdowns) */}
           {!isCustom && (
             <div className="lw-show-savings">
-              <div className="lw-show-saving-fig">
-                <div className="lw-show-saving-val">~{gbp(data.monthlySaving)}/mo</div>
-                <div className="lw-show-saving-label">Monthly bill reduction</div>
-              </div>
-              <div className="lw-show-saving-fig">
-                <div className="lw-show-saving-val">~{gbp(data.saving20yr)}</div>
-                <div className="lw-show-saving-label">Estimated over 20 years</div>
+              <div className="lw-show-savings-head">Your estimated savings</div>
+              <div className="lw-show-savings-figs">
+                <div className="lw-show-saving-fig">
+                  <div className="lw-show-saving-val">{gbp(data.monthlySaving)}/mo<span className="lw-show-saving-est"> est.</span></div>
+                  <div className="lw-show-saving-label">Monthly bill reduction</div>
+                </div>
+                <div className="lw-show-saving-fig">
+                  <div className="lw-show-saving-val">{gbp(data.saving20yr)}<span className="lw-show-saving-est"> est.</span></div>
+                  <div className="lw-show-saving-label">Estimated over 20 years</div>
+                </div>
               </div>
             </div>
           )}
