@@ -141,7 +141,7 @@ Payment toggle at top: "Pay monthly" / "Pay in full" - pill style, default "Pay 
 Selected pill: solid red background, white text. Unselected: white, grey border.
 
 PAY MONTHLY section:
-- "Your deposit" label, then slider: 0% to 30% of current tier system price, £500 steps.
+- "Your deposit" label, then slider: 0% to 50% of current tier system price, £500 steps.
   Show deposit amount and percentage below slider in grey.
 - "Loan term" label, then pill selector: 36 / 48 / 60 / 84 / 120 / 180 months. Default 180.
   Selected pill: solid red, white text.

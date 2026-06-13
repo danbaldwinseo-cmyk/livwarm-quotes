@@ -210,12 +210,12 @@ Lives at `/solar/solar-products.json`. Fetched by the React SPA on quote screen 
 | Google Maps JavaScript API | Satellite map display - visual confirmation only | Already licensed on LivWarm. No data extracted from map. |
 | postcodes.io | Postcode geocoding (lat/long lookup) | Free open-source API. Decision taken to use postcodes.io instead of Ideal Postcodes to avoid costs. Returns lat/long and town only - no street-level address dropdown. User types house number and street manually after postcode lookup. |
 | Stripe | Payment processing | Card, Klarna, Revolut Pay. New account needed for LivWarm. |
-| Shermin Finance (Stax) | Finance calculator | Confirmed finance provider. Platform is Stax (staxpay.co.uk). Integration method TBC - build self-contained calculator placeholder for now; Shermin embed drops in once credentials confirmed. APR: 9.9% fixed. Loan terms: 36/48/60/84/120/180 months. Deposit cap: 30%. Max loan: £25,000. Reference calculators: UKEM custom build at https://v0-ukem-calculator.vercel.app/ (primary reference - matches LivWarm requirements exactly), public Stax calculator at https://www.staxpay.co.uk/finance-calculator |
+| Shermin Finance (Stax) | Finance calculator | Confirmed finance provider. Platform is Stax (staxpay.co.uk). Integration method TBC - build self-contained calculator placeholder for now; Shermin embed drops in once credentials confirmed. APR: 9.9% fixed. Loan terms: 36/48/60/84/120/180 months. Deposit cap: 50%. Max loan: £25,000. Reference calculators: UKEM custom build at https://v0-ukem-calculator.vercel.app/ (primary reference - matches LivWarm requirements exactly), public Stax calculator at https://www.staxpay.co.uk/finance-calculator |
 | Payaca | CRM / lead management | Direct API call via WordPress AJAX handler (PHP) on same WP install. |
 
 ### Finance calculation
 
-APR: 9.9% fixed. Default term: 180 months (15 years). Deposit cap: 30%. Max loan: £25,000.
+APR: 9.9% fixed. Default term: 180 months (15 years). Deposit cap: 50%. Max loan: £25,000.
 
 ```javascript
 monthlyRate = 0.099 / 12
@@ -380,7 +380,7 @@ EV adjustments (Performance tier only): has_ev=Yes +2, ev_plans=within_2_years +
 
 8. **Inline finance calculator** (below tier carousel, above CTA)
    - Collapsed by default, expandable via "Explore finance options" link/button
-   - When expanded: deposit slider 0-30% of system price in £500 steps, loan term selector 36/48/60/84/120/180 months (default 180), live monthly payment (Math.ceil, 9.9% APR), FCA representative example updating live
+   - When expanded: deposit slider 0-50% of system price in £500 steps, loan term selector 36/48/60/84/120/180 months (default 180), live monthly payment (Math.ceil, 9.9% APR), FCA representative example updating live
    - `// SHERMIN_INTEGRATION_POINT` marked at "Apply for Finance" button
    - This allows users to understand affordability before committing to contact details
    - Updates dynamically when user switches between tier cards
