@@ -445,7 +445,9 @@
       transition: box-shadow 300ms ease,
                   transform 300ms ease,
                   background-color 300ms ease,
-                  border-color 300ms ease;
+                  border-color 300ms ease,
+                  opacity 300ms ease,
+                  filter 300ms ease;
     }
     /* PRESS — :active gives the mouse-held tactile dip. */
     .lw-card:not(.is-selected):active {
@@ -2572,7 +2574,7 @@
       );
     }
 
-    function OptionCard({ option, selected, selectionTick, onPress, lock }) {
+    const OptionCard = React.memo(function OptionCard({ option, selected, selectionTick, onPress, lock }) {
       const ref = useRef(null);
       // The ENTIRE press sequence runs via direct DOM class manipulation with NO React
       // setState until the very end — so no card (and none of its siblings) re-renders
@@ -2650,7 +2652,18 @@
             : <span className="lw-card-label">{option.label}</span>}
         </button>
       );
-    }
+    }, (prev, next) => {
+      // Custom bail-out so a sibling card NEVER re-renders when another card is selected.
+      // selectionTick bumps for the whole grid on every selection — but only the card that
+      // is (or is becoming) selected needs it (to replay its shimmer); siblings must ignore
+      // it, or they'd re-render and risk losing their CSS hover state for a frame.
+      if (prev.selected !== next.selected) return false;                 // selection flipped → re-render
+      if (next.selected && prev.selectionTick !== next.selectionTick) return false;  // selected card replays shimmer
+      if (prev.option !== next.option) return false;
+      if (prev.onPress !== next.onPress) return false;
+      if (prev.lock !== next.lock) return false;
+      return true;                                                       // otherwise skip the re-render
+    });
 
     function Question({ q, currentValue, selectionTick, onSelect }) {
       const lock = useRef(false);   // one press sequence at a time across this grid
@@ -2864,14 +2877,19 @@
     function CardChoice({ options, value, onSelect, onSettle }) {
       const [tick, setTick] = useState(0);
       const lock = useRef(false);   // one press sequence at a time across this grid
+      // Keep the latest callbacks in a ref so `choose` keeps a STABLE identity across
+      // re-renders. With a stable onPress, the memo'd OptionCards bail out — so siblings
+      // never re-render (and so never flash) when one card is selected.
+      const cbRef = useRef();
+      cbRef.current = { onSelect, onSettle };
       // OptionCard owns the full press → settle sequence via DOM classes (no re-render
       // during the animation). choose() fires only once that sequence is complete, so it
       // commits + reveals/advances in one go — the hold already happened in the card.
-      const choose = (option) => {
-        onSelect(option.value);              // commit
-        setTick((t) => t + 1);               // replay the select shimmer
-        if (onSettle) onSettle(option.value); // reveal sub-question / advance
-      };
+      const choose = useCallback((option) => {
+        cbRef.current.onSelect(option.value);              // commit
+        setTick((t) => t + 1);                             // replay the select shimmer
+        if (cbRef.current.onSettle) cbRef.current.onSettle(option.value); // reveal / advance
+      }, []);
       const cls = 'lw-card-grid'
         + (options.length === 2 ? ' cols-2' : '')
         + (options.length === 4 ? ' grid-4' : '')
