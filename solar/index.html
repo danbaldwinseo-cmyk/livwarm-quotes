@@ -2967,8 +2967,8 @@
     };
     const EXPORT_TARIFF = 0.15;        // £/kWh
     const SELF_CONSUMPTION = 0.5;
-    const FINANCE_APR = 0.069;
-    const FINANCE_MONTHS = 120;
+    const FINANCE_APR = 0.099;
+    const FINANCE_MONTHS = 180;
     // battery option key → PRICING.base key
     const BATTERY_PRICE_KEY = { none: 'noB', '5kw': 'b5', '10kw': 'b10', '15kw': 'b15', powerwall: 'pw' };
     // battery option key → display labels
@@ -3042,7 +3042,7 @@
       return 'powerwall';
     }
 
-    // Finance monthly payment: 6.9% APR over 10 years, rounded up to the nearest £.
+    // Finance monthly payment: 9.9% APR over 15 years, rounded up to the nearest £.
     function monthlyPayment(systemCost) {
       const r = FINANCE_APR / 12;
       const p = systemCost * (r * Math.pow(1 + r, FINANCE_MONTHS)) / (Math.pow(1 + r, FINANCE_MONTHS) - 1);
