@@ -1802,6 +1802,8 @@
     .lw-mc-price-label { font-size: 0.95rem; font-weight: 600; color: var(--color-primary); }
     .lw-mc-monthly { font-size: 3rem; font-weight: 800; color: var(--color-primary); line-height: 1.1; }
     .lw-mc-cash { font-size: 1.1rem; color: var(--color-dark); margin-top: 4px; }
+    .lw-mc-cash--deemph { font-size: 1rem; color: var(--color-body); }
+    .lw-mc-finterms { font-size: 0.8rem; color: #999; margin-top: 4px; }
     .lw-mc-vat { font-size: 0.75rem; color: #999; margin-top: 4px; }
     .lw-mc-note { font-size: 0.75rem; color: #999; font-style: italic; margin: 12px auto 0; }
     .lw-mc-cta { width: auto; min-width: 280px; margin: 24px auto 0; }
@@ -2015,26 +2017,29 @@
       margin: 0 0 18px;
       text-align: left;
     }
-    .lw-fin-apply {
+    .lw-fin-select {
       display: block;
       width: 100%;
-      padding: 13px 20px;
-      background: #fff;
-      color: var(--color-primary);
-      border: 1.5px solid rgba(232, 50, 58, 0.4);
-      border-radius: 999px;
+      padding: 14px 20px;
+      background: #E8323A;
+      color: #fff;
+      border: none;
+      border-radius: 24px;
       font-family: inherit;
       font-size: 1rem;
       font-weight: 800;
       cursor: pointer;
       transition: background 150ms ease;
     }
-    .lw-fin-apply:hover { background: rgba(232, 50, 58, 0.05); }
-    .lw-fin-shermin {
-      margin: 12px 0 0;
-      font-size: 0.85rem;
-      color: var(--color-body);
+    .lw-fin-select:hover { background: #C8232B; }
+    .lw-fin-select--cash { margin-top: 16px; }
+    .lw-fin-confirm {
+      margin: 0;
+      padding: 14px 0;
       text-align: center;
+      color: #4CAF50;
+      font-size: 0.95rem;
+      font-weight: 700;
     }
     .lw-fin-full { text-align: center; padding: 8px 0; }
     .lw-fin-full-price { font-size: 2rem; font-weight: 800; color: var(--color-dark); line-height: 1.1; }
@@ -2256,6 +2261,12 @@
     .lw-bsum-item { font-size: 0.8rem; color: #888; margin-top: 2px; }
     .lw-bsum-monthly { font-size: 0.95rem; font-weight: 700; color: var(--color-primary); margin-top: 8px; }
     .lw-bsum-apr { font-size: 0.75rem; color: #999; margin-top: 2px; }
+    /* Finance-led price section (when a finance quote was selected) */
+    .lw-bsum-mplabel { font-size: 0.875rem; color: var(--color-body); }
+    .lw-bsum-mpfig { font-size: 1.5rem; font-weight: 800; color: var(--color-primary); line-height: 1.1; margin: 2px 0 10px; }
+    .lw-bsum-tr { font-size: 0.875rem; font-weight: 700; color: var(--color-dark); }
+    .lw-bsum-cash { font-size: 0.875rem; color: #999; }
+    .lw-bsum-finnote { font-size: 0.8rem; color: #999; font-style: italic; margin: 12px 0 0; line-height: 1.5; }
     .lw-bsum-line + .lw-bsum-line { margin-top: 8px; }
     .lw-bsum-k2 { font-size: 0.8rem; color: var(--color-body); }
     .lw-bsum-v2 { font-size: 0.95rem; font-weight: 800; color: var(--color-dark); }
@@ -3939,11 +3950,11 @@
        ============================================================ */
     // Loan term (months) → year label for the FCA representative example.
     const TERM_YEARS = { 36: '3 years', 48: '4 years', 60: '5 years', 84: '7 years', 120: '10 years', 180: '15 years' };
-    function FinanceModal({ systemPrice, onClose }) {
+    function FinanceModal({ systemPrice, onClose, onSelectFinance }) {
       const [mode, setMode] = useState('monthly');     // 'monthly' | 'full'
       const [term, setTerm] = useState(180);           // months; default 15 years
       const [deposit, setDeposit] = useState(0);
-      const [showShermin, setShowShermin] = useState(false);
+      const [confirmed, setConfirmed] = useState(false);  // brief "selected ✓" before closing
       const TERMS = [36, 48, 60, 84, 120, 180];
 
       // Deposit: largest clean £500 multiple that keeps the remaining loan at or above
@@ -3966,6 +3977,25 @@
       // Saving from paying in full vs financing the full price over 15 years.
       const full15Monthly = financeMonthly(systemPrice, 180);
       const financeSavingVsTotal = Math.max(0, full15Monthly * 180 - systemPrice);
+
+      // Commit the selected finance terms to app state, confirm briefly, then close.
+      const selectFinance = () => {
+        onSelectFinance({
+          financeSelected: true,
+          financeDeposit: deposit,
+          financeDepositPct: depositPct,
+          financeTerm: term,
+          financeMonthly: monthly,
+          financeTotalRepayable: totalRepayable,
+        });
+        setConfirmed(true);
+        setTimeout(onClose, 1500);
+      };
+      // Choose cash purchase: clear any finance selection and close.
+      const selectCash = () => {
+        onSelectFinance({ financeSelected: false });
+        onClose();
+      };
 
       return (
         <div className="lw-modal-overlay" onClick={onClose}>
@@ -4023,14 +4053,13 @@
                   Credit is subject to status and affordability.
                 </p>
 
-                {/* SHERMIN_INTEGRATION_POINT — drop the Shermin/Stax embed in here once
-                    credentials are confirmed; replace the placeholder button + note below. */}
-                <button type="button" className="lw-fin-apply" onClick={() => setShowShermin(true)}>
-                  Apply for Finance with Shermin
-                </button>
-                {showShermin && (
-                  <p className="lw-fin-shermin">Finance applications will open shortly - call 0800 222 9494</p>
-                )}
+                {/* SHERMIN_INTEGRATION_POINT — the live Shermin/Stax application embed drops
+                    in once credentials are confirmed; for now the user selects the quote. */}
+                {confirmed
+                  ? <p className="lw-fin-confirm">Finance quote selected ✓</p>
+                  : <button type="button" className="lw-fin-select" onClick={selectFinance}>
+                      Select this finance quote →
+                    </button>}
               </div>
             ) : (
               <div className="lw-fin-body lw-fin-full">
@@ -4038,6 +4067,9 @@
                 <div className="lw-fin-full-save">
                   Save {gbp(financeSavingVsTotal)} compared to paying monthly over 15 years
                 </div>
+                <button type="button" className="lw-fin-select lw-fin-select--cash" onClick={selectCash}>
+                  Select cash purchase →
+                </button>
               </div>
             )}
           </div>
@@ -4081,7 +4113,7 @@
       );
     }
 
-    function QuoteStep({ answers, onContinue }) {
+    function QuoteStep({ answers, onContinue, onSelectFinance }) {
       // Sensible initial Custom selection: the Performance system, clamped to 6–22.
       const init = buildTiers(answers, { panels: 6, battery: 'none' }).defaults;
       const [custom, setCustom] = useState({
@@ -4313,7 +4345,8 @@
 
           {/* Finance options modal — reflects the tier whose footer button was clicked */}
           {financePrice != null && (
-            <FinanceModal systemPrice={financePrice} onClose={() => setFinancePrice(null)} />
+            <FinanceModal systemPrice={financePrice} onClose={() => setFinancePrice(null)}
+              onSelectFinance={onSelectFinance} />
           )}
         </div>
       );
@@ -4406,8 +4439,9 @@
     /* ============================================================
        STEP 7A — Micro-commitment screen (system summary; no progress increment)
        ============================================================ */
-    function MicroCommitment({ sel, warrantyAdded, evChargerInterest, busGrantInterest, onContinue, onEdit }) {
+    function MicroCommitment({ sel, warrantyAdded, evChargerInterest, busGrantInterest, financeChoice, onContinue, onEdit }) {
       const total = sel.price + (warrantyAdded ? 199 : 0);
+      const fin = financeChoice && financeChoice.financeSelected ? financeChoice : null;
       const hideImg = (e) => { e.currentTarget.style.display = 'none'; };
       const images = sel.images || {};
       const included = sel.included || [];
@@ -4474,10 +4508,13 @@
 
               <hr className="lw-mc-div" />
 
-              {/* Row 4 — price block */}
+              {/* Row 4 — price block (finance-led when a finance quote was selected) */}
               <div className="lw-mc-price-label">Your price</div>
-              <div className="lw-mc-monthly">£{sel.monthly}/mo</div>
-              <div className="lw-mc-cash">or pay in full: {gbp(total)}</div>
+              <div className="lw-mc-monthly">£{fin ? fin.financeMonthly : sel.monthly}/mo</div>
+              <div className={'lw-mc-cash' + (fin ? ' lw-mc-cash--deemph' : '')}>or pay in full: {gbp(total)}</div>
+              {fin && (
+                <div className="lw-mc-finterms">{gbp(fin.financeDeposit)} deposit · {fin.financeTerm} months · 9.9% APR</div>
+              )}
               <div className="lw-mc-vat">All prices include VAT</div>
             </div>
           </div>
@@ -4734,7 +4771,8 @@
     /* ============================================================
        STEP 8 — Your details + booking summary
        ============================================================ */
-    function ContactDetails({ sel, warrantyAdded, leadFirstName, leadEmail, onSubmit }) {
+    function ContactDetails({ sel, warrantyAdded, financeChoice, leadFirstName, leadEmail, onSubmit }) {
+      const fin = financeChoice && financeChoice.financeSelected ? financeChoice : null;
       // Pre-populate from the email-capture gate: if a lead name/email was provided
       // there, seed the matching field (otherwise blank — e.g. the user skipped).
       const [firstName, setFirstName] = useState(leadFirstName || '');
@@ -4844,13 +4882,40 @@
 
                 <hr className="lw-bsum-div" />
 
-                <div className="lw-bsum-line">
-                  <span className="lw-bsum-k">System price</span>
-                  <span className="lw-bsum-v">{gbp(total)}</span>
-                </div>
-                {warrantyAdded && <div className="lw-bsum-item">+£199 warranty</div>}
-                <div className="lw-bsum-monthly">or £{monthly}/mo</div>
-                <div className="lw-bsum-apr">at 9.9% APR, 15-year term</div>
+                {fin ? (
+                  <React.Fragment>
+                    <div className="lw-bsum-mplabel">Monthly payment</div>
+                    <div className="lw-bsum-mpfig">£{fin.financeMonthly}/mo</div>
+                    <div className="lw-bsum-line">
+                      <span className="lw-bsum-k">Deposit</span>
+                      <span className="lw-bsum-k">{gbp(fin.financeDeposit)} ({fin.financeDepositPct}%)</span>
+                    </div>
+                    <div className="lw-bsum-line">
+                      <span className="lw-bsum-k">Term</span>
+                      <span className="lw-bsum-k">{fin.financeTerm} months ({TERM_YEARS[fin.financeTerm] || (Math.round(fin.financeTerm / 12) + ' years')}) · 9.9% APR</span>
+                    </div>
+                    <div className="lw-bsum-line">
+                      <span className="lw-bsum-k">Total repayable</span>
+                      <span className="lw-bsum-tr">{gbp(fin.financeTotalRepayable)}</span>
+                    </div>
+                    <hr className="lw-bsum-div" />
+                    <div className="lw-bsum-line">
+                      <span className="lw-bsum-cash">Cash price</span>
+                      <span className="lw-bsum-cash">{gbp(total)}</span>
+                    </div>
+                    <p className="lw-bsum-finnote">Your finance application will be submitted after your free survey. Our team will confirm your terms before any commitment is made.</p>
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment>
+                    <div className="lw-bsum-line">
+                      <span className="lw-bsum-k">System price</span>
+                      <span className="lw-bsum-v">{gbp(total)}</span>
+                    </div>
+                    {warrantyAdded && <div className="lw-bsum-item">+£199 warranty</div>}
+                    <div className="lw-bsum-monthly">or £{monthly}/mo</div>
+                    <div className="lw-bsum-apr">at 9.9% APR, 15-year term</div>
+                  </React.Fragment>
+                )}
 
                 <hr className="lw-bsum-div" />
 
@@ -4913,6 +4978,9 @@
       const [quoteSel, setQuoteSel] = useState(null);
       const [upsellOpen, setUpsellOpen] = useState(false);
       const [microCommit, setMicroCommit] = useState(false);
+      // Finance choice from the finance modal: null = not engaged, else the selected
+      // terms object (or { financeSelected: false } for a cash purchase).
+      const [financeChoice, setFinanceChoice] = useState(null);
       React.useEffect(() => {
         if (currentIndex >= frontierRef.current) {
           frontierRef.current = currentIndex;   // at/forward of the frontier → collapse
@@ -4993,6 +5061,7 @@
         setQuoteSel(null);
         setUpsellOpen(false);
         setMicroCommit(false);
+        setFinanceChoice(null);
         frontierRef.current = 0;
       }, []);
 
@@ -5390,7 +5459,8 @@
                     />
                   )}
                   {onQuote && !microCommit && (
-                    <QuoteStep answers={answers} onContinue={handleQuoteContinue} />
+                    <QuoteStep answers={answers} onContinue={handleQuoteContinue}
+                      onSelectFinance={setFinanceChoice} />
                   )}
                   {onQuote && microCommit && quoteSel && (
                     <MicroCommitment
@@ -5398,6 +5468,7 @@
                       warrantyAdded={!!answers.warrantyAdded}
                       evChargerInterest={!!answers.evChargerInterest}
                       busGrantInterest={!!answers.busGrantInterest}
+                      financeChoice={financeChoice}
                       onContinue={handleMicroContinue}
                       onEdit={handleMicroEdit}
                     />
@@ -5406,6 +5477,7 @@
                     <ContactDetails
                       sel={quoteSel}
                       warrantyAdded={!!answers.warrantyAdded}
+                      financeChoice={financeChoice}
                       leadFirstName={answers.lead_first_name}
                       leadEmail={answers.lead_email}
                       onSubmit={handleContactContinue}
