@@ -53,8 +53,8 @@ Four flows, built in this order:
 
 ### Typography
 
-- Brand font: lbrand (woff2, woff, ttf files in /fonts/ folder)
-- Fallback stack: 'lbrand', 'Nunito', sans-serif
+- Brand font: IBrand (woff2, woff, ttf files in /fonts/ folder)
+- Fallback stack: 'IBrand', 'Nunito', sans-serif
 - Minimum font size: 16px everywhere, including inputs
 
 ### Font scale
@@ -76,17 +76,24 @@ Four flows, built in this order:
 - Generous white space between sections
 - Trust signals (MCS Certified, Trustpilot 4.9, 2yr Warranty) in footer bar only - not duplicated above CTA
 
-### Card Interaction System (built in Session 1 - do not alter)
+### Card Interaction System (built in Session 1, refined in polish sessions)
 
 Three-state interaction:
 
-- **Default:** raised shadow (0 4px 16px rgba(0,0,0,0.13), 0 2px 6px rgba(0,0,0,0.09)), light background, dot texture lower-right corner
-- **Hover:** card sinks slightly, shimmer sweep to rgba(255,255,255,0.65) across surface
-- **Click:** two-beat punch-and-rise animation, then settles into depressed inset shadow selected state
-- **Selected:** inset shadow (depressed feel), background fills with LivWarm red at low opacity, border becomes solid red, label goes bold, dot texture switches to rgba(232,50,58,0.25) red dots
+- **Default:** raised shadow (`0 4px 16px rgba(0,0,0,0.13), 0 2px 6px rgba(0,0,0,0.09), inset 0 0 18px 8px rgba(255,255,255,0.92), inset 0 4px 12px rgba(0,0,0,0), inset 0 2px 4px rgba(0,0,0,0)`), light background, dot texture lower-right corner
+- **Hover:** card sinks to same depth as selected state. Outer shadow fades out smoothly over 300ms via zero-opacity placeholder layers in both default and hover states so CSS can interpolate between them. No shimmer on hover.
+- **Click:** two-beat punch-and-rise animation. At 35% (deepest press) translateY(5px) with stronger inset shadow (`inset 0 8px 20px rgba(0,0,0,0.28), inset 0 3px 6px rgba(0,0,0,0.18)`). Single dark shimmer sweep plays on click only. Settles back to hover/selected depth.
+- **Selected:** same visual depth as hover - `background: #e8e8e8`, `border: 1px solid rgba(0,0,0,0.10)`, inset shadow (`inset 0 4px 12px rgba(0,0,0,0.22), inset 0 2px 4px rgba(0,0,0,0.14)`), translateY(1px), label goes bold, grey dot texture
 - **Unselected (after selection made):** dims to 60% opacity with desaturation
-- Smooth 150ms transition throughout
+- 300ms transition on box-shadow, transform, background-color, border-color
 - 500ms delay before auto-advancing after card selection
+- No red glow on selected state - neutral grey depression only
+- Grey dot texture on selected state - no red dots
+
+### Shimmer
+
+- Single dark shimmer on click only (`rgba(0,0,0,0.08)` sweep via `shimmer-sweep-click` keyframe)
+- No hover shimmer - removed entirely
 
 ### Dot Texture (all cards)
 
@@ -97,11 +104,11 @@ mask: radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.5) 0%, transparent 100%
 width: 65%; height: 65%; /* bottom-right corner only */
 ```
 
-Selected state dot colour: `rgba(232,50,58,0.25)`
+Selected state dot colour: same grey (`#b8b8b8`) - no red dots on selected cards.
 
 ### Tariff Toggle Cards
 
-Styled as mini answer cards - rectangular, rounded corners, dot texture lower-right corner. Selected state: `background: rgba(232,50,58,0.04)`, `border: 1.5px solid rgba(232,50,58,0.9)`, red text, soft red bloom box-shadow.
+Styled as mini answer cards - rectangular, rounded corners, dot texture lower-right corner. Selected state uses red treatment (unlike answer cards): `background: rgba(232,50,58,0.04)`, `border: 1.5px solid rgba(232,50,58,0.9)`, red text, soft red inset shadow. Default state: no visible border, raised shadow. Hover: subtle sink, no border.
 
 ### Continue Button
 
@@ -115,7 +122,6 @@ Full width, same pill shape and shadow as Continue button. Background: #4CAF50 (
 
 - Content block max-width: 1100px, centred
 - Two-card layouts: max-width 860px, centred
-- Vertically positioned at roughly 45% from top
 - No Continue buttons on card-based screens - cards auto-advance after 500ms
 - Continue button only on input screens (kWh, tariff)
 - Subheadings globally: font-size 1.125rem, font-weight 500, colour #4A4A4A
@@ -128,6 +134,11 @@ Full width, same pill shape and shadow as Continue button. Background: #4CAF50 (
 
 - Accumulate above each question, show previous answers with edit icon, centred
 - Collapses to "X previous answers ∨" toggle when more than 6 pills
+- Hidden entirely on the quote screen (Step 7) - not needed on a results screen
+
+### Sub-question reveal timing
+
+On steps where clicking an answer card reveals a sub-question row (Battery step, EV step), the sub-question does not appear until the full press animation is complete (after PRESS_MS + SELECT_HOLD_MS). Implemented via local `settledLocation` / `settledHasEv` state in each step component, initialised from props so back-navigation shows prior answers correctly.
 
 ---
 
@@ -138,9 +149,9 @@ Full width, same pill shape and shadow as Continue button. Background: #4CAF50 (
 ```
 livwarm-quotes/
 ├── fonts/
-│   ├── lbrand.woff2
-│   ├── lbrand.woff
-│   └── lbrand.ttf
+│   ├── IBrand.woff2
+│   ├── IBrand.woff
+│   └── IBrand.ttf
 ├── solar/
 │   ├── index.html              (self-contained React SPA)
 │   └── solar-products.json    (product content - images, descriptions, who_for copy)
@@ -174,16 +185,11 @@ Lives at `/solar/solar-products.json`. Fetched by the React SPA on quote screen 
 
 **Panel image:** https://deals.livwarm.co.uk/wp-content/uploads/2025/10/12-Solar-Panels.webp
 
-**Maintenance:** To update product content, edit solar-products.json directly in VS Code and commit to GitHub. Vercel deploys within 30 seconds. No code changes needed.
-
 ### WordPress product catalogue
 
 - WordPress custom post type slug: `prod` (not `products`)
 - REST API endpoint: `https://deals.livwarm.co.uk/wp-json/wp/v2/prod`
-- Product images live in WordPress media library at `https://deals.livwarm.co.uk/wp-content/uploads/`
 - No WooCommerce installed - custom post type only
-- Product types taxonomy used for categorisation (Battery Storage, Air Source Heat Pumps, EV Chargers, Boilers, Solar Panels)
-- Note: no Solar Panel products currently exist in WordPress - panel image sourced directly from media library
 
 ### WordPress deployment
 
@@ -202,44 +208,24 @@ Lives at `/solar/solar-products.json`. Fetched by the React SPA on quote screen 
 | Service | Purpose | Notes |
 |---------|---------|-------|
 | Google Maps JavaScript API | Satellite map display - visual confirmation only | Already licensed on LivWarm. No data extracted from map. |
-| Ideal Postcodes API | Postcode/address lookup dropdown | This is what UKEM uses - not Google Places. Confirm whether LivWarm has an account or needs one. |
+| postcodes.io | Postcode geocoding (lat/long lookup) | Free open-source API. Decision taken to use postcodes.io instead of Ideal Postcodes to avoid costs. Returns lat/long and town only - no street-level address dropdown. User types house number and street manually after postcode lookup. |
 | Stripe | Payment processing | Card, Klarna, Revolut Pay. New account needed for LivWarm. |
-| Shermin Finance (Stax) | Finance calculator | Confirmed finance provider. Platform is Stax (staxpay.co.uk). Integration method TBC - build self-contained calculator placeholder for now; Shermin embed drops in once credentials confirmed. APR: 9.9% fixed. Loan terms: 36/48/60/84/120/180 months. Deposit cap: 30%. Max loan: £25,000. |
-| Payaca | CRM / lead management | Direct API call via WordPress AJAX handler (PHP) on same WP install. Credentials and field maps already in existing PHP. No Zapier needed. |
-
-### Google Solar API - NOT USED
-
-The Google Solar API has been removed from the spec. Panel sizing is handled by the lookup table in Section 6, supplemented by the occupancy and roof orientation questions.
-
-### Google Maps setup required
-
-- Maps JavaScript API only
-- API key needs domain restrictions for: `*.deals.livwarm.co.uk/*` and `*.vercel.app/*` (remove Vercel restriction before production launch)
-
-### Postcode lookup
-
-UKEM uses Ideal Postcodes (api.ideal-postcodes.co.uk), not Google Places. Confirm whether LivWarm already has an Ideal Postcodes account.
+| Shermin Finance (Stax) | Finance calculator | Confirmed finance provider. Platform is Stax (staxpay.co.uk). Integration method TBC - build self-contained calculator placeholder for now; Shermin embed drops in once credentials confirmed. APR: 9.9% fixed. Loan terms: 36/48/60/84/120/180 months. Deposit cap: 30%. Max loan: £25,000. Reference calculators: UKEM custom build at https://v0-ukem-calculator.vercel.app/ (primary reference - matches LivWarm requirements exactly), public Stax calculator at https://www.staxpay.co.uk/finance-calculator |
+| Payaca | CRM / lead management | Direct API call via WordPress AJAX handler (PHP) on same WP install. |
 
 ### Finance calculation
 
-APR: 9.9% fixed (confirmed from UKEM Stax/Shermin calculator and UKEM quote engine).
-Available terms: 36 / 48 / 60 / 84 / 120 / 180 months.
-Default term shown to user: 180 months (15 years) - displays the lowest monthly figure as the headline number, matching UKEM approach.
-Deposit cap: 30% of system price (matches UKEM quote engine - not the 50% shown on the standalone Vercel calculator).
-Max loan amount: £25,000.
+APR: 9.9% fixed. Default term: 180 months (15 years). Deposit cap: 30%. Max loan: £25,000.
 
 ```javascript
 monthlyRate = 0.099 / 12
-// Default display uses 180 months to show lowest monthly figure
 monthlyPayment = systemCost × (monthlyRate × (1 + monthlyRate)^months) / ((1 + monthlyRate)^months - 1)
 // Round up to nearest £ using Math.ceil
 ```
 
 ### VAT treatment
 
-All prices are shown VAT-inclusive throughout the flow. A footnote "All prices include VAT" appears below the price breakdown on the booking summary and payment screens. This matches UKEM exactly. The prices in the PRICING constant are treated as VAT-inclusive - no multiplication applied.
-
-Note: VAT on solar PV and battery storage is 5% (reduced rate for energy-saving materials), not 20%. The spreadsheet prices are assumed to already include this 5% VAT. Awaiting confirmation from UKEM account manager - see Section 10 TBC items.
+All prices are shown VAT-inclusive throughout the flow. "All prices include VAT" footnote on booking summary and payment screens.
 
 ---
 
@@ -247,27 +233,16 @@ Note: VAT on solar PV and battery storage is 5% (reduced rate for energy-saving 
 
 ### Overview: 9 steps
 
-Steps 1-7 are complete and deployed at livwarm-quotes.vercel.app/solar. Step 7 (quote screen) has a polish pass pending (see Section 11).
-
-Note: electricity usage was split into two steps (kWh and tariff), making the total 9 not 8 as originally planned.
+Steps 1-7 and Step 7A are complete and deployed at livwarm-quotes.vercel.app/solar.
 
 ---
 
 ### Step 1 - Home Details (Qualifier) - COMPLETE
 
-1. Are you a homeowner or a landlord?
-   - Homeowner / Landlord → both continue (NOT a dead-end)
-
-2. What type of home do you live in?
-   - Detached / Semi-Detached / Terrace / Bungalow → continue
-   - Flat → dead-end to /sorry-we-cannot-help
-
-3. What type of roof do you have?
-   - Pitched → continue
-   - Flat → dead-end to /sorry-we-cannot-help
-
-4. How many bedrooms?
-   - 1 / 2 / 3 / 4 / 5+
+1. Are you a homeowner or a landlord? - Homeowner / Landlord (both continue)
+2. What type of home do you live in? - Detached / Semi-Detached / Terrace / Bungalow / Flat (dead-end)
+3. What type of roof do you have? - Pitched / Flat (dead-end)
+4. How many bedrooms? - 1 / 2 / 3 / 4 / 5+
 
 Data collected: `house_owner_type`, `house_type`, `roof_type`, `house_bedrooms`
 
@@ -275,11 +250,7 @@ Data collected: `house_owner_type`, `house_type`, `roof_type`, `house_bedrooms`
 
 ### Step 2 - Electricity Usage (kWh) - COMPLETE
 
-- Annual kWh input with placeholder "e.g. 4,100", unit label "kWh/yr"
-- "Where do I find this?" link - help modal with annotated energy bill. Passes `highlightField='usage'` to modal - only the "Electricity used (annual)" row is highlighted.
-- "I'm not sure - use national averages" link populates 4,100 kWh/yr
-- Continue button activates once kWh field is populated
-- Breadcrumb pill: "Usage: 4,100 kWh"
+- Annual kWh input, "Where do I find this?" modal (highlightField='usage'), national average fallback (4,100 kWh)
 
 Data collected: `electricity_usage`
 
@@ -287,19 +258,10 @@ Data collected: `electricity_usage`
 
 ### Step 3 - Electricity Tariff - COMPLETE
 
-- Screen title: "How are you charged for electricity?"
-- Subtitle: "You'll find this on your latest electricity bill."
 - Tariff toggle cards: Same rate / Economy 7
-- If same rate: single unit rate input in p/kWh. "Where do I find this?" passes `highlightField='rate'` to modal - only the "Unit rate" row is highlighted.
-- If Economy 7: day rate and night rate inputs
-- "I'm not sure - use national averages": 26.35p/kWh single, or 28p/15p Economy 7
-- Breadcrumb pill: "Rate: 27p/kWh" or "Rate: 28p/15p (E7)"
+- Rate input(s), "Where do I find this?" modal (highlightField='rate'), national average fallback
 
 Data collected: `rate_type`, `day_unit_rate`, `night_unit_rate`
-
-### Help Modal - dynamic field highlighting
-
-The "Where do I find this?" modal accepts a `highlightField` prop ('usage' or 'rate'). Only the relevant row is highlighted with the red box and annotation. The other row renders as a normal unhighlighted bill row. Same modal component used for both steps - context-aware via prop.
 
 ---
 
@@ -309,6 +271,8 @@ The "Where do I find this?" modal accepts a `highlightField` prop ('usage' or 'r
 2. If Inside: Garage / Utility room / Cupboard / Other
 3. If Outside: Side of the garage / Side of the house / Back of the house / Other
 
+Sub-question delayed until press animation completes via local `settledLocation` state.
+
 Data collected: `battery_location`, `battery_location_inside`, `battery_location_outside`
 
 ---
@@ -316,8 +280,10 @@ Data collected: `battery_location`, `battery_location_inside`, `battery_location
 ### Step 5 - EV Details - COMPLETE
 
 1. Do you have an electric vehicle? - Yes / No
-2. If Yes: How do you currently charge it? - Home charger / Public charger / Both
+2. If Yes: How do you currently charge it? (4 options)
 3. If No: Are you planning to get one? - Yes within 2 years / Maybe 2-5 years / No plans
+
+Sub-question delayed until press animation completes via local `settledHasEv` state.
 
 Data collected: `has_ev`, `ev_charging_method`, `ev_plans`
 
@@ -325,71 +291,25 @@ Data collected: `has_ev`, `ev_charging_method`, `ev_plans`
 
 ### Step 6 - Address & Roof Confirmation - COMPLETE
 
-#### Part A: Postcode lookup
-- "Let's identify your roof" heading
-- Postcode input + "Find Addresses" button (Ideal Postcodes API)
-- Address dropdown populated from postcode lookup
-- "Can't find your address? Enter manually" fallback
-- On selection: lat/long stored, street bearing calculated for orientation suggestion
+Parts A-D: postcode lookup → satellite map → orientation compass → occupancy
 
-#### Part B: Satellite map confirmation
-- Full-screen Google Maps satellite view, pin on property
-- Pin is draggable - updates stored lat/long
-- Confirm button
+Generation multipliers by orientation: S=1.00, SE/SW=0.93, E/W=0.82, NE/NW=0.65, N=0.52
 
-#### Part C: Roof orientation
-- Auto-suggestion from street bearing: "Your front door appears to face [Direction]. Does that sound right?"
-- If Yes: confirmed, advance
-- If No: interactive compass UI with satellite map + eight-point compass graphic
-- User taps direction, highlighted in LivWarm red
+Occupancy adjustments when national average kWh used: 1=1800, 2=2700, 3=3500, 4=4300, 5+=5500 kWh
 
-Generation multipliers by orientation:
-
-| Direction | Multiplier |
-|-----------|------------|
-| S | 1.00 |
-| SE / SW | 0.93 |
-| E / W | 0.82 |
-| NE / NW | 0.65 |
-| N | 0.52 |
-
-#### Part D: Occupancy
-- "How many people live in your home?" - cards: 1 / 2 / 3 / 4 / 5+
-- Used to refine usage when national average fallback was applied
-
-| Occupants | Estimated annual usage |
-|-----------|----------------------|
-| 1 | 1,800 kWh |
-| 2 | 2,700 kWh |
-| 3 | 3,500 kWh |
-| 4 | 4,300 kWh |
-| 5+ | 5,500 kWh |
-
-**CTA at end of Step 6:** Green "Prepare my quote →" button (not red Continue). Full width, #4CAF50, margin-top 32px, padding-bottom 32px. Triggers loading overlay before quote screen.
+CTA: Green "Prepare my quote →" button triggers loading overlay.
 
 Data collected: `postcode`, `address_line1`, `town`, `latlong`, `roof_orientation`, `occupants`
 
 ---
 
-### "Preparing Your Quote" Loading Overlay
+### "Preparing Your Quote" Loading Overlay - COMPLETE
 
-Triggered by the "Prepare my quote" button. Full-screen white overlay, runs for ~6.8 seconds, then dissolves into the quote screen. Pure setTimeout - no actual processing. Psychological purpose: labour illusion increases perceived value and trust.
-
-- LivWarm logo centred top
-- Rotating sun SVG icon, 56px, LivWarm red
-- Heading: "Preparing your quote" - 2.25rem, bold, #2D2D2D
-- Progress bar: LivWarm red, 10px height, border-radius 5px, fills left to right over 6 seconds
-- Five sequential messages, each shown for 1,200ms, 1.25rem, font-weight 500, #2D2D2D, centred:
-  1. "Analysing your property and roof orientation..."
-  2. "Calculating your solar generation potential..."
-  3. "Checking current energy rates and export tariffs..."
-  4. "Matching you to the best available systems..."
-  5. "Finalising your personalised quote..."
-- Fades in over 300ms, fades out over 500ms at end
+6.8 second overlay, 5 messages at 1,200ms each, red progress bar, rotating sun icon. Pure labour illusion - no actual processing.
 
 ---
 
-### Step 7 - Your Solar Potential (Quote Screen) - COMPLETE (polish pass pending)
+### Step 7 - Your Solar Potential (Quote Screen) - COMPLETE
 
 #### Pricing data (inline PRICING constant)
 
@@ -399,18 +319,9 @@ const PRICING = {
   pricePerExtraPanel: 250,
   base: { noB: 4342, b5: 5842, b10: 6842, b15: 7842, pw: 10842 }
 };
-// 445W panels. Base generation: 400 kWh/year/panel at south-facing.
-
-function getPrice(panels, battery) {
-  const extraPanels = Math.max(0, panels - 6);
-  const basePrice = PRICING.base[{none:'noB','5kw':'b5','10kw':'b10','15kw':'b15','powerwall':'pw'}[battery]];
-  return basePrice + (extraPanels * 250);
-}
 ```
 
 #### Panel sizing logic
-
-Base panel count from lookup table:
 
 | Property | Bedrooms | Base panels |
 |----------|----------|-------------|
@@ -426,7 +337,7 @@ Base panel count from lookup table:
 | Bungalow | 2 | 10 |
 | Bungalow | 3+ | 12 |
 
-EV adjustments: has_ev=true +2, ev_plans=within_2_years +2, ev_plans=maybe_2_5_years +1. Applied to Performance tier only. Essential uses base count with no EV adjustment.
+EV adjustments (Performance tier only): has_ev=Yes +2, ev_plans=within_2_years +2, maybe_2_5_years +1.
 
 #### Battery sizing (Performance tier)
 
@@ -437,277 +348,190 @@ EV adjustments: has_ev=true +2, ev_plans=within_2_years +2, ev_plans=maybe_2_5_y
 | 6,000-8,000 kWh | 15kw |
 | Over 8,000 kWh | powerwall |
 
-#### Financial calculations
-
-```
-export_tariff = 0.15
-gridImportRate = day_unit_rate / 100 (default 0.2635)
-annualGeneration = panelCount × 400 × orientationMultiplier
-annualSaving = (annualGeneration × 0.5 × gridImportRate) + (annualGeneration × 0.5 × 0.15)
-breakEvenYear = systemCost / annualSaving
-saving20yr = (annualSaving × 20) - systemCost
-monthlySaving = annualSaving / 12
-currentBill = (electricity_usage / 12) × gridImportRate
-billAfterSolar = Math.max(0, currentBill - monthlySaving)
-monthlyPayment = Math.ceil(systemCost × (monthlyRate × (1+monthlyRate)^180) / ((1+monthlyRate)^180 - 1))
-// monthlyRate = 0.099 / 12 (9.9% APR, default 180 months / 15 years for headline figure)
-```
-
-#### Quote screen layout (reading order - top to bottom)
+#### Quote screen layout (top to bottom)
 
 1. **Headline block**
-   - Address line: address_line1 + town, 0.9rem, #4A4A4A
-   - Two prices side by side: "£{price}" (2.5rem, bold, #2D2D2D) + "or" separator + "£{monthly}/mo" (2.5rem, bold, #E8323A)
-   - Disclaimer: "Subject to survey and final system confirmation" - 0.75rem, #999, italic
-   - Price breakdown: "£{panelsCost} panels + £{batteryCost} battery storage" or "panels only" - 0.85rem, #4A4A4A
-   - All update live on tier switch
+   - "Your instant quote" label - 0.875rem, #4A4A4A
+   - Two prices: `£{price}` (2.5rem, bold, #2D2D2D) + "or" + `£{monthly}/mo` (2.5rem, bold, #E8323A)
+   - Product summary line (e.g. "16 panels (7.12kW system) · Fox ESS EP12 Battery · 11.52kWh") - 0.875rem, #4A4A4A
+   - Disclaimer - 0.75rem, #999, italic
+   - No address line, no price breakdown, no savings boxes, no breadcrumb pills
 
-2. **Savings hero block** (red gradient box, full width)
-   - Background: linear-gradient(135deg, #E8323A 0%, #c42830 100%), border-radius 16px
-   - Left: "Your estimated monthly saving" label + "~£{monthlySaving}/mo" value (2.5rem, bold, white)
-   - Right: "Currently paying ~£{currentBill}/mo" (strikethrough) + "With solar: ~£{billAfterSolar}/mo"
-   - Updates live on tier switch
+2. **"Choose your system"** heading - tightened spacing
 
-3. **Two smaller stat boxes** (side by side)
-   - "£{saving20yr}" / "20-year saving"
-   - "{breakEvenYear} years" / "Estimated break-even"
+3. **Navigation dots** - dots only, no labels, `margin: 8px 0 12px`
 
-4. **Three tier cards** (Essential / Performance / Custom)
-   - Performance pre-selected on load. Tier cards switch immediately (no 500ms delay).
-   - Performance: heading 1.15rem bold, red price, 2px red border selected, red background wash, product image 160px right side, who_for text italic below specs, price breakdown line
-   - Essential: heading 1rem, grey price (#4A4A4A), panel image 140px right side, who_for text
-   - Custom: heading 1rem, grey price, panel/battery dropdowns, no product image
+4. **Tier carousel** - Performance centred, Essential left peek, Custom right peek
+   - Performance active border: `1.5px solid rgba(232,50,58,0.55)`
 
-5. **What's included** (flush below tier cards, 32px margin)
-   - Wrapped in card (white bg, 1px border #E5E5E5, border-radius 12px, padding 24px 32px)
-   - Two-column grid desktop, single column mobile (below 600px)
-   - Updates dynamically per selected tier
-   - Red SVG tick icons
+5. **Savings bar** (inside each card, Essential and Performance only)
+   - Background: `linear-gradient(115deg, #E8323A 45%, #d44a2a 100%)`
+   - White dot texture overlay, bottom-right corner
+   - Heading: "Your estimated savings" - 0.95rem, bold, white
+   - Three columns: monthly saving / 20-year saving / break-even, each with "est." suffix
+   - All figures update dynamically per tier
 
-6. **CTA** - "Continue with this system →"
-   - Width: auto, min-width 320px, max-width 380px, centred
-   - No trust badge pills above CTA - removed. Footer trust bar only.
+6. **What's included** - two-column grid, green ticks
 
-Data collected: `product_selection`, `solar_panel_number`, `payment_total`
+7. **Price block** (card footer, right side)
+   - "Your price" label - 1.15rem, font-weight 700, #E8323A
+   - `£{monthly}/mo` - 2.5rem, bold, #E8323A
+   - `or pay in full: £{price}` (replaces previous "cash" wording)
 
----
+8. **Inline finance calculator** (below tier carousel, above CTA)
+   - Collapsed by default, expandable via "Explore finance options" link/button
+   - When expanded: deposit slider 0-30% of system price in £500 steps, loan term selector 36/48/60/84/120/180 months (default 180), live monthly payment (Math.ceil, 9.9% APR), FCA representative example updating live
+   - `// SHERMIN_INTEGRATION_POINT` marked at "Apply for Finance" button
+   - This allows users to understand affordability before committing to contact details
+   - Updates dynamically when user switches between tier cards
 
-### Step 8 - Upsell Modal (triggered on Continue from quote screen)
+9. **"Get your quote emailed to you"** prompt (below finance calculator, above CTA)
+   - Lightweight name + email capture. Not a blocking gate - clearly optional.
+   - Label: "Get your quote emailed to you"
+   - Subtext: "We'll send a summary to your inbox so you can review it any time."
+   - Two fields inline: First name (half width) / Email address (half width)
+   - Submit button: "Send my quote →" - outlined red pill, auto width
+   - On submit: POST name + email + current system selection to WordPress AJAX endpoint `/wp-admin/admin-ajax.php?action=livwarm_email_quote`
+   - Sends a summary email to the user and stores the lead in Payaca for follow-up
+   - On success: replace the form with a green tick and "Quote sent - check your inbox."
+   - If user skips this and hits the main CTA, that is fine - no enforcement
+   - Fields pre-populate at Step 8 if the user already submitted them here
 
-Modal: "Enhance Your System"
-- Extended Warranty toggle: 5-year workmanship guarantee (+£199)
-- BUS Heat Pump Grant cross-sell card (orange highlight): £7,500 grant available
-- "Not this time" / "Continue: Add Selected" buttons
+10. **CTA** - "Continue with this system →", auto width, max 380px, centred
 
----
-
-### Micro-Commitment Step
-
-- Summary of selected tier (name, panel count, battery, price)
-- Single button: "This looks right - get my full quote"
-
----
-
-### Step 8 - Your Details + Booking Summary
-
-Left side:
-- First name, Surname, Email, Phone
-- Preferred installation date: calendar picker, weekdays only
-- Copy: "Select your preferred date. Our team will confirm availability after your technical review."
-
-Right side - Booking Summary:
-- System selected, price breakdown, savings estimates, trust badges
-- "Explore finance options" → finance calculator (inline expanded section, matching UKEM pattern)
-- Finance calculator: 9.9% APR, terms 36/48/60/84/120/180 months, default 180 months, deposit slider 0-30%, live monthly payment, FCA compliant representative example, Shermin integration point clearly marked in code
-
-Data collected: `full_name`, `email`, `phone`, `preferred_date`, `payment_method`
+Data collected: `product_selection`, `solar_panel_number`, `payment_total`, `quote_email_captured` (bool), `lead_first_name` (if captured), `lead_email` (if captured)
 
 ---
 
-### Step 9 - Secure Your Booking (Payment)
+### Step 7A - Upsell Modal + Micro-commitment - COMPLETE
 
-- Pay securely online (Stripe) or Spread the cost (Shermin)
-- Stripe Payment Element: Card, Klarna, Revolut Pay
-- Pay button: "Pay £X,XXX.00"
-- On successful payment: POST to WordPress AJAX handler → Payaca API
+#### Upsell Modal
 
----
+Three addon cards:
+1. **EV Charger & Installation** (conditional) - "Enquire", toggle
+2. **Extended Warranty** - +£199, toggle. Selected: neutral grey (`#e8e8e8`), `border: 1px solid rgba(0,0,0,0.10)`, no red. Hover: matches selected depth, 300ms transition.
+3. **Heat Pump Government Grant** - green card. Default: `border: 1px solid rgba(76,175,80,0.25)`. Selected: `border: 1.5px solid rgba(76,175,80,0.55)`. Toggle: green (#4CAF50) when on. Hover: maintains green tint with same inset shadow depth.
 
-### Step 10 - Confirmation
+All addon cards use same shadow/interaction system as answer cards.
 
-- "You're all booked in!" headline
-- System summary, preferred date, what happens next (3-step)
-- QR code for photo submission
+#### Micro-commitment Screen
 
----
-
-## 7. UX & Design Improvements Over UKEM
-
-### Quote Screen - key decisions vs UKEM
-
-- Monthly price given equal visual weight to cash price (both 2.5rem, side by side) - monthly figure in red as conversion lever
-- Red gradient savings hero box replaces three equal stat boxes - loss aversion via crossed-out current bill
-- No satellite map on quote screen
-- Performance card has strongest visual weight - Essential and Custom are secondary
-- Product images pulled from solar-products.json - battery unit photos on Performance card
-- Trust badge pills removed from above CTA - footer bar only (avoids duplication)
-- "Prepare my quote" green button + loading overlay before quote screen - labour illusion increases perceived value
-
-### Key improvements over UKEM
-
-1. Bold, warm brand-led design
-2. Trust signals in header on every step
-3. Bold red progress bar with percentage and step name
-4. Monthly price as hero figure alongside cash price
-5. Red savings block with crossed-out current bill
-6. Product images on tier cards from WordPress media library
-7. Context-aware help modal (highlights only the relevant bill field)
-8. "Prepare my quote" loading overlay with personalised messages
-9. 3-state card interactions with physical feedback
-10. Warm confirmation screen
+System summary, prices, add-ons, "All prices include VAT", disclaimer. CTA advances to Step 8.
 
 ---
 
-## 8. Payaca Integration
+### Step 8 - Your Details + Booking Confirmation - TO BUILD
 
-Method: Direct Payaca API call via WordPress AJAX handler on deals.livwarm.co.uk.
+Two-column layout (55% left / 45% right, stacks below 768px).
 
-Trigger: On successful payment.
+Left column: name (pre-populated if captured at Step 7), email (pre-populated if captured at Step 7), phone, weekday-only calendar picker (min 14 days lead time).
 
-Payload for Solar (form ID 3):
+Heading framing: "Secure your free survey" / "No payment today. Our team will contact you within 24 hours to confirm your installation date." - sets clear expectations, removes ambiguity about commitment level.
 
-```json
-{
-  "house_owner_type": "Homeowner",
-  "house_type": "Semi-Detached",
-  "roof_type": "Pitched",
-  "electricity_usage": "4100",
-  "day_unit_rate": "26.35",
-  "night_unit_rate": "",
-  "battery_location": "Inside",
-  "battery_location_inside": "Garage",
-  "postcode": "DY13 8UA",
-  "address_dropdown": "5 Almond Way, Stourport-on-Severn",
-  "latlong": "52.3456,-2.2345",
-  "roof_orientation": "SE",
-  "occupants": "3",
-  "solar_panel_number": "10",
-  "product_selection": "Performance Solar PV System",
-  "payment_total": "15529.00",
-  "full_name": "John Smith",
-  "email": "john@example.com",
-  "phone": "07700900000"
-}
-```
+"What happens next?" three-step note inline below the form fields (not below the button): Survey booked / Remote design confirmed / Installation day.
+
+Right column: sticky booking summary panel with system, price (cash + monthly), warranty if added, savings figures, trust badges. No "Explore finance options" link - finance calculator is already on the quote screen.
+
+CTA: "Book my free survey →" - red pill, disabled until all fields + date populated.
+
+Data collected: `full_name`, `email`, `phone`, `preferred_date`
 
 ---
 
-## 9. Dead-End Rules
+### Step 9 - Secure Your Booking (Payment) - TO BUILD
+
+Stripe Payment Element (Card, Klarna, Revolut Pay). On success: POST to WordPress AJAX handler → Payaca.
+
+---
+
+### Step 10 - Confirmation - TO BUILD
+
+"You're all booked in!", system summary, what happens next, QR code for photo submission.
+
+---
+
+## 7. Payaca Integration
+
+Payload for Solar (form ID 3) - see payaca_webhook.txt for full PHP implementation.
+
+Additional fields to map:
+- `quote_email_captured` - bool, whether user submitted email at Step 7
+- `lead_first_name` - captured at Step 7 email prompt if submitted
+- `lead_email` - captured at Step 7 email prompt if submitted (may differ from Step 8 email)
+
+---
+
+## 8. Dead-End Rules
 
 | Condition | Action |
 |-----------|--------|
 | Flat (property type) | Redirect to /sorry-we-cannot-help |
 | Flat roof | Redirect to /sorry-we-cannot-help |
 | Landlord | Continues through flow (NOT a dead-end) |
-| LPG or Oil fuel (boiler flow) | "Form Fill Required - Bespoke Project" - capture details, route to callback |
 
 ---
 
-## 10. Outstanding TBC Items
+## 9. Outstanding TBC Items
 
 | Item | Action needed |
 |------|--------------|
-| Shermin Finance integration method | Confirmed provider (Stax). Integration method TBC - confirm embed widget, redirect, or API. `// SHERMIN_INTEGRATION_POINT` marked in Session 7B code. |
-| VAT - are spreadsheet prices inclusive? | Email sent to UKEM account manager. Assumption: prices are VAT-inclusive at 5%. Confirm before launch. |
-| LivWarm vs UKEM pricing discrepancy | £194 gap between spreadsheet (£9,342) and UKEM app (£9,148) for 11-panel + 10kW system. Email sent to UKEM account manager. |
-| Panel wattage - 445W vs 450W | Spreadsheet uses 445W, UKEM app uses 450W JA Solar. Confirm which applies to LivWarm installs. Email sent to UKEM account manager. |
-| Panel count lookup table | Confirm numbers with UKEM before launch |
-| Stripe account | Set up new Stripe account for LivWarm, obtain publishable key |
-| lbrand font licence | Confirm web embedding is covered by existing licence |
-| Ideal Postcodes account | Confirm whether LivWarm has account or needs one |
-| Google Maps API key | Domain restrictions set for Vercel and deals.livwarm.co.uk - remove Vercel before production |
-| Deposit vs full payment | Client to confirm - currently assuming full payment |
-| Solar panel product in WordPress | Add a Solar Panels product type to WordPress catalogue for future use |
-| Battery model confirmation | Confirm with UKEM that Fox ESS EP6/EP12/EP18 and Tesla Powerwall are the correct models for LivWarm installs |
+| Shermin Finance integration method | Confirmed provider (Stax). Integration method TBC. `// SHERMIN_INTEGRATION_POINT` in code. |
+| VAT - are spreadsheet prices inclusive? | Assumption: VAT-inclusive at 5%. Confirm before launch. |
+| LivWarm vs UKEM pricing discrepancy | £194 gap for 11-panel + 10kW system. Email sent to UKEM. |
+| Panel wattage - 445W vs 450W | Confirm which applies to LivWarm installs. |
+| Panel count lookup table | Confirm numbers with UKEM before launch. |
+| Stripe account | Set up new Stripe account for LivWarm. |
+| IBrand font licence | Confirm web embedding covered. |
+| Google Maps API key | Remove Vercel restriction before production. |
+| Deposit vs full payment | Client to confirm - currently assuming full payment. |
+| WordPress AJAX endpoint for quote email | `/wp-admin/admin-ajax.php?action=livwarm_email_quote` - PHP snippet needed (Session 7B). |
 
 ---
 
-## 11. Session Handover Notes
+## 10. Session Handover Notes
 
-### Pre-build sessions (June 2026) - Planning complete
+### Sessions 1-6 (June 2026) - Complete
 
-- Full UKEM flow reviewed via Claude in Chrome
-- UKEM confirmed to use Ideal Postcodes for address lookup (not Google Places)
-- Solar API removed from spec - panel sizing via lookup table
-- Pricing matrix extracted from spreadsheet
-- Brand assets and lbrand font confirmed
-- All major decisions made
+Steps 1-6 built and deployed. Card interaction system built. All step logic confirmed.
 
-### Sessions 1-5 (June 2026) - Complete
+### Session 7 / Quote Screen (June 2026) - Complete
 
-- Steps 1-5 built and deployed at livwarm-quotes.vercel.app/solar
-- Card interaction system fully built and refined
-- Tariff toggles styled as mini answer cards
-- Total steps confirmed as 9
-- Landlord confirmed NOT a dead-end
-- Battery outside sub-locations added
-- EV charging method sub-question added
-- No per-step summary screens - single consolidated review screen
-- No Continue buttons on card-based screens - auto-advance after 500ms
+Quote screen built. solar-products.json deployed. Finance APR 9.9% confirmed. Loading overlay built.
 
-### Session 6 (June 2026) - Complete
+### Quote Screen Polish Pass (June 2026) - Complete
 
-- Step 6 built: postcode lookup (Ideal Postcodes), satellite map confirmation, orientation compass with interactive SVG, occupancy question
-- All four parts within Step 6 - occupancy does NOT increment step counter
-- Street bearing auto-calculates suggested front door direction
-- Compass rose overlay on satellite map, always north-up
-- "Prepare my quote" green button replaces Continue at end of Step 6
+- Breadcrumb pills hidden on quote screen
+- Address line and price breakdown removed from headline block
+- Savings stat boxes removed from above cards
+- Savings bar added inside tier cards with three figures and "est." suffix
+- "or pay in full: £X,XXX" replaces "cash" wording
+- "Your price" label added to card price block (1.15rem, bold, red)
+- Recommended card border: `1.5px solid rgba(232,50,58,0.55)`
+- Navigation dot labels removed, spacing tightened
+- "All systems include professional installation and MCS certification" removed
 
-### Session 7 / Quote Screen Session (June 2026) - Complete, polish pass pending
+### Card Interaction System Refinements (June 2026) - Complete
 
-- Step 7 quote screen built and deployed
-- solar-products.json created and deployed to Vercel with all battery product data and images sourced from WordPress media library via Claude in Chrome
-- WordPress custom post type confirmed as `prod` (not `products`) - REST API accessible at /wp-json/wp/v2/prod
-- No WooCommerce on site - custom post type with media library images
-- Battery products confirmed: Fox ESS EP6 (6kWh), EP12 (11.52kWh), EP18 (18kWh), Tesla Powerwall 13.5kWh
-- Panel image confirmed: 12-Solar-Panels.webp in media library
-- Finance APR was noted as 6.9% from UKEM pricing example - THIS WAS INCORRECT, see pre-session 7A notes below
-- "Preparing your quote" loading overlay designed and built - 5 messages, 1,200ms each, 6.8s total
-- Loading overlay uses labour illusion psychology - no actual processing, pure UX
-- Trust badge pills removed from above CTA - footer bar only
-- VAT: not shown anywhere in flow - THIS WAS INCORRECT, see pre-session 7A notes below
+- Selected state: neutral grey depression, no red glow, no red dots
+- Hover state: matches selected depth, outer shadow fades smoothly via zero-opacity placeholder layers
+- Click animation: deeper press at 35% with stronger inset shadow
+- Hover shimmer removed - single dark shimmer on click only
+- 300ms transitions throughout
+- Sub-question reveal delayed until press animation completes
 
-### Quote Screen Polish Pass - PENDING (next session)
+### Session 7A - Upsell Modal + Micro-commitment (June 2026) - Complete
 
-The following fixes are queued and ready to paste into Claude Code when session tokens reset. Full prompt is in the roadmap document.
+- Upsell modal built with three addon cards
+- Addon card interactions match refined answer card system
+- Warranty selected state: neutral grey, no red
+- BUS grant toggle: green when on, subtle green borders
+- Micro-commitment screen built
 
-- FIX 1 REVISION: "Prepare my quote" button - correct width (auto, max 560px, centred) with proper spacing
-- FIX 2: Quote screen headline - two prices side by side at equal size (cash + monthly)
-- FIX 3: Red gradient savings hero box replacing equal stat boxes
-- FIX 4: Tier card visual hierarchy - Performance dominant, Essential/Custom secondary
-- FIX 5: Product images at correct size (160px) from solar-products.json
-- FIX 6: "What's included" - flush below tier cards, two-column layout, card wrapper
-- FIX 7: "Continue with this system" button - auto width, centred, not full width
-- FIX 8: Remove trust badge pills above CTA entirely
-- FIX 9: Help modal dynamic highlighting - `highlightField` prop, only relevant row highlighted
+### Session 7B - Contact Details + Quote Email Capture (June 2026) - NEXT SESSION
 
-### Pre-session 7A (June 2026) - Confirmed corrections, roadmap updated
+Two additions to the original Session 7B scope:
+1. Inline finance calculator added to quote screen (Step 7) - expandable, updates per tier
+2. "Get your quote emailed to you" lightweight capture added to quote screen (Step 7) - optional, name + email only, sends summary email, pre-populates Step 8
+3. Step 8 reframed: heading changed to "Secure your free survey", subheading sets clear expectations, CTA label changed to "Book my free survey →", finance modal removed (calculator already on quote screen)
 
-This session compared the UKEM quote engine and Stax/Shermin calculator via Claude in Chrome and corrected several errors in the spec. All prompts in the roadmap have been updated to reflect these corrections. Do NOT use the 6.9% or 10-year figures from earlier sessions.
-
-**Confirmed corrections:**
-
-- APR: **9.9%** (was 6.9% - the 6.9% figure was incorrect)
-- Default term shown to user: **180 months / 15 years** (displays lowest monthly figure as headline - matches UKEM)
-- Available terms: **36 / 48 / 60 / 84 / 120 / 180 months**
-- Deposit cap: **30%** (matches UKEM quote engine)
-- VAT: **"All prices include VAT"** footnote shown on booking summary and payment screens - prices treated as VAT-inclusive throughout (matches UKEM exactly)
-- Finance calculator style: **inline expanded section** within the payment step, not a separate modal (matches UKEM pattern)
-- Shermin is confirmed provider, platform is **Stax** (staxpay.co.uk). Integration method still TBC.
-
-**Three items pending UKEM account manager reply (email sent):**
-1. Are spreadsheet prices VAT-inclusive?
-2. Why is there a £194 gap between spreadsheet (£9,342) and UKEM app (£9,148) for 11 panels + 10kW?
-3. Spreadsheet uses 445W panels, UKEM app uses 450W - which applies to LivWarm?
-
-**Next action:** Session 7A in Claude Code - upsell modal and micro-commitment screen. Prompt is in roadmap. Run the quote screen polish pass first if not already done.
+See roadmap for full prompt.

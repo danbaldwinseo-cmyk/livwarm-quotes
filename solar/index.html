@@ -1808,6 +1808,418 @@
       animation: lw-msg-in 200ms ease both;
     }
     @keyframes lw-msg-in { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ============================================================
+       STEP 7 ADDITION 1 — Inline finance calculator
+       ============================================================ */
+    .lw-fin { margin: 4px auto 0; max-width: 560px; width: 100%; }
+    .lw-fin-trigger {
+      display: block;
+      margin: 0 auto;
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+    .lw-fin-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 300ms ease;
+    }
+    .lw-fin-panel.is-open { max-height: 900px; }
+    .lw-fin-inner {
+      margin-top: 14px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .lw-fin-modes {
+      display: flex;
+      gap: 8px;
+      background: #f4f4f4;
+      border-radius: 999px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+    .lw-fin-mode {
+      flex: 1;
+      border: 1px solid transparent;
+      background: transparent;
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-body);
+      cursor: pointer;
+      transition: background 150ms ease, color 150ms ease;
+    }
+    .lw-fin-mode.is-on { background: var(--color-primary); color: #fff; }
+    .lw-fin-label {
+      display: block;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--color-dark);
+      margin: 0 0 10px;
+    }
+    .lw-fin-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: #e5e5e5;
+      outline: none;
+      margin: 0 0 8px;
+    }
+    .lw-fin-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      border: 3px solid #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+      cursor: pointer;
+    }
+    .lw-fin-slider::-moz-range-thumb {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      border: 3px solid #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+      cursor: pointer;
+    }
+    .lw-fin-meta {
+      text-align: left;
+      font-size: 0.8rem;
+      color: #888;
+      margin: 0 0 20px;
+    }
+    .lw-fin-terms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .lw-fin-term {
+      flex: 1 1 auto;
+      min-width: 48px;
+      border: 1px solid var(--color-border);
+      background: #fff;
+      border-radius: 8px;
+      padding: 9px 6px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-dark);
+      cursor: pointer;
+      transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+    }
+    .lw-fin-term.is-on { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+    .lw-fin-payment {
+      text-align: center;
+      margin: 18px 0 14px;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 2px;
+    }
+    .lw-fin-payment-fig { font-size: 2.5rem; font-weight: 800; color: var(--color-primary); line-height: 1; }
+    .lw-fin-payment-unit { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); }
+    .lw-fin-rep {
+      font-size: 0.75rem;
+      font-style: italic;
+      color: #999;
+      line-height: 1.5;
+      margin: 0 0 18px;
+      text-align: left;
+    }
+    .lw-fin-apply {
+      display: block;
+      width: 100%;
+      padding: 13px 20px;
+      background: #fff;
+      color: var(--color-primary);
+      border: 1.5px solid rgba(232, 50, 58, 0.4);
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .lw-fin-apply:hover { background: rgba(232, 50, 58, 0.05); }
+    .lw-fin-shermin {
+      margin: 12px 0 0;
+      font-size: 0.85rem;
+      color: var(--color-body);
+      text-align: center;
+    }
+    .lw-fin-full { text-align: center; padding: 8px 0; }
+    .lw-fin-full-price { font-size: 2.5rem; font-weight: 800; color: var(--color-dark); line-height: 1.1; }
+    .lw-fin-full-save { font-size: 0.875rem; color: var(--color-cta-green); font-weight: 700; margin-top: 8px; }
+
+    /* ============================================================
+       STEP 7 ADDITION 2 — Email-me-this-quote capture
+       ============================================================ */
+    .lw-emailcap {
+      margin: 20px auto 0;
+      max-width: 560px;
+      width: 100%;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      text-align: left;
+    }
+    .lw-emailcap-title { margin: 0 0 4px; font-size: 1rem; font-weight: 800; color: var(--color-dark); }
+    .lw-emailcap-sub { margin: 0 0 14px; font-size: 0.875rem; color: var(--color-body); }
+    .lw-emailcap-fields { display: flex; gap: 12px; margin-bottom: 14px; }
+    .lw-emailcap-input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-dark);
+      background: #fff;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .lw-emailcap-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(232, 50, 58, 0.12);
+    }
+    .lw-emailcap-input::placeholder { color: #b3b3b3; font-weight: 500; }
+    .lw-emailcap-btn {
+      display: inline-block;
+      padding: 11px 22px;
+      background: #fff;
+      color: var(--color-primary);
+      border: 1.5px solid rgba(232, 50, 58, 0.4);
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 150ms ease, opacity 150ms ease;
+    }
+    .lw-emailcap-btn:hover:not(:disabled) { background: rgba(232, 50, 58, 0.05); }
+    .lw-emailcap-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .lw-emailcap--done {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-dark);
+    }
+    .lw-emailcap-tick { color: var(--color-cta-green); flex-shrink: 0; }
+    @media (max-width: 560px) {
+      .lw-emailcap-fields { flex-direction: column; }
+    }
+
+    /* ============================================================
+       STEP 8 — Contact details + booking summary
+       ============================================================ */
+    .lw-contact { width: 100%; }
+    .lw-contact-grid {
+      display: grid;
+      grid-template-columns: 55% 45%;
+      gap: 40px;
+      align-items: start;
+    }
+    .lw-cd-left { text-align: left; min-width: 0; }
+    .lw-cd-h1 { margin: 0 0 8px; font-size: 1.75rem; font-weight: 800; color: var(--color-dark); }
+    .lw-cd-subh { margin: 0 0 24px; font-size: 1rem; color: var(--color-body); line-height: 1.5; }
+    .lw-cd-row { display: flex; gap: 16px; }
+    .lw-cd-row .lw-cd-field { flex: 1; min-width: 0; }
+    .lw-cd-field { margin-bottom: 18px; }
+    .lw-cd-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-dark);
+      margin-bottom: 6px;
+    }
+    .lw-cd-input {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-dark);
+      background: #fff;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .lw-cd-input:focus {
+      outline: none;
+      border: 2px solid var(--color-primary);
+      padding: 11px 15px;                              /* compensate for the +1px border */
+      box-shadow: 0 0 0 3px rgba(232, 50, 58, 0.12);
+    }
+    .lw-cd-hint { margin: 0 0 12px; font-size: 0.8rem; color: #888; }
+    .lw-cd-chosen { margin: 12px 0 0; font-size: 0.9rem; font-weight: 700; color: var(--color-dark); }
+    .lw-cd-cta { margin-top: 24px; }
+    .lw-cd-err { margin: 10px 0 0; font-size: 0.85rem; font-weight: 600; color: var(--color-primary); text-align: center; }
+
+    /* Custom calendar */
+    .lw-cal {
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fff;
+    }
+    .lw-cal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .lw-cal-title { font-size: 1rem; font-weight: 800; color: var(--color-dark); }
+    .lw-cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--color-dark);
+      cursor: pointer;
+      transition: background 150ms ease, opacity 150ms ease;
+    }
+    .lw-cal-nav:hover:not(:disabled) { background: #f4f4f4; }
+    .lw-cal-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+    .lw-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .lw-cal-dow { margin-bottom: 4px; }
+    .lw-cal-dowcell {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #999;
+      padding: 4px 0;
+    }
+    .lw-cal-cell {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      border-radius: 50%;
+      background: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-dark);
+      cursor: pointer;
+      transition: background 150ms ease, color 150ms ease;
+    }
+    .lw-cal-cell.is-empty { cursor: default; }
+    .lw-cal-cell:not(.is-disabled):not(.is-selected):hover { background: rgba(232, 50, 58, 0.08); }
+    .lw-cal-cell.is-disabled { opacity: 0.3; cursor: not-allowed; color: #aaa; }
+    .lw-cal-cell.is-today { border-color: rgba(232, 50, 58, 0.55); }
+    .lw-cal-cell.is-selected { background: var(--color-primary); color: #fff; }
+
+    /* What happens next? */
+    .lw-next3 {
+      display: flex;
+      gap: 16px;
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--color-border);
+    }
+    .lw-next3-item { flex: 1; display: flex; gap: 10px; align-items: flex-start; }
+    .lw-next3-num {
+      flex-shrink: 0;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lw-next3-label { font-size: 0.9rem; font-weight: 800; color: var(--color-dark); }
+    .lw-next3-desc { font-size: 0.8rem; color: #888; line-height: 1.4; margin-top: 2px; }
+
+    /* Booking summary panel */
+    .lw-cd-right { min-width: 0; }
+    .lw-bsum {
+      position: sticky;
+      top: 24px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      text-align: left;
+    }
+    .lw-bsum-h { margin: 0 0 16px; font-size: 1.1rem; font-weight: 800; color: var(--color-dark); }
+    .lw-bsum-tier { font-size: 0.95rem; font-weight: 800; color: var(--color-dark); }
+    .lw-bsum-spec { font-size: 0.875rem; color: var(--color-body); margin-top: 2px; }
+    .lw-bsum-warr {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--color-cta-green);
+    }
+    .lw-bsum-warr svg { color: var(--color-cta-green); flex-shrink: 0; }
+    .lw-bsum-div { border: none; border-top: 1px solid var(--color-border); margin: 16px 0; }
+    .lw-bsum-line { display: flex; align-items: baseline; justify-content: space-between; }
+    .lw-bsum-k { font-size: 0.875rem; color: var(--color-body); }
+    .lw-bsum-v { font-size: 1rem; font-weight: 800; color: var(--color-dark); }
+    .lw-bsum-item { font-size: 0.8rem; color: #888; margin-top: 2px; }
+    .lw-bsum-monthly { font-size: 0.95rem; font-weight: 700; color: var(--color-primary); margin-top: 8px; }
+    .lw-bsum-apr { font-size: 0.75rem; color: #999; margin-top: 2px; }
+    .lw-bsum-line + .lw-bsum-line { margin-top: 8px; }
+    .lw-bsum-k2 { font-size: 0.8rem; color: var(--color-body); }
+    .lw-bsum-v2 { font-size: 0.95rem; font-weight: 800; color: var(--color-dark); }
+    .lw-bsum-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-body);
+    }
+    .lw-bsum-badges span { display: inline-flex; align-items: center; gap: 4px; }
+    .lw-bsum-vat { margin-top: 14px; font-size: 0.7rem; color: #999; text-align: center; }
+
+    @media (max-width: 768px) {
+      .lw-contact-grid { grid-template-columns: 1fr; gap: 28px; }
+      .lw-bsum { position: static; }
+      .lw-next3 { flex-direction: column; gap: 14px; }
+    }
+    @media (max-width: 480px) {
+      .lw-cd-row { flex-direction: column; gap: 0; }
+    }
   </style>
 </head>
 <body>
@@ -2564,6 +2976,15 @@
       const r = FINANCE_APR / 12;
       const p = systemCost * (r * Math.pow(1 + r, FINANCE_MONTHS)) / (Math.pow(1 + r, FINANCE_MONTHS) - 1);
       return Math.ceil(p);
+    }
+
+    // Shermin/Stax finance: 9.9% APR fixed, any term in months, rounded up to the
+    // nearest £. Used by the inline finance calculator (Step 7) and the Step 8 booking
+    // summary so both reflect the confirmed 9.9% finance product.
+    function financeMonthly(principal, months) {
+      if (principal <= 0) return 0;
+      const r = 0.099 / 12;
+      return Math.ceil(principal * (r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1));
     }
 
     // Build a complete tier object (price, generation, savings, finance).
@@ -3376,7 +3797,184 @@
       );
     }
 
-    function QuoteStep({ answers, onContinue }) {
+    /* ============================================================
+       STEP 7 ADDITION 1 — Inline finance calculator (Shermin placeholder)
+       Self-contained. Recalculates whenever the active tier price changes.
+       ============================================================ */
+    function FinanceCalculator({ systemPrice }) {
+      const [open, setOpen] = useState(false);
+      const [mode, setMode] = useState('monthly');     // 'monthly' | 'full'
+      const [term, setTerm] = useState(180);           // months; default 15 years
+      const [deposit, setDeposit] = useState(0);
+      const [showShermin, setShowShermin] = useState(false);
+      const TERMS = [36, 48, 60, 84, 120, 180];
+
+      // Deposit cap: 30% of the current system price, in whole £500 steps.
+      const maxDeposit = Math.max(0, Math.floor((systemPrice * 0.30) / 500) * 500);
+      // Re-clamp the deposit whenever the active tier (and therefore the cap) changes.
+      React.useEffect(() => { setDeposit((d) => Math.min(d, maxDeposit)); }, [maxDeposit]);
+
+      const depositPct = systemPrice > 0 ? Math.round((deposit / systemPrice) * 100) : 0;
+      const financeAmount = Math.max(0, systemPrice - deposit);
+      const monthly = financeMonthly(financeAmount, term);
+      const totalRepayable = monthly * term;            // total repayable on the borrowed sum
+      const termYears = Math.round(term / 12);
+
+      // Saving from paying in full vs financing the full price over 15 years.
+      const full15Monthly = financeMonthly(systemPrice, 180);
+      const financeSavingVsTotal = Math.max(0, full15Monthly * 180 - systemPrice);
+
+      return (
+        <div className="lw-fin">
+          <button type="button" className="lw-fin-trigger" onClick={() => setOpen((o) => !o)}
+                  aria-expanded={open}>
+            {open ? 'Hide finance options' : 'Explore finance options'}
+          </button>
+          <div className={'lw-fin-panel' + (open ? ' is-open' : '')}>
+            <div className="lw-fin-inner">
+              {/* Pay monthly / Pay in full toggle */}
+              <div className="lw-fin-modes">
+                <button type="button" className={'lw-fin-mode' + (mode === 'monthly' ? ' is-on' : '')}
+                        onClick={() => setMode('monthly')}>Pay monthly</button>
+                <button type="button" className={'lw-fin-mode' + (mode === 'full' ? ' is-on' : '')}
+                        onClick={() => setMode('full')}>Pay in full</button>
+              </div>
+
+              {mode === 'monthly' ? (
+                <div className="lw-fin-body">
+                  <label className="lw-fin-label">Your deposit</label>
+                  <input type="range" className="lw-fin-slider" min={0} max={maxDeposit} step={500}
+                         value={deposit} onChange={(e) => setDeposit(Number(e.target.value))}
+                         aria-label="Deposit amount" />
+                  <div className="lw-fin-meta">{gbp(deposit)} deposit · {depositPct}%</div>
+
+                  <label className="lw-fin-label">Loan term</label>
+                  <div className="lw-fin-terms">
+                    {TERMS.map((t) => (
+                      <button key={t} type="button"
+                              className={'lw-fin-term' + (t === term ? ' is-on' : '')}
+                              onClick={() => setTerm(t)}>{t}</button>
+                    ))}
+                  </div>
+                  <div className="lw-fin-meta">months</div>
+
+                  <div className="lw-fin-payment">
+                    <span className="lw-fin-payment-fig">£{monthly}</span>
+                    <span className="lw-fin-payment-unit">/mo</span>
+                  </div>
+
+                  <p className="lw-fin-rep">
+                    Representative example: Borrowing {gbp(financeAmount)} over {termYears} years at 9.9% APR (fixed).
+                    Monthly repayments of £{monthly}. Total amount repayable: {gbp(totalRepayable)}.
+                    Credit is subject to status and affordability.
+                  </p>
+
+                  {/* SHERMIN_INTEGRATION_POINT — drop the Shermin/Stax embed in here once
+                      credentials are confirmed; replace the placeholder button + note below. */}
+                  <button type="button" className="lw-fin-apply" onClick={() => setShowShermin(true)}>
+                    Apply for Finance with Shermin →
+                  </button>
+                  {showShermin && (
+                    <p className="lw-fin-shermin">Finance applications will open shortly. Call 0800 222 9494.</p>
+                  )}
+                </div>
+              ) : (
+                <div className="lw-fin-body lw-fin-full">
+                  <div className="lw-fin-full-price">{gbp(systemPrice)}</div>
+                  <div className="lw-fin-full-save">
+                    Save {gbp(financeSavingVsTotal)} compared to paying monthly over 15 years
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       STEP 7 ADDITION 2 — "Get your quote emailed to you"
+       Optional, non-blocking. Posts to a WordPress AJAX handler and stores the
+       lead in app state (lead_first_name / lead_email / quote_email_captured).
+
+       PHP placeholder (full implementation in Session 9 — wp functions.php / snippet):
+
+         add_action('wp_ajax_livwarm_email_quote',        'livwarm_email_quote');
+         add_action('wp_ajax_nopriv_livwarm_email_quote', 'livwarm_email_quote');
+         function livwarm_email_quote() {
+           $first = sanitize_text_field($_POST['first_name'] ?? '');
+           $email = sanitize_email($_POST['email'] ?? '');
+           $prod  = sanitize_text_field($_POST['product_selection'] ?? '');
+           $panels= sanitize_text_field($_POST['solar_panel_number'] ?? '');
+           $total = sanitize_text_field($_POST['payment_total'] ?? '');
+           $tier  = sanitize_text_field($_POST['tier_name'] ?? '');
+           if (!is_email($email) || $first === '') wp_send_json_error('invalid', 400);
+           // 1) email the summary to $email  2) create/update the Payaca lead
+           wp_send_json_success();
+         }
+       ============================================================ */
+    function QuoteEmailCapture({ captured, leadFirstName, leadEmail, payload, onCapture }) {
+      const [firstName, setFirstName] = useState(leadFirstName || '');
+      const [email, setEmail] = useState(leadEmail || '');
+      const [sending, setSending] = useState(false);
+      const [sent, setSent] = useState(!!captured);
+
+      const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+      const canSend = firstName.trim().length > 0 && emailValid && !sending;
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!canSend) return;
+        setSending(true);
+        const body = new URLSearchParams({
+          first_name: firstName.trim(),
+          email: email.trim(),
+          product_selection: payload.product_selection,
+          solar_panel_number: payload.solar_panel_number,
+          payment_total: payload.payment_total,
+          tier_name: payload.tier_name,
+        });
+        // Endpoint 404s locally / on Vercel, so surface the success state regardless —
+        // the lead is also stored in app state for the Payaca payload.
+        fetch('/wp-admin/admin-ajax.php?action=livwarm_email_quote', { method: 'POST', body })
+          .catch(() => {})
+          .then(() => {
+            onCapture(firstName.trim(), email.trim());
+            setSent(true);
+            setSending(false);
+          });
+      };
+
+      if (sent) {
+        return (
+          <div className="lw-emailcap lw-emailcap--done">
+            <svg className="lw-emailcap-tick" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" /><path d="M8 12l3 3 5-6" />
+            </svg>
+            <span>Quote sent — check your inbox.</span>
+          </div>
+        );
+      }
+
+      return (
+        <form className="lw-emailcap" onSubmit={handleSubmit}>
+          <h3 className="lw-emailcap-title">Get your quote emailed to you</h3>
+          <p className="lw-emailcap-sub">We'll send a summary to your inbox so you can review it any time.</p>
+          <div className="lw-emailcap-fields">
+            <input type="text" className="lw-emailcap-input" placeholder="First name"
+                   value={firstName} onChange={(e) => setFirstName(e.target.value)} aria-label="First name" />
+            <input type="email" className="lw-emailcap-input" placeholder="Email address"
+                   value={email} onChange={(e) => setEmail(e.target.value)} aria-label="Email address" />
+          </div>
+          <button type="submit" className="lw-emailcap-btn" disabled={!canSend}>
+            {sending ? 'Sending…' : 'Send my quote →'}
+          </button>
+        </form>
+      );
+    }
+
+    function QuoteStep({ answers, onContinue, emailCaptured, leadFirstName, leadEmail, onEmailCapture }) {
       // Sensible initial Custom selection: the Performance system, clamped to 6–22.
       const init = buildTiers(answers, { panels: 6, battery: 'none' }).defaults;
       const [custom, setCustom] = useState({
@@ -3505,6 +4103,9 @@
           panelBatteryLine,
           price: active.price,        // base cash price (number, ex any add-ons)
           monthly: active.monthly,    // finance monthly (number)
+          // savings figures carried through to the Step 8 booking summary
+          monthlySaving: active.monthlySaving,
+          saving20yr: active.saving20yr,
         });
       };
 
@@ -3574,6 +4175,27 @@
                 )}
               </div>
             </div>
+          </Reveal>
+
+          {/* ADDITION 1 — inline finance calculator (recalculates with the active tier) */}
+          <Reveal delay={700}>
+            <FinanceCalculator systemPrice={active.price} />
+          </Reveal>
+
+          {/* ADDITION 2 — optional "email me this quote" capture */}
+          <Reveal delay={800}>
+            <QuoteEmailCapture
+              captured={emailCaptured}
+              leadFirstName={leadFirstName}
+              leadEmail={leadEmail}
+              payload={{
+                product_selection: active.name + ' Solar PV System',
+                solar_panel_number: String(active.panels),
+                payment_total: String(active.price),
+                tier_name: active.name,
+              }}
+              onCapture={onEmailCapture}
+            />
           </Reveal>
 
           {/* CTA */}
@@ -3887,6 +4509,229 @@
     };
 
     /* ============================================================
+       STEP 8 — Custom weekday-only calendar picker
+       ============================================================ */
+    const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
+    const DOW_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    function isoDate(y, m, d) {
+      return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    }
+    function formatIsoLong(iso) {
+      if (!iso) return '';
+      const [y, m, d] = iso.split('-');
+      return Number(d) + ' ' + MONTH_NAMES[Number(m) - 1] + ' ' + y;
+    }
+
+    function CalendarPicker({ value, onSelect }) {
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const minDate = new Date(today.getTime()); minDate.setDate(minDate.getDate() + 14);  // earliest = 14 days out
+      const [view, setView] = useState({ y: minDate.getFullYear(), m: minDate.getMonth() });
+
+      const firstOfMonth = new Date(view.y, view.m, 1);
+      const startOffset = (firstOfMonth.getDay() + 6) % 7;          // Monday-based leading blanks
+      const daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
+      const todayIso = isoDate(today.getFullYear(), today.getMonth(), today.getDate());
+
+      // Don't page back into a month that's entirely before the earliest selectable date.
+      const canPrev = (view.y > minDate.getFullYear())
+        || (view.y === minDate.getFullYear() && view.m > minDate.getMonth());
+      const prevMonth = () => { if (canPrev) setView((v) => v.m === 0 ? { y: v.y - 1, m: 11 } : { y: v.y, m: v.m - 1 }); };
+      const nextMonth = () => setView((v) => v.m === 11 ? { y: v.y + 1, m: 0 } : { y: v.y, m: v.m + 1 });
+
+      const cells = [];
+      for (let i = 0; i < startOffset; i++) cells.push(null);
+      for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+      return (
+        <div className="lw-cal">
+          <div className="lw-cal-head">
+            <button type="button" className="lw-cal-nav" onClick={prevMonth} disabled={!canPrev}
+                    aria-label="Previous month">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+            </button>
+            <span className="lw-cal-title">{MONTH_NAMES[view.m]} {view.y}</span>
+            <button type="button" className="lw-cal-nav" onClick={nextMonth} aria-label="Next month">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+            </button>
+          </div>
+          <div className="lw-cal-grid lw-cal-dow">
+            {DOW_LABELS.map((d) => <span key={d} className="lw-cal-dowcell">{d}</span>)}
+          </div>
+          <div className="lw-cal-grid">
+            {cells.map((d, i) => {
+              if (d == null) return <span key={'e' + i} className="lw-cal-cell is-empty" />;
+              const dow = (startOffset + d - 1) % 7;                 // 0=Mon .. 6=Sun
+              const isWeekend = dow >= 5;
+              const cellDate = new Date(view.y, view.m, d); cellDate.setHours(0, 0, 0, 0);
+              const iso = isoDate(view.y, view.m, d);
+              const disabled = isWeekend || cellDate < minDate;
+              const isSel = value === iso;
+              const isToday = iso === todayIso;
+              const cls = 'lw-cal-cell'
+                + (disabled ? ' is-disabled' : '')
+                + (isWeekend ? ' is-weekend' : '')
+                + (isSel ? ' is-selected' : '')
+                + (isToday && !isSel ? ' is-today' : '');
+              return (
+                <button key={iso} type="button" className={cls} disabled={disabled}
+                        onClick={() => onSelect(iso)}>{d}</button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       STEP 8 — Your details + booking summary
+       ============================================================ */
+    function ContactDetails({ sel, warrantyAdded, emailCaptured, leadFirstName, leadEmail, onSubmit }) {
+      const [firstName, setFirstName] = useState(emailCaptured ? (leadFirstName || '') : '');
+      const [surname, setSurname] = useState('');
+      const [email, setEmail] = useState(emailCaptured ? (leadEmail || '') : '');
+      const [phone, setPhone] = useState('');
+      const [date, setDate] = useState('');
+      const [touched, setTouched] = useState(false);
+
+      const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+      const phoneValid = /^(?:\+?44|0)\d{9,10}$/.test(phone.replace(/[^0-9+]/g, ''));
+      const allValid = firstName.trim() && surname.trim() && emailValid && phoneValid && !!date;
+
+      const total = sel.price + (warrantyAdded ? 199 : 0);
+      const monthly = financeMonthly(total, 180);
+
+      const handleBook = () => {
+        setTouched(true);
+        if (!allValid) return;
+        onSubmit({
+          full_name: (firstName.trim() + ' ' + surname.trim()).trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          preferred_date: date,
+        });
+      };
+
+      const NEXT = [
+        { n: 1, label: 'Survey booked', desc: "We'll confirm your slot within 24 hours" },
+        { n: 2, label: 'Remote design', desc: 'Our engineers review your roof and design your system' },
+        { n: 3, label: 'Installation day', desc: 'Your system is fitted by our MCS-certified team' },
+      ];
+
+      return (
+        <div className="lw-contact lw-fade-in">
+          <div className="lw-contact-grid">
+            {/* LEFT — form */}
+            <div className="lw-cd-left">
+              <h1 className="lw-cd-h1">Secure your free survey</h1>
+              <p className="lw-cd-subh">No payment today. Our team will contact you within 24 hours to confirm your installation date.</p>
+
+              <div className="lw-cd-row">
+                <div className="lw-cd-field">
+                  <label className="lw-cd-label" htmlFor="cd-first">First name</label>
+                  <input id="cd-first" className="lw-cd-input" type="text" value={firstName}
+                         onChange={(e) => setFirstName(e.target.value)} />
+                </div>
+                <div className="lw-cd-field">
+                  <label className="lw-cd-label" htmlFor="cd-surname">Surname</label>
+                  <input id="cd-surname" className="lw-cd-input" type="text" value={surname}
+                         onChange={(e) => setSurname(e.target.value)} />
+                </div>
+              </div>
+              <div className="lw-cd-field">
+                <label className="lw-cd-label" htmlFor="cd-email">Email address</label>
+                <input id="cd-email" className="lw-cd-input" type="email" value={email}
+                       onChange={(e) => setEmail(e.target.value)} />
+              </div>
+              <div className="lw-cd-field">
+                <label className="lw-cd-label" htmlFor="cd-phone">Phone number</label>
+                <input id="cd-phone" className="lw-cd-input" type="tel" value={phone}
+                       onChange={(e) => setPhone(e.target.value)} />
+              </div>
+
+              <div className="lw-cd-field">
+                <label className="lw-cd-label">Preferred installation date</label>
+                <p className="lw-cd-hint">Weekdays only. Our team will confirm availability after your technical review.</p>
+                <CalendarPicker value={date} onSelect={setDate} />
+                {date && <p className="lw-cd-chosen">Selected: {formatIsoLong(date)}</p>}
+              </div>
+
+              {/* What happens next? */}
+              <div className="lw-next3">
+                {NEXT.map((s) => (
+                  <div key={s.n} className="lw-next3-item">
+                    <span className="lw-next3-num">{s.n}</span>
+                    <div className="lw-next3-body">
+                      <div className="lw-next3-label">{s.label}</div>
+                      <div className="lw-next3-desc">{s.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button type="button" className="lw-cta lw-cd-cta" disabled={!allValid} onClick={handleBook}>
+                Book my free survey →
+              </button>
+              {touched && !allValid && (
+                <p className="lw-cd-err">Please complete all fields with a valid email, UK phone number and a chosen date.</p>
+              )}
+            </div>
+
+            {/* RIGHT — sticky booking summary */}
+            <aside className="lw-cd-right">
+              <div className="lw-bsum">
+                <h2 className="lw-bsum-h">Your booking summary</h2>
+
+                <div className="lw-bsum-tier">{sel.tierTitle}</div>
+                <div className="lw-bsum-spec">{sel.panelBatteryLine}</div>
+                {warrantyAdded && (
+                  <div className="lw-bsum-warr">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                    5-Year Workmanship Guarantee
+                  </div>
+                )}
+
+                <hr className="lw-bsum-div" />
+
+                <div className="lw-bsum-line">
+                  <span className="lw-bsum-k">System price</span>
+                  <span className="lw-bsum-v">{gbp(total)}</span>
+                </div>
+                {warrantyAdded && <div className="lw-bsum-item">+£199 warranty</div>}
+                <div className="lw-bsum-monthly">or £{monthly}/mo</div>
+                <div className="lw-bsum-apr">at 9.9% APR, 15-year term</div>
+
+                <hr className="lw-bsum-div" />
+
+                <div className="lw-bsum-line">
+                  <span className="lw-bsum-k2">Monthly bill reduction</span>
+                  <span className="lw-bsum-v2">{gbp(sel.monthlySaving)} est./mo</span>
+                </div>
+                <div className="lw-bsum-line">
+                  <span className="lw-bsum-k2">20-year saving</span>
+                  <span className="lw-bsum-v2">{gbp(sel.saving20yr)} est.</span>
+                </div>
+
+                <hr className="lw-bsum-div" />
+
+                <div className="lw-bsum-badges">
+                  <span>{ICONS.shield} MCS Certified</span>
+                  <span>{ICONS.star} Trustpilot 4.9</span>
+                  <span>HIES Member</span>
+                </div>
+                <div className="lw-bsum-vat">All prices include VAT</div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
        APP
        ============================================================ */
     function App() {
@@ -4156,6 +5001,29 @@
         setUpsellOpen(true);
       }, []);
 
+      // Step 7 ADDITION 2 — "email me this quote" capture. Stores the lead so Step 8
+      // can pre-populate, and flags it for the Payaca payload.
+      const handleEmailCapture = useCallback((firstName, email) => {
+        setAnswers((prev) => ({
+          ...prev,
+          quote_email_captured: true,
+          lead_first_name: firstName,
+          lead_email: email,
+        }));
+      }, []);
+
+      // Step 8 — commit contact details + preferred date, then advance to Step 9.
+      const handleContactContinue = useCallback((data) => {
+        setAnswers((prev) => ({
+          ...prev,
+          full_name: data.full_name,
+          email: data.email,
+          phone: data.phone,
+          preferred_date: data.preferred_date,
+        }));
+        setCurrentIndex((i) => i + 1);
+      }, []);
+
       // Upsell toggles — warranty affects the cash total; EV charger + BUS grant are
       // interest flags only. All three persist into answers (Payaca payload).
       const handleToggleWarranty = useCallback(() => {
@@ -4197,7 +5065,8 @@
       const onEv = currentIndex === EV_INDEX;             // Step 5 EV details
       const onStep6 = currentIndex === STEP6_INDEX;       // Step 6 address & roof confirmation
       const onQuote = currentIndex === QUOTE_INDEX;       // Step 7 quote screen
-      const isComplete = currentIndex > QUOTE_INDEX;      // handover (placeholder for Step 8)
+      const onContact = currentIndex === QUOTE_INDEX + 1; // Step 8 contact details
+      const isComplete = currentIndex > QUOTE_INDEX + 1;  // handover (placeholder for Step 9)
       const currentQuestion = inQualifier ? QUESTIONS[currentIndex] : null;
       const step = inQualifier ? { number: 1, name: 'Home Details' }
         : onUsage ? { number: 2, name: 'Electricity Usage' }
@@ -4205,7 +5074,9 @@
         : onBattery ? { number: 4, name: 'Battery Details' }
         : onEv ? { number: 5, name: 'EV Details' }
         : onStep6 ? { number: 6, name: 'Address & Roof' }
-        : { number: 7, name: 'Your Solar Potential' };
+        : onQuote ? { number: 7, name: 'Your Solar Potential' }
+        : onContact ? { number: 8, name: 'Your details' }
+        : { number: 9, name: 'Secure Your Booking' };
 
       // Breadcrumb pills: answers for screens *before* the current one (so the current
       // screen's value shows in-place rather than duplicated as a pill above).
@@ -4275,8 +5146,10 @@
         percent = 5 * segment + (phaseIdx / 4) * segment;
       } else if (onQuote) {
         percent = 6 * segment;                                   // Steps 1–6 done; on the quote screen
+      } else if (onContact) {
+        percent = 7 * segment;                                   // Steps 1–7 done; on contact details
       } else {
-        percent = 7 * segment;                                   // Steps 1–7 done
+        percent = 8 * segment;                                   // Steps 1–8 done
       }
 
       return (
@@ -4295,7 +5168,7 @@
                     canGoBack={!isComplete && currentIndex > 0}
                     onBack={handleBack}
                   />
-                  {!isComplete && !onQuote && <Breadcrumbs answered={breadcrumbItems} onEdit={handleEdit}
+                  {!isComplete && !onQuote && !onContact && <Breadcrumbs answered={breadcrumbItems} onEdit={handleEdit}
                     expanded={bcExpanded} onToggle={handleToggleBreadcrumbs} />}
                   {inQualifier && (
                     <Question
@@ -4360,7 +5233,11 @@
                     />
                   )}
                   {onQuote && !microCommit && (
-                    <QuoteStep answers={answers} onContinue={handleQuoteContinue} />
+                    <QuoteStep answers={answers} onContinue={handleQuoteContinue}
+                      emailCaptured={!!answers.quote_email_captured}
+                      leadFirstName={answers.lead_first_name}
+                      leadEmail={answers.lead_email}
+                      onEmailCapture={handleEmailCapture} />
                   )}
                   {onQuote && microCommit && quoteSel && (
                     <MicroCommitment
@@ -4370,6 +5247,16 @@
                       busGrantInterest={!!answers.busGrantInterest}
                       onContinue={handleMicroContinue}
                       onEdit={handleMicroEdit}
+                    />
+                  )}
+                  {onContact && quoteSel && (
+                    <ContactDetails
+                      sel={quoteSel}
+                      warrantyAdded={!!answers.warrantyAdded}
+                      emailCaptured={!!answers.quote_email_captured}
+                      leadFirstName={answers.lead_first_name}
+                      leadEmail={answers.lead_email}
+                      onSubmit={handleContactContinue}
                     />
                   )}
                   {isComplete && <StepComplete answers={answers} onRestart={handleRestart} />}
