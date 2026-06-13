@@ -1728,36 +1728,74 @@
     .lw-upsell-go:hover { background: #C8232B; transform: translateY(1px); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10); }
     .lw-upsell-go:active { background: #B01E24; transform: translateY(2px); box-shadow: none; }
 
-    /* Micro-commitment screen */
-    .lw-micro { max-width: 600px; margin: 0 auto; text-align: center; }
-    .lw-micro-tick { color: var(--color-cta-green); display: block; margin: 8px auto 16px; }
-    .lw-micro-title { font-size: 1.75rem; font-weight: 800; color: var(--color-dark); margin: 0 0 24px; }
-    .lw-micro-card {
-      background: #fff; border: 1px solid var(--color-border); border-radius: 12px;
-      padding: 24px 32px; text-align: left; max-width: 600px; margin: 0 auto;
+    /* Micro-commitment screen — premium product card */
+    .lw-mc { max-width: 700px; margin: 0 auto; text-align: center; }
+    .lw-mc-tick { color: var(--color-cta-green); display: block; margin: 8px auto 16px; }
+    .lw-mc-h { font-size: 2rem; font-weight: 800; color: var(--color-dark); margin: 0 0 8px; }
+    .lw-mc-sub { font-size: 1rem; color: var(--color-body); margin: 0 0 32px; }
+    .lw-mc-card {
+      position: relative;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      text-align: left;
     }
-    .lw-micro-tier { font-size: 1.1rem; font-weight: 700; color: var(--color-dark); }
-    .lw-micro-spec { font-size: 0.9rem; color: var(--color-body); margin-top: 4px; line-height: 1.4; }
-    .lw-micro-addon { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--color-dark); margin-top: 10px; }
-    .lw-micro-addon svg { flex-shrink: 0; }
-    .lw-micro-addon--green svg { color: var(--color-cta-green); }
-    .lw-micro-addon--orange svg { color: #F57C00; }
-    .lw-micro-div { border: none; border-top: 1px solid var(--color-border); margin: 18px 0; }
-    .lw-micro-cash { font-size: 1.5rem; font-weight: 800; color: var(--color-dark); line-height: 1.1; }
-    .lw-micro-monthly { font-size: 0.95rem; color: var(--color-primary); margin-top: 4px; font-weight: 600; }
-    .lw-micro-vat { font-size: 0.75rem; color: #999; margin-top: 6px; }
-    .lw-micro-note { font-size: 0.75rem; color: #999; font-style: italic; margin: 16px auto 0; }
-    .lw-micro-cta {
-      width: auto; min-width: 320px; max-width: 440px;
-      margin: 28px auto 0;
+    .lw-mc-dots {
+      position: absolute; bottom: 0; right: 0;
+      width: 65%; height: 65%;
+      background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
+      background-size: 10px 10px;
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
     }
-    @media (max-width: 420px) { .lw-micro-cta { min-width: 0; width: 100%; } }
-    .lw-micro-edit {
-      display: block; margin: 16px auto 0; background: none; border: none;
-      color: var(--color-primary); font-size: 0.9rem; font-weight: 600;
+    .lw-mc-imgs { display: flex; position: relative; z-index: 1; }
+    .lw-mc-cell {
+      flex: 1; height: 140px; background: #F8F8F8;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lw-mc-cell + .lw-mc-cell { border-left: 1px solid var(--color-border); }
+    .lw-mc-cell img { max-height: 110px; max-width: 90%; object-fit: contain; }
+    .lw-mc-cell-empty { font-size: 0.85rem; font-weight: 600; color: #999; }
+    .lw-mc-body { padding: 24px; position: relative; z-index: 1; }
+    .lw-mc-pill {
+      display: inline-block;
+      background: rgba(232, 50, 58, 0.08);
+      color: var(--color-primary);
+      font-size: 0.8rem; font-weight: 600;
+      border-radius: 20px; padding: 4px 12px;
+      margin-bottom: 8px;
+    }
+    .lw-mc-spec { font-size: 0.95rem; color: var(--color-body); }
+    .lw-mc-incl {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px;
+      margin-top: 16px;
+    }
+    .lw-mc-incl-row { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--color-body); }
+    .lw-mc-incl-row svg { color: var(--color-cta-green); width: 16px; height: 16px; flex-shrink: 0; }
+    .lw-mc-addons { margin-top: 16px; }
+    .lw-mc-addon { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--color-body); margin-top: 8px; }
+    .lw-mc-addon svg { color: var(--color-cta-green); width: 16px; height: 16px; flex-shrink: 0; }
+    .lw-mc-div { border: none; border-top: 1px solid var(--color-border); margin: 16px 0; }
+    .lw-mc-price-label { font-size: 0.95rem; font-weight: 600; color: var(--color-primary); }
+    .lw-mc-monthly { font-size: 2.5rem; font-weight: 800; color: var(--color-primary); line-height: 1.1; }
+    .lw-mc-cash { font-size: 1rem; color: var(--color-dark); margin-top: 4px; }
+    .lw-mc-vat { font-size: 0.75rem; color: #999; margin-top: 4px; }
+    .lw-mc-note { font-size: 0.75rem; color: #999; font-style: italic; margin: 12px auto 0; }
+    .lw-mc-cta { width: auto; min-width: 280px; margin: 24px auto 0; }
+    @media (max-width: 360px) { .lw-mc-cta { min-width: 0; width: 100%; } }
+    .lw-mc-edit {
+      display: block; margin: 12px auto 0; background: none; border: none;
+      color: var(--color-primary); font-size: 0.875rem; font-weight: 600;
       cursor: pointer; font-family: inherit;
     }
-    .lw-micro-edit:hover { color: var(--color-primary-light); }
+    .lw-mc-edit:hover { color: var(--color-primary-light); }
+    @media (max-width: 480px) {
+      .lw-mc-incl { grid-template-columns: 1fr; }
+    }
 
     /* ============================================================
        "Preparing your quote" transition overlay (Step 6 → Step 7)
@@ -1810,48 +1848,49 @@
     @keyframes lw-msg-in { from { opacity: 0; } to { opacity: 1; } }
 
     /* ============================================================
-       STEP 7 ADDITION 1 — Inline finance calculator
+       STEP 7 — Finance options modal (opened from each tier card footer)
        ============================================================ */
-    .lw-fin { margin: 4px auto 0; max-width: 560px; width: 100%; }
-    .lw-fin-trigger {
-      display: block;
-      margin: 0 auto;
+    /* Footer trigger button inside the tier card price block */
+    .lw-show-finbtn {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 8px 20px;
+      background: #fff;
+      color: var(--color-primary);
+      border: 1.5px solid var(--color-primary);
+      border-radius: 20px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .lw-show-finbtn:hover { background: rgba(232, 50, 58, 0.05); }
+    /* Modal panel — reuses .lw-modal-overlay; custom panel width + close button */
+    .lw-modal--finance { max-width: 520px; }
+    .lw-finmodal-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
       background: none;
       border: none;
-      font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--color-primary);
-      text-decoration: underline;
-      text-underline-offset: 3px;
+      font-size: 1.25rem;
+      line-height: 1;
+      color: var(--color-body);
       cursor: pointer;
-      padding: 4px 8px;
+      padding: 4px;
     }
-    .lw-fin-panel {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 300ms ease;
-    }
-    .lw-fin-panel.is-open { max-height: 900px; }
-    .lw-fin-inner {
-      margin-top: 14px;
-      background: #fff;
-      border: 1px solid var(--color-border);
-      border-radius: 12px;
-      padding: 24px;
-    }
+    .lw-finmodal-title { font-size: 1.25rem; font-weight: 800; color: var(--color-dark); margin: 0 0 24px; padding-right: 28px; }
+    .lw-fin-note { font-size: 0.8rem; color: var(--color-primary); margin: -12px 0 20px; text-align: left; }
     .lw-fin-modes {
       display: flex;
       gap: 8px;
-      background: #f4f4f4;
-      border-radius: 999px;
-      padding: 4px;
       margin-bottom: 20px;
     }
     .lw-fin-mode {
       flex: 1;
-      border: 1px solid transparent;
-      background: transparent;
+      border: 1px solid var(--color-border);
+      background: #fff;
       border-radius: 999px;
       padding: 9px 12px;
       font-family: inherit;
@@ -1859,9 +1898,9 @@
       font-weight: 700;
       color: var(--color-body);
       cursor: pointer;
-      transition: background 150ms ease, color 150ms ease;
+      transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
     }
-    .lw-fin-mode.is-on { background: var(--color-primary); color: #fff; }
+    .lw-fin-mode.is-on { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
     .lw-fin-label {
       display: block;
       text-align: left;
@@ -1933,7 +1972,7 @@
       justify-content: center;
       gap: 2px;
     }
-    .lw-fin-payment-fig { font-size: 2.5rem; font-weight: 800; color: var(--color-primary); line-height: 1; }
+    .lw-fin-payment-fig { font-size: 2rem; font-weight: 800; color: var(--color-primary); line-height: 1; }
     .lw-fin-payment-unit { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); }
     .lw-fin-rep {
       font-size: 0.75rem;
@@ -1965,7 +2004,7 @@
       text-align: center;
     }
     .lw-fin-full { text-align: center; padding: 8px 0; }
-    .lw-fin-full-price { font-size: 2.5rem; font-weight: 800; color: var(--color-dark); line-height: 1.1; }
+    .lw-fin-full-price { font-size: 2rem; font-weight: 800; color: var(--color-dark); line-height: 1.1; }
     .lw-fin-full-save { font-size: 0.875rem; color: var(--color-cta-green); font-weight: 700; margin-top: 8px; }
 
     /* ============================================================
@@ -2911,6 +2950,16 @@
     const TIER_TITLES = { essential: 'Solar Panels Only', performance: 'Our Recommended Package', custom: 'Build Your Own System' };
     // Battery → data-sheet link label (expanded spec sheet).
     const BATTERY_DATASHEET = { '5kw': 'EP6 Battery', '10kw': 'EP12 Battery', '15kw': 'EP18 Battery', powerwall: 'Powerwall' };
+    // Product image fallbacks (used by the micro-commitment card if solar-products.json
+    // hasn't loaded). Mirror the URLs in solar-products.json / the spec product table.
+    const PANEL_IMG = 'https://deals.livwarm.co.uk/wp-content/uploads/2025/10/12-Solar-Panels.webp';
+    const INVERTER_IMG = 'https://deals.livwarm.co.uk/wp-content/uploads/2026/06/Fox-H1-G2-Hybrid-Inverter-Gen2-1ph-Edited.png';
+    const BATTERY_IMG = {
+      '5kw': 'https://deals.livwarm.co.uk/wp-content/uploads/2025/10/Fox-ESS-6kw-Battery.webp',
+      '10kw': 'https://deals.livwarm.co.uk/wp-content/uploads/2026/02/foxess-ep12-battery.webp',
+      '15kw': 'https://deals.livwarm.co.uk/wp-content/uploads/2025/10/foxess-ep18-battery.webp',
+      powerwall: 'https://deals.livwarm.co.uk/wp-content/uploads/2025/10/tesla-powerwall-png-no-background.png',
+    };
 
     // Base panel count from the lookup table (Section 6 — Step 7).
     function basePanelCount(houseType, bedrooms) {
@@ -3598,7 +3647,7 @@
 
     // A single product-showcase card for the carousel. The active card shows the full
     // layout; inactive (peek) cards render the same markup, clipped + faded by the carousel.
-    function CarouselCard({ data, products, custom, onCustomChange, isActive, currentBill }) {
+    function CarouselCard({ data, products, custom, onCustomChange, isActive, currentBill, onExploreFinance }) {
       const isCustom = data.id === 'custom';
       const hasBattery = data.battery !== 'none';
       const hideImg = (e) => { e.currentTarget.style.display = 'none'; };
@@ -3778,6 +3827,10 @@
               </div>
               <div className="lw-show-price-hero">£{data.monthly}/mo</div>
               <div className="lw-show-price-cash">or pay in full: {gbp(data.price)}</div>
+              <button type="button" className="lw-show-finbtn"
+                      onClick={(e) => { e.stopPropagation(); onExploreFinance(data.price); }}>
+                Explore finance options
+              </button>
             </div>
           </div>
         </div>
@@ -3785,95 +3838,102 @@
     }
 
     /* ============================================================
-       STEP 7 ADDITION 1 — Inline finance calculator (Shermin placeholder)
-       Self-contained. Recalculates whenever the active tier price changes.
+       STEP 7 — Finance options modal (Shermin/Stax placeholder)
+       Opened from a tier card footer; reflects that tier's system price.
+       Mounted fresh on each open, so it resets and picks up the new price.
        ============================================================ */
-    function FinanceCalculator({ systemPrice }) {
-      const [open, setOpen] = useState(false);
+    function FinanceModal({ systemPrice, onClose }) {
       const [mode, setMode] = useState('monthly');     // 'monthly' | 'full'
       const [term, setTerm] = useState(180);           // months; default 15 years
       const [deposit, setDeposit] = useState(0);
       const [showShermin, setShowShermin] = useState(false);
       const TERMS = [36, 48, 60, 84, 120, 180];
 
-      // Deposit cap: 30% of the current system price, in whole £500 steps.
-      const maxDeposit = Math.max(0, Math.floor((systemPrice * 0.30) / 500) * 500);
-      // Re-clamp the deposit whenever the active tier (and therefore the cap) changes.
-      React.useEffect(() => { setDeposit((d) => Math.min(d, maxDeposit)); }, [maxDeposit]);
+      // Deposit: 0-50% of system price in £500 steps, but never so much that the
+      // remaining loan drops below the £1,000 minimum. Floored to a whole £500 step.
+      const cap50 = systemPrice * 0.5;
+      const capMinLoan = systemPrice - 1000;
+      const maxDeposit = Math.max(0, Math.floor(Math.min(cap50, capMinLoan) / 500) * 500);
+      const minLoanBinds = capMinLoan < cap50;          // £1,000 floor is the binding cap
 
       const depositPct = systemPrice > 0 ? Math.round((deposit / systemPrice) * 100) : 0;
       const financeAmount = Math.max(0, systemPrice - deposit);
       const monthly = financeMonthly(financeAmount, term);
       const totalRepayable = monthly * term;            // total repayable on the borrowed sum
       const termYears = Math.round(term / 12);
+      const overMaxLoan = financeAmount > 25000;        // max loan £25,000 (defensive)
 
       // Saving from paying in full vs financing the full price over 15 years.
       const full15Monthly = financeMonthly(systemPrice, 180);
       const financeSavingVsTotal = Math.max(0, full15Monthly * 180 - systemPrice);
 
       return (
-        <div className="lw-fin">
-          <button type="button" className="lw-fin-trigger" onClick={() => setOpen((o) => !o)}
-                  aria-expanded={open}>
-            {open ? 'Hide finance options' : 'Explore finance options'}
-          </button>
-          <div className={'lw-fin-panel' + (open ? ' is-open' : '')}>
-            <div className="lw-fin-inner">
-              {/* Pay monthly / Pay in full toggle */}
-              <div className="lw-fin-modes">
-                <button type="button" className={'lw-fin-mode' + (mode === 'monthly' ? ' is-on' : '')}
-                        onClick={() => setMode('monthly')}>Pay monthly</button>
-                <button type="button" className={'lw-fin-mode' + (mode === 'full' ? ' is-on' : '')}
-                        onClick={() => setMode('full')}>Pay in full</button>
-              </div>
+        <div className="lw-modal-overlay" onClick={onClose}>
+          <div className="lw-modal lw-modal--finance" role="dialog" aria-modal="true"
+               aria-label="Finance options" onClick={(e) => e.stopPropagation()}>
+            <button className="lw-finmodal-close" onClick={onClose} aria-label="Close">×</button>
+            <h2 className="lw-finmodal-title">Finance options</h2>
 
-              {mode === 'monthly' ? (
-                <div className="lw-fin-body">
-                  <label className="lw-fin-label">Your deposit</label>
-                  <input type="range" className="lw-fin-slider" min={0} max={maxDeposit} step={500}
-                         value={deposit} onChange={(e) => setDeposit(Number(e.target.value))}
-                         aria-label="Deposit amount" />
-                  <div className="lw-fin-meta">{gbp(deposit)} deposit · {depositPct}%</div>
-
-                  <label className="lw-fin-label">Loan term</label>
-                  <div className="lw-fin-terms">
-                    {TERMS.map((t) => (
-                      <button key={t} type="button"
-                              className={'lw-fin-term' + (t === term ? ' is-on' : '')}
-                              onClick={() => setTerm(t)}>{t}</button>
-                    ))}
-                  </div>
-                  <div className="lw-fin-meta">months</div>
-
-                  <div className="lw-fin-payment">
-                    <span className="lw-fin-payment-fig">£{monthly}</span>
-                    <span className="lw-fin-payment-unit">/mo</span>
-                  </div>
-
-                  <p className="lw-fin-rep">
-                    Representative example: Borrowing {gbp(financeAmount)} over {termYears} years at 9.9% APR (fixed).
-                    Monthly repayments of £{monthly}. Total amount repayable: {gbp(totalRepayable)}.
-                    Credit is subject to status and affordability.
-                  </p>
-
-                  {/* SHERMIN_INTEGRATION_POINT — drop the Shermin/Stax embed in here once
-                      credentials are confirmed; replace the placeholder button + note below. */}
-                  <button type="button" className="lw-fin-apply" onClick={() => setShowShermin(true)}>
-                    Apply for Finance with Shermin →
-                  </button>
-                  {showShermin && (
-                    <p className="lw-fin-shermin">Finance applications will open shortly. Call 0800 222 9494.</p>
-                  )}
-                </div>
-              ) : (
-                <div className="lw-fin-body lw-fin-full">
-                  <div className="lw-fin-full-price">{gbp(systemPrice)}</div>
-                  <div className="lw-fin-full-save">
-                    Save {gbp(financeSavingVsTotal)} compared to paying monthly over 15 years
-                  </div>
-                </div>
-              )}
+            {/* Pay monthly / Pay in full toggle */}
+            <div className="lw-fin-modes">
+              <button type="button" className={'lw-fin-mode' + (mode === 'monthly' ? ' is-on' : '')}
+                      onClick={() => setMode('monthly')}>Pay monthly</button>
+              <button type="button" className={'lw-fin-mode' + (mode === 'full' ? ' is-on' : '')}
+                      onClick={() => setMode('full')}>Pay in full</button>
             </div>
+
+            {mode === 'monthly' ? (
+              <div className="lw-fin-body">
+                <label className="lw-fin-label">Your deposit</label>
+                <input type="range" className="lw-fin-slider" min={0} max={maxDeposit} step={500}
+                       value={deposit} onChange={(e) => setDeposit(Number(e.target.value))}
+                       aria-label="Deposit amount" />
+                <div className="lw-fin-meta">{gbp(deposit)} deposit · {depositPct}%</div>
+                {minLoanBinds && (
+                  <p className="lw-fin-note">Maximum deposit for this system is {gbp(maxDeposit)}</p>
+                )}
+                {overMaxLoan && (
+                  <p className="lw-fin-note">This system exceeds the £25,000 finance maximum - please pay in full or call us to discuss.</p>
+                )}
+
+                <label className="lw-fin-label">Loan term</label>
+                <div className="lw-fin-terms">
+                  {TERMS.map((t) => (
+                    <button key={t} type="button"
+                            className={'lw-fin-term' + (t === term ? ' is-on' : '')}
+                            onClick={() => setTerm(t)}>{t}</button>
+                  ))}
+                </div>
+                <div className="lw-fin-meta">months</div>
+
+                <div className="lw-fin-payment">
+                  <span className="lw-fin-payment-fig">£{monthly}</span>
+                  <span className="lw-fin-payment-unit">/mo</span>
+                </div>
+
+                <p className="lw-fin-rep">
+                  Representative example: Borrowing {gbp(financeAmount)} over {termYears} years at 9.9% APR (fixed).
+                  Monthly repayments of £{monthly}. Total amount repayable: {gbp(totalRepayable)}.
+                  Credit is subject to status and affordability.
+                </p>
+
+                {/* SHERMIN_INTEGRATION_POINT — drop the Shermin/Stax embed in here once
+                    credentials are confirmed; replace the placeholder button + note below. */}
+                <button type="button" className="lw-fin-apply" onClick={() => setShowShermin(true)}>
+                  Apply for Finance with Shermin
+                </button>
+                {showShermin && (
+                  <p className="lw-fin-shermin">Finance applications will open shortly - call 0800 222 9494</p>
+                )}
+              </div>
+            ) : (
+              <div className="lw-fin-body lw-fin-full">
+                <div className="lw-fin-full-price">{gbp(systemPrice)}</div>
+                <div className="lw-fin-full-save">
+                  Save {gbp(financeSavingVsTotal)} compared to paying monthly over 15 years
+                </div>
+              </div>
+            )}
           </div>
         </div>
       );
@@ -3924,6 +3984,9 @@
       });
       const order = ['essential', 'performance', 'custom'];
       const [activeCard, setActiveCard] = useState(1);   // 0 Essential · 1 Performance · 2 Custom
+      // Finance modal — holds the system price of the tier whose footer button was
+      // clicked (null = closed). Reopening from another tier passes that tier's price.
+      const [financePrice, setFinancePrice] = useState(null);
 
       // IMPROVEMENT 1 — product data (brand names, capacities, images, who_for).
       // Silent fallback to the hardcoded values if the fetch fails.
@@ -4034,6 +4097,17 @@
         + (microBatteryName ? ' + ' + microBatteryName : '');
 
       const handleContinue = () => {
+        // "What's included" list for the active tier (mirrors the carousel card).
+        const batteryIncl = active.battery !== 'none' ? BATTERY_INCLUDED[active.battery] : null;
+        const inclItems = active.id === 'essential'
+          ? [active.panels + ' × ' + PANEL_WATT + 'W solar panels', 'Fox ESS H1 G2 hybrid inverter', 'MCS certified installation', 'Smart monitoring app', 'Manufacturer warranty']
+          : [active.panels + ' × ' + PANEL_WATT + 'W solar panels', ...(batteryIncl ? [batteryIncl] : []), 'Fox ESS H1 G2 hybrid inverter', 'MCS certified installation', 'Smart monitoring app', 'Manufacturer warranty'];
+        // Product images (from solar-products.json, with hardcoded fallbacks).
+        const panelImg = (products && products.panels && products.panels.standard && products.panels.standard.image) || PANEL_IMG;
+        const inverterImg = (products && products.inverter && products.inverter.image) || INVERTER_IMG;
+        const batteryObj = products && products.batteries ? products.batteries[active.battery] : null;
+        const batteryImg = active.battery === 'none' ? null : ((batteryObj && batteryObj.image) || BATTERY_IMG[active.battery] || null);
+
         // Opens the upsell modal (handled by the parent) — does not advance the step.
         onContinue({
           product_selection: `${active.name} Solar PV System`,
@@ -4041,12 +4115,17 @@
           battery: BATTERY_NAME[active.battery],
           // extra fields the upsell modal + micro-commitment screen need
           tierTitle: TIER_TITLES[active.id] || active.name,
+          tierName: active.name,
           panelBatteryLine,
           price: active.price,        // base cash price (number, ex any add-ons)
           monthly: active.monthly,    // finance monthly (number)
           // savings figures carried through to the Step 8 booking summary
           monthlySaving: active.monthlySaving,
           saving20yr: active.saving20yr,
+          // micro-commitment product card
+          batteryKey: active.battery,
+          included: inclItems,
+          images: { panel: panelImg, inverter: inverterImg, battery: batteryImg },
         });
       };
 
@@ -4092,7 +4171,8 @@
                          style={{ width: slideW + 'px' }}
                          onClick={() => { if (i !== activeCard) setActiveCard(i); }}>
                       <CarouselCard data={tiers[id]} products={products} currentBill={currentBill}
-                        custom={custom} onCustomChange={onCustomChange} isActive={i === activeCard} />
+                        custom={custom} onCustomChange={onCustomChange} isActive={i === activeCard}
+                        onExploreFinance={setFinancePrice} />
                     </div>
                   ))}
                 </div>
@@ -4118,17 +4198,17 @@
             </div>
           </Reveal>
 
-          {/* ADDITION 1 — inline finance calculator (recalculates with the active tier) */}
-          <Reveal delay={700}>
-            <FinanceCalculator systemPrice={active.price} />
-          </Reveal>
-
           {/* CTA */}
           <Reveal delay={900}>
             <button type="button" className="lw-cta lw-cta-quote" onClick={handleContinue}>
               Continue with this system →
             </button>
           </Reveal>
+
+          {/* Finance options modal — reflects the tier whose footer button was clicked */}
+          {financePrice != null && (
+            <FinanceModal systemPrice={financePrice} onClose={() => setFinancePrice(null)} />
+          )}
         </div>
       );
     }
@@ -4222,52 +4302,86 @@
        ============================================================ */
     function MicroCommitment({ sel, warrantyAdded, evChargerInterest, busGrantInterest, onContinue, onEdit }) {
       const total = sel.price + (warrantyAdded ? 199 : 0);
+      const hideImg = (e) => { e.currentTarget.style.display = 'none'; };
+      const images = sel.images || {};
+      const included = sel.included || [];
+      const hasBattery = sel.batteryKey && sel.batteryKey !== 'none';
+      const tick = (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+             strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+      );
       return (
-        <div className="lw-micro lw-fade-in">
-          <svg className="lw-micro-tick" width="48" height="48" viewBox="0 0 24 24" fill="none"
+        <div className="lw-mc lw-fade-in">
+          {/* Header */}
+          <svg className="lw-mc-tick" width="48" height="48" viewBox="0 0 24 24" fill="none"
                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" /><path d="M8 12l3 3 5-6" />
           </svg>
-          <h2 className="lw-micro-title">Here's your system summary</h2>
+          <h2 className="lw-mc-h">Here's your system</h2>
+          <p className="lw-mc-sub">Review your selection before booking your free survey.</p>
 
-          <div className="lw-micro-card">
-            <div className="lw-micro-tier">{sel.tierTitle}</div>
-            <div className="lw-micro-spec">{sel.panelBatteryLine}</div>
+          {/* Premium product card */}
+          <div className="lw-mc-card">
+            <div className="lw-mc-dots" />
 
-            {warrantyAdded && (
-              <div className="lw-micro-addon lw-micro-addon--green">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
-                Extended Warranty (5-year)
+            {/* Product images row */}
+            <div className="lw-mc-imgs">
+              <div className="lw-mc-cell">
+                {images.panel && <img src={images.panel} alt="Solar panels" onError={hideImg} />}
               </div>
-            )}
-            {evChargerInterest && (
-              <div className="lw-micro-addon lw-micro-addon--green">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
-                EV Charger &amp; Installation — subject to survey
+              <div className="lw-mc-cell">
+                {images.inverter && <img src={images.inverter} alt="Inverter" onError={hideImg} />}
               </div>
-            )}
-            {busGrantInterest && (
-              <div className="lw-micro-addon lw-micro-addon--orange">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
-                BUS Heat Pump Grant — we'll be in touch
+              <div className="lw-mc-cell">
+                {hasBattery && images.battery
+                  ? <img src={images.battery} alt="Battery" onError={hideImg} />
+                  : <span className="lw-mc-cell-empty">No battery</span>}
               </div>
-            )}
+            </div>
 
-            <hr className="lw-micro-div" />
-            <div className="lw-micro-cash">{gbp(total)}</div>
-            <div className="lw-micro-monthly">or £{sel.monthly}/mo est. at 9.9% APR</div>
-            <div className="lw-micro-vat">All prices include VAT</div>
+            <div className="lw-mc-body">
+              {/* Row 1 — tier + summary */}
+              <div className="lw-mc-pill">{sel.tierName || sel.tierTitle}</div>
+              <div className="lw-mc-spec">{sel.panelBatteryLine}</div>
+
+              {/* Row 2 — what's included */}
+              <div className="lw-mc-incl">
+                {included.map((it, i) => (
+                  <div className="lw-mc-incl-row" key={i}>{tick}<span>{it}</span></div>
+                ))}
+              </div>
+
+              {/* Row 3 — add-ons (only if any selected) */}
+              {(warrantyAdded || busGrantInterest || evChargerInterest) && (
+                <div className="lw-mc-addons">
+                  {warrantyAdded && (
+                    <div className="lw-mc-addon">{tick}<span>5-Year Workmanship Guarantee included</span></div>
+                  )}
+                  {busGrantInterest && (
+                    <div className="lw-mc-addon">{tick}<span>BUS Heat Pump Grant - we'll be in touch</span></div>
+                  )}
+                  {evChargerInterest && (
+                    <div className="lw-mc-addon">{tick}<span>EV Charger enquiry registered</span></div>
+                  )}
+                </div>
+              )}
+
+              <hr className="lw-mc-div" />
+
+              {/* Row 4 — price block */}
+              <div className="lw-mc-price-label">Your price</div>
+              <div className="lw-mc-monthly">£{sel.monthly}/mo</div>
+              <div className="lw-mc-cash">or pay in full: {gbp(total)}</div>
+              <div className="lw-mc-vat">All prices include VAT</div>
+            </div>
           </div>
 
-          <p className="lw-micro-note">Prices subject to survey and final system confirmation.</p>
+          <p className="lw-mc-note">Prices subject to survey and final system confirmation.</p>
 
-          <button type="button" className="lw-cta lw-micro-cta" onClick={onContinue}>
-            This looks right - continue to booking →
+          <button type="button" className="lw-cta lw-mc-cta" onClick={onContinue}>
+            Confirm this system →
           </button>
-          <button type="button" className="lw-micro-edit" onClick={onEdit}>← Change system</button>
+          <button type="button" className="lw-mc-edit" onClick={onEdit}>← Change system</button>
         </div>
       );
     }
