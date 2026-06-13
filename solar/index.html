@@ -3957,13 +3957,12 @@
       const [confirmed, setConfirmed] = useState(false);  // brief "selected ✓" before closing
       const TERMS = [36, 48, 60, 84, 120, 180];
 
-      // Deposit: largest clean £500 multiple that keeps the remaining loan at or above
-      // the £1,000 minimum (no separate percentage cap). The slider max is set to this
-      // exact value so the thumb reaches the end of the track on every system price.
-      const cap50 = systemPrice * 0.5;
-      const capMinLoan = systemPrice - 1000;
-      const maxDeposit = Math.floor((systemPrice - 1000) / 500) * 500;
-      const minLoanBinds = capMinLoan < cap50;          // £1,000 floor is the binding cap
+      // Deposit cap: largest clean £500 multiple that satisfies BOTH Shermin constraints —
+      // at most 50% of the system price AND leaving at least £1,000 of loan remaining
+      // (whichever is more restrictive wins). The slider max is set to this value.
+      const maxDeposit = Math.floor(
+        Math.min(systemPrice * 0.5, systemPrice - 1000) / 500
+      ) * 500;
       // If the active tier (and thus the max) shrinks, clamp the deposit to the new max.
       React.useEffect(() => { if (deposit > maxDeposit) setDeposit(maxDeposit); }, [maxDeposit]);
 
@@ -4022,9 +4021,6 @@
                   <span className="lw-fin-deposit-amt">{gbp(deposit)}</span>
                   <span className="lw-fin-deposit-pct">({depositPct}%)</span>
                 </div>
-                {minLoanBinds && (
-                  <p className="lw-fin-note">Maximum deposit for this system is {gbp(maxDeposit)}</p>
-                )}
                 {overMaxLoan && (
                   <p className="lw-fin-note">This system exceeds the £25,000 finance maximum - please pay in full or call us to discuss.</p>
                 )}
