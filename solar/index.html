@@ -1962,6 +1962,14 @@
       color: #888;
       margin: 0 0 20px;
     }
+    .lw-fin-deposit {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 8px 0 20px;
+    }
+    .lw-fin-deposit-amt { font-size: 1.5rem; font-weight: 700; color: #2D2D2D; }
+    .lw-fin-deposit-pct { font-size: 0.9rem; font-weight: 400; color: #999; }
     .lw-fin-terms {
       display: flex;
       flex-wrap: wrap;
@@ -1998,7 +2006,7 @@
     }
     .lw-fin-payment-fig { font-size: 2rem; font-weight: 800; color: var(--color-primary); line-height: 1; }
     .lw-fin-payment-unit { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); }
-    .lw-fin-total { margin: 8px 0 16px; font-size: 0.95rem; font-weight: 600; color: var(--color-dark); text-align: center; }
+    .lw-fin-total { margin: 8px 0 16px; font-size: 1.1rem; font-weight: 700; color: #2D2D2D; text-align: center; }
     .lw-fin-rep {
       font-size: 0.75rem;
       font-style: italic;
@@ -3938,17 +3946,17 @@
       const [showShermin, setShowShermin] = useState(false);
       const TERMS = [36, 48, 60, 84, 120, 180];
 
-      // Deposit: largest clean £500 multiple that stays at/under 50% of the system price
-      // AND keeps the remaining loan at or above £1,000. The slider max is set to this
+      // Deposit: largest clean £500 multiple that keeps the remaining loan at or above
+      // the £1,000 minimum (no separate percentage cap). The slider max is set to this
       // exact value so the thumb reaches the end of the track on every system price.
       const cap50 = systemPrice * 0.5;
       const capMinLoan = systemPrice - 1000;
-      const maxDeposit = Math.floor(
-        Math.min(systemPrice * 0.5, systemPrice - 1000) / 500
-      ) * 500;
+      const maxDeposit = Math.floor((systemPrice - 1000) / 500) * 500;
       const minLoanBinds = capMinLoan < cap50;          // £1,000 floor is the binding cap
+      // If the active tier (and thus the max) shrinks, clamp the deposit to the new max.
+      React.useEffect(() => { if (deposit > maxDeposit) setDeposit(maxDeposit); }, [maxDeposit]);
 
-      const depositPct = systemPrice > 0 ? Math.round((deposit / systemPrice) * 100) : 0;
+      const depositPct = Math.round((deposit / systemPrice) * 100);
       const financeAmount = Math.max(0, systemPrice - deposit);
       const monthly = financeMonthly(financeAmount, term);
       const totalRepayable = monthly * term;            // total repayable on the borrowed sum
@@ -3980,7 +3988,10 @@
                 <input type="range" className="lw-fin-slider" min={0} max={maxDeposit} step={500}
                        value={deposit} onChange={(e) => setDeposit(Number(e.target.value))}
                        aria-label="Deposit amount" />
-                <div className="lw-fin-meta">{gbp(deposit)} deposit · {depositPct}%</div>
+                <div className="lw-fin-deposit">
+                  <span className="lw-fin-deposit-amt">{gbp(deposit)}</span>
+                  <span className="lw-fin-deposit-pct">({depositPct}%)</span>
+                </div>
                 {minLoanBinds && (
                   <p className="lw-fin-note">Maximum deposit for this system is {gbp(maxDeposit)}</p>
                 )}
