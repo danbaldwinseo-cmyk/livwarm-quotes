@@ -447,11 +447,26 @@
                   background-color 300ms ease,
                   border-color 300ms ease;
     }
-    /* PRESS — :active (mouse held) and .is-pressing (JS-held min 80ms for touch) */
-    .lw-card:not(.is-selected):active,
-    .lw-card.is-pressing {
+    /* PRESS — :active gives the mouse-held tactile dip. */
+    .lw-card:not(.is-selected):active {
       transform: translateY(3px);
       box-shadow: none;                           /* shadow collapses on press */
+    }
+    /* The press sequence is driven entirely by DOM classes (no React state change until
+       it completes): is-pressing plays the punch animation, then is-settled holds the
+       depressed resting state through the select-hold, then React applies is-selected. */
+    .lw-card.is-pressing {
+      animation: card-press 350ms ease-out forwards;
+    }
+    .lw-card.is-settled {
+      background: #e8e8e8;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                  0 2px 6px rgba(0, 0, 0, 0),
+                  inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                  inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                  inset 0 2px 4px rgba(0, 0, 0, 0.14);
+      transform: translateY(1px);
     }
     /* SELECTED — resting state: warm white card, soft red ambient glow, hairline
        red border (via box-shadow). No hard red fill, no thick border.
@@ -1378,6 +1393,7 @@
     .lw-comp { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 12px; }
     .lw-comp + .lw-comp { border-left: 1px solid var(--color-border); }
     .lw-comp-img { height: 90px; max-width: 100%; object-fit: contain; }
+    .lw-comp-img--faded { filter: grayscale(100%) opacity(0.25); }
     .lw-comp-text { display: flex; flex-direction: column; }
     .lw-comp-name { font-size: 0.9rem; font-weight: 600; color: var(--color-primary); margin-top: 10px; line-height: 1.3; }
     .lw-comp-spec { font-size: 0.8rem; color: var(--color-body); }
@@ -2555,46 +2571,52 @@
       );
     }
 
-    function OptionCard({ option, selected, selectionTick, onPress, disabled }) {
+    function OptionCard({ option, selected, selectionTick, onPress, lock }) {
       const ref = useRef(null);
-      // Press is driven entirely by a CSS class toggled on this element via the ref —
-      // NO React state changes during the press, so sibling cards never re-render
-      // (and so never lose their hover state) mid-animation. The selection is only
-      // committed to React state after PRESS_MS, once the press has settled.
-      const timerRef = useRef(null);
-      const doneRef = useRef(false);
-      React.useEffect(() => () => clearTimeout(timerRef.current), []);  // clear on unmount
-
-      const startPress = () => {
-        if (disabled) return;
+      // The ENTIRE press sequence runs via direct DOM class manipulation with NO React
+      // setState until the very end — so no card (and none of its siblings) re-renders
+      // mid-animation and loses its CSS hover state for a frame. Timers are parked on the
+      // element itself. onPress (the single state update) fires only once the full
+      // press → settle sequence is visually complete (PRESS_MS + SELECT_HOLD_MS).
+      React.useEffect(() => {
         const el = ref.current;
-        if (!el || timerRef.current) return;           // ignore if already pressing
-        doneRef.current = false;
-        el.classList.add('is-pressing');               // pure CSS, synchronous — no re-render
-        timerRef.current = setTimeout(() => {
-          timerRef.current = null;
-          doneRef.current = true;
-          onPress(option);                             // press settled → commit selection
+        return () => { if (el) { clearTimeout(el._pressTimer); clearTimeout(el._selectTimer); } };
+      }, []);
+
+      const startSeq = (el) => {
+        if (!el) return;
+        if (lock && lock.current) return;             // another card is mid-sequence
+        if (el._pressTimer || el._selectTimer) return;
+        if (lock) lock.current = true;
+        el.classList.add('is-pressing');              // plays card-press (pure CSS)
+        el._pressTimer = setTimeout(() => {
+          el._pressTimer = null;
+          el.classList.remove('is-pressing');
+          el.classList.add('is-settled');             // hold the settled depressed state
+          el._selectTimer = setTimeout(() => {
+            el._selectTimer = null;
+            el.classList.remove('is-settled');
+            if (lock) lock.current = false;
+            onPress(option);                          // ← the only React state update
+          }, SELECT_HOLD_MS);
         }, PRESS_MS);
       };
-      // Abandoned press (pointer left the card / touch cancelled) before it settled:
-      // drop the class and the pending commit. A normal click/tap keeps the pointer on
-      // the card, so the PRESS_MS timer still fires and the selection commits.
-      const cancelPress = () => {
-        if (doneRef.current || !timerRef.current) return;
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-        const el = ref.current;
-        if (el) el.classList.remove('is-pressing');
+      // Pointer left the card / touch cancelled before the sequence finished: abort it
+      // (clear both timers, drop the transient classes). A normal click/tap keeps the
+      // pointer on the card, so the sequence runs to completion and the selection commits.
+      const cancelSeq = (el) => {
+        if (!el) return;
+        clearTimeout(el._pressTimer); el._pressTimer = null;
+        clearTimeout(el._selectTimer); el._selectTimer = null;
+        el.classList.remove('is-pressing', 'is-settled');
+        if (lock) lock.current = false;
       };
 
       const cls = 'lw-card' + (selected ? ' is-selected' : '');
       // Re-trigger the shimmer every time this card (re)enters the selected state —
       // including deselect/reselect of the same card. Exactly the requested trick:
       // remove the class, force a reflow, re-add it. selectionTick bumps on each
-      // selection so this replays even when `selected` was already true. (React's
-      // className write also clears any lingering is-pressing here, springing the
-      // card from the press straight into the selected state.)
+      // selection so this replays even when `selected` was already true.
       useLayoutEffect(() => {
         const el = ref.current;
         if (selected && el) {
@@ -2608,13 +2630,13 @@
           ref={ref}
           type="button"
           className={cls}
-          onMouseDown={startPress}
-          onMouseLeave={cancelPress}
-          onTouchStart={startPress}
-          onTouchCancel={cancelPress}
-          /* Keyboard activation (Enter/Space) fires click with detail 0 — no mousedown,
-             so commit here. Mouse/touch clicks (detail >= 1) are handled by the press. */
-          onClick={(e) => { if (e.detail === 0 && !disabled && !doneRef.current && !timerRef.current) onPress(option); }}
+          onMouseDown={(e) => startSeq(e.currentTarget)}
+          onMouseLeave={(e) => cancelSeq(e.currentTarget)}
+          onTouchStart={(e) => startSeq(e.currentTarget)}
+          onTouchCancel={(e) => cancelSeq(e.currentTarget)}
+          /* Keyboard (Enter/Space) drives the same DOM sequence — no onClick, so a
+             plain mouse click never commits early or double-fires. */
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startSeq(ref.current); } }}
           aria-pressed={selected}
         >
           <span className="lw-card-icon">
@@ -2629,7 +2651,8 @@
       );
     }
 
-    function Question({ q, currentValue, selectionTick, onSelect, disabled }) {
+    function Question({ q, currentValue, selectionTick, onSelect }) {
+      const lock = useRef(false);   // one press sequence at a time across this grid
       return (
         <div className="lw-fade-in" key={q.key}>
           <h1 className="lw-question">{q.question}</h1>
@@ -2645,7 +2668,7 @@
                 selected={currentValue === opt.value}
                 selectionTick={selectionTick}
                 onPress={onSelect}
-                disabled={disabled}
+                lock={lock}
               />
             ))}
           </div>
@@ -2839,18 +2862,14 @@
     // shimmer → dim others) but NO auto-advance — the value is committed via onSelect.
     function CardChoice({ options, value, onSelect, onSettle }) {
       const [tick, setTick] = useState(0);
-      const [busy, setBusy] = useState(false);
-      // OptionCard now owns the press (ref-driven CSS, no re-render during the press).
-      // choose() fires only once the press has settled, so it just commits + advances.
+      const lock = useRef(false);   // one press sequence at a time across this grid
+      // OptionCard owns the full press → settle sequence via DOM classes (no re-render
+      // during the animation). choose() fires only once that sequence is complete, so it
+      // commits + reveals/advances in one go — the hold already happened in the card.
       const choose = (option) => {
-        if (busy) return;
-        setBusy(true);
-        onSelect(option.value);              // commit (sub-question, if any, reveals here)
-        setTick((t) => t + 1);
-        setTimeout(() => {                   // after the settle: release + notify parent
-          setBusy(false);
-          if (onSettle) onSettle(option.value);
-        }, SELECT_HOLD_MS);
+        onSelect(option.value);              // commit
+        setTick((t) => t + 1);               // replay the select shimmer
+        if (onSettle) onSettle(option.value); // reveal sub-question / advance
       };
       const cls = 'lw-card-grid'
         + (options.length === 2 ? ' cols-2' : '')
@@ -2864,7 +2883,7 @@
               selected={value === opt.value}
               selectionTick={tick}
               onPress={choose}
-              disabled={busy} />
+              lock={lock} />
           ))}
         </div>
       );
@@ -3702,6 +3721,9 @@
       const battery = products && products.batteries ? products.batteries[data.battery] : null;
       const batteryName = (battery && battery.name) || BATTERY_NAME[data.battery];
       const batteryCap = battery && battery.capacity_kwh ? battery.capacity_kwh : 0;
+      // Essential card shows a faded (greyscale, low-opacity) EP6 / 5kW battery image to
+      // signal that storage is available but not included.
+      const faded5kwImg = (products && products.batteries && products.batteries['5kw'] && products.batteries['5kw'].image) || BATTERY_IMG['5kw'];
 
       const panelsCost = getPrice(data.panels, 'none');
       const batteryCost = data.price - panelsCost;
@@ -3750,7 +3772,9 @@
               </div>
             </div>
             <div className="lw-comp">
-              {hasBattery && battery && battery.image && <img className="lw-comp-img" src={battery.image} alt="" onError={hideImg} />}
+              {hasBattery && battery && battery.image
+                ? <img className="lw-comp-img" src={battery.image} alt="" onError={hideImg} />
+                : (data.id === 'essential' && <img className="lw-comp-img lw-comp-img--faded" src={faded5kwImg} alt="" onError={hideImg} />)}
               <div className="lw-comp-text">
                 <div className="lw-comp-name">{hasBattery ? batteryName : 'No Battery Storage'}</div>
                 <div className="lw-comp-spec">{hasBattery ? (batteryCap ? batteryCap + 'kWh storage' : 'Battery storage') : 'Add storage anytime'}</div>
@@ -4822,7 +4846,6 @@
       const [answers, setAnswers] = useState({});   // { house_owner_type: 'Homeowner', ... }
       const [currentIndex, setCurrentIndex] = useState(0);
       const [deadEnd, setDeadEnd] = useState(null);  // { reason }
-      const [busy, setBusy] = useState(false);        // guards the press→select→advance sequence
       const [selectionTick, setSelectionTick] = useState(0); // bumps on each selection to replay the shimmer
       // Step 2 — electricity usage form state (kept in App so it persists across navigation)
       const [electricity, setElectricity] = useState({ usage: '', rateMode: 'same', dayRate: '', nightRate: '', used_national_average_kwh: false, used_national_average_rate: false });
@@ -4859,32 +4882,26 @@
       }, [currentIndex]);
       const handleToggleBreadcrumbs = useCallback(() => setBcExpanded((x) => !x), []);
 
-      // OptionCard drives the press animation itself (ref-toggled CSS, no re-render
-      // during the press). This fires only AFTER the press has settled (PRESS_MS),
-      // so it just commits the answer and schedules the advance.
+      // OptionCard drives the entire press → settle sequence via DOM classes (no
+      // re-render during the animation). This fires only AFTER that sequence is visually
+      // complete (PRESS_MS + SELECT_HOLD_MS), so it just commits the answer and advances.
       const handleSelect = useCallback((option) => {
-        if (busy) return;                          // ignore taps mid-animation
         const q = QUESTIONS[currentIndex];
         if (option.deadEnd) {
           const label = q.key === 'roof_type' && option.value === 'Flat' ? 'Flat roof' : option.value;
           setDeadEnd({ reason: DEAD_END_REASONS[label] || "Based on your answer, we're unable to proceed." });
           return;
         }
-        setBusy(true);
         setAnswers((prev) => ({ ...prev, [q.key]: option.value }));
         setSelectionTick((t) => t + 1);           // replay shimmer even if reselecting the same card
-        setTimeout(() => {                        // let the pulse play, then advance
-          setCurrentIndex((i) => i + 1);
-          setBusy(false);
-        }, SELECT_HOLD_MS);
-      }, [currentIndex, busy]);
+        setCurrentIndex((i) => i + 1);
+      }, [currentIndex]);
 
       const handleEdit = useCallback((index) => {
         // Step 6 pills jump back into the address phase of Step 6.
         if (index === STEP6_INDEX) {
           setCurrentIndex(STEP6_INDEX);
           setStep6((s) => ({ ...s, phase: 'address' }));
-          setBusy(false);
           return;
         }
         // Jump back to an answered question. Keep its own answer so the chosen
@@ -4896,10 +4913,9 @@
           return next;
         });
         setCurrentIndex(index);
-        setBusy(false);
       }, []);
 
-      const handleBackFromDeadEnd = useCallback(() => { setDeadEnd(null); setBusy(false); }, []);
+      const handleBackFromDeadEnd = useCallback(() => { setDeadEnd(null); }, []);
 
       // Back button — within Step 6 step back through its phases; otherwise to the
       // previous question/step (answers persist).
@@ -4922,14 +4938,12 @@
           return;
         }
         setCurrentIndex((i) => Math.max(0, i - 1));
-        setBusy(false);
       }, [currentIndex, step6.phase, microCommit, emailGate]);
 
       const handleRestart = useCallback(() => {
         setAnswers({});
         setCurrentIndex(0);
         setDeadEnd(null);
-        setBusy(false);
         setElectricity({ usage: '', rateMode: 'same', dayRate: '', nightRate: '', used_national_average_kwh: false, used_national_average_rate: false });
         setShowHelp(null);
         setStep6({ phase: 'address', postcode: '', address_line1: '', town: '', lat: null, lng: null, manual: false, looking: false, lookupError: '', suggestedDir: null, roof_orientation: '', occupants: '' });
@@ -5273,7 +5287,6 @@
                       currentValue={answers[currentQuestion.key]}
                       selectionTick={selectionTick}
                       onSelect={handleSelect}
-                      disabled={busy}
                     />
                   )}
                   {onUsage && (
