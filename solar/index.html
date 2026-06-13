@@ -1383,8 +1383,9 @@
       pointer-events: none; border-radius: inherit; z-index: 0;
     }
     .lw-show-card > * { position: relative; z-index: 1; }
-    /* Performance active — red border + soft red elevation (no background tint) */
-    .lw-show-card--performance.is-active { border: 1.5px solid rgba(232, 50, 58, 0.55); box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 18px 8px rgba(232, 50, 58, 0.06); }
+    /* Performance active — red border + soft red elevation (no background tint).
+       Keeps the standard raised drop shadow so the centre card doesn't read flat. */
+    .lw-show-card--performance.is-active { border: 1.5px solid rgba(232, 50, 58, 0.55); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 18px 8px rgba(232, 50, 58, 0.06); }
     /* header (left-aligned) */
     .lw-show-head { text-align: left; }
     .lw-show-title { font-size: 1.4rem; font-weight: 700; color: var(--color-dark); line-height: 1.2; }
@@ -1395,7 +1396,6 @@
     .lw-comp { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 12px; }
     .lw-comp + .lw-comp { border-left: 1px solid var(--color-border); }
     .lw-comp-img { height: 90px; max-width: 100%; object-fit: contain; }
-    .lw-comp-img--faded { filter: grayscale(100%) opacity(0.25); }
     .lw-comp-text { display: flex; flex-direction: column; }
     .lw-comp-name { font-size: 0.9rem; font-weight: 600; color: var(--color-primary); margin-top: 10px; line-height: 1.3; }
     .lw-comp-spec { font-size: 0.8rem; color: var(--color-body); }
@@ -3742,7 +3742,7 @@
       const batteryCap = battery && battery.capacity_kwh ? battery.capacity_kwh : 0;
       // Essential card shows a faded (greyscale, low-opacity) EP6 / 5kW battery image to
       // signal that storage is available but not included.
-      const faded5kwImg = (products && products.batteries && products.batteries['5kw'] && products.batteries['5kw'].image) || BATTERY_IMG['5kw'];
+      const faded5kwImg = products && products.batteries && products.batteries['5kw'] ? products.batteries['5kw'].image : null;
 
       const panelsCost = getPrice(data.panels, 'none');
       const batteryCost = data.price - panelsCost;
@@ -3793,7 +3793,10 @@
             <div className="lw-comp">
               {hasBattery && battery && battery.image
                 ? <img className="lw-comp-img" src={battery.image} alt="" onError={hideImg} />
-                : (data.id === 'essential' && <img className="lw-comp-img lw-comp-img--faded" src={faded5kwImg} alt="" onError={hideImg} />)}
+                : (data.battery === 'none' && faded5kwImg
+                    ? <img className="lw-comp-img" src={faded5kwImg} alt=""
+                           style={{ filter: 'grayscale(100%) opacity(0.25)' }} onError={hideImg} />
+                    : null)}
               <div className="lw-comp-text">
                 <div className="lw-comp-name">{hasBattery ? batteryName : 'No Battery Storage'}</div>
                 <div className="lw-comp-spec">{hasBattery ? (batteryCap ? batteryCap + 'kWh storage' : 'Battery storage') : 'Add storage anytime'}</div>
@@ -3935,12 +3938,14 @@
       const [showShermin, setShowShermin] = useState(false);
       const TERMS = [36, 48, 60, 84, 120, 180];
 
-      // Deposit slider tops out at exactly 50% of the system price, but never so much
-      // that the remaining loan drops below the £1,000 minimum. (£500 steps along the
-      // way via the input step; the max position is the precise 50% value.)
+      // Deposit: largest clean £500 multiple that stays at/under 50% of the system price
+      // AND keeps the remaining loan at or above £1,000. The slider max is set to this
+      // exact value so the thumb reaches the end of the track on every system price.
       const cap50 = systemPrice * 0.5;
       const capMinLoan = systemPrice - 1000;
-      const maxDeposit = Math.max(0, Math.round(Math.min(cap50, capMinLoan)));
+      const maxDeposit = Math.floor(
+        Math.min(systemPrice * 0.5, systemPrice - 1000) / 500
+      ) * 500;
       const minLoanBinds = capMinLoan < cap50;          // £1,000 floor is the binding cap
 
       const depositPct = systemPrice > 0 ? Math.round((deposit / systemPrice) * 100) : 0;
