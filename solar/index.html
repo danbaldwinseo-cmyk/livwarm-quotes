@@ -3897,11 +3897,11 @@
         <div className="lw-fade-in lw-egate">
           <form onSubmit={handleSubmit}>
             <h1 className="lw-egate-h1">Where shall we send your quote?</h1>
-            <p className="lw-egate-sub">We'll show you your quote now and email you a copy to review any time — no commitment required.</p>
-            <input type="text" className="lw-egate-input" placeholder="First name"
+            <p className="lw-egate-sub">We'll show you your quote now and email you a copy to review any time - no commitment required.</p>
+            <input type="text" name="lw_first_name" autoComplete="given-name" className="lw-egate-input" placeholder="First name"
                    value={firstName} onChange={(e) => onChange({ ...data, first_name: e.target.value })}
                    aria-label="First name" />
-            <input type="email" className="lw-egate-input" placeholder="Email address"
+            <input type="email" name="lw_email" autoComplete="email" className="lw-egate-input" placeholder="Email address"
                    value={email} onChange={(e) => onChange({ ...data, email: e.target.value })}
                    aria-label="Email address" />
             <button type="submit" className="lw-cta lw-cta-green" disabled={!canSend}>
