@@ -1988,7 +1988,7 @@
     .lw-fin-term.is-on .lw-fin-term-yr { color: rgba(255, 255, 255, 0.8); }
     .lw-fin-payment {
       text-align: center;
-      margin: 18px 0 14px;
+      margin: 18px 0 0;
       display: flex;
       align-items: baseline;
       justify-content: center;
@@ -1996,6 +1996,7 @@
     }
     .lw-fin-payment-fig { font-size: 2rem; font-weight: 800; color: var(--color-primary); line-height: 1; }
     .lw-fin-payment-unit { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); }
+    .lw-fin-total { margin: 8px 0 16px; font-size: 0.95rem; font-weight: 600; color: var(--color-dark); text-align: center; }
     .lw-fin-rep {
       font-size: 0.75rem;
       font-style: italic;
@@ -3907,6 +3908,8 @@
        Opened from a tier card footer; reflects that tier's system price.
        Mounted fresh on each open, so it resets and picks up the new price.
        ============================================================ */
+    // Loan term (months) → year label for the FCA representative example.
+    const TERM_YEARS = { 36: '3 years', 48: '4 years', 60: '5 years', 84: '7 years', 120: '10 years', 180: '15 years' };
     function FinanceModal({ systemPrice, onClose }) {
       const [mode, setMode] = useState('monthly');     // 'monthly' | 'full'
       const [term, setTerm] = useState(180);           // months; default 15 years
@@ -3914,18 +3917,19 @@
       const [showShermin, setShowShermin] = useState(false);
       const TERMS = [36, 48, 60, 84, 120, 180];
 
-      // Deposit: 0-50% of system price in £500 steps, but never so much that the
-      // remaining loan drops below the £1,000 minimum. Floored to a whole £500 step.
+      // Deposit slider tops out at exactly 50% of the system price, but never so much
+      // that the remaining loan drops below the £1,000 minimum. (£500 steps along the
+      // way via the input step; the max position is the precise 50% value.)
       const cap50 = systemPrice * 0.5;
       const capMinLoan = systemPrice - 1000;
-      const maxDeposit = Math.max(0, Math.floor(Math.min(cap50, capMinLoan) / 500) * 500);
+      const maxDeposit = Math.max(0, Math.round(Math.min(cap50, capMinLoan)));
       const minLoanBinds = capMinLoan < cap50;          // £1,000 floor is the binding cap
 
       const depositPct = systemPrice > 0 ? Math.round((deposit / systemPrice) * 100) : 0;
       const financeAmount = Math.max(0, systemPrice - deposit);
       const monthly = financeMonthly(financeAmount, term);
       const totalRepayable = monthly * term;            // total repayable on the borrowed sum
-      const termYears = Math.round(term / 12);
+      const termYears = TERM_YEARS[term] || (Math.round(term / 12) + ' years');
       const overMaxLoan = financeAmount > 25000;        // max loan £25,000 (defensive)
 
       // Saving from paying in full vs financing the full price over 15 years.
@@ -3977,9 +3981,10 @@
                   <span className="lw-fin-payment-fig">£{monthly}</span>
                   <span className="lw-fin-payment-unit">/mo</span>
                 </div>
+                <div className="lw-fin-total">Total repayable: {gbp(totalRepayable)}</div>
 
                 <p className="lw-fin-rep">
-                  Representative example: Borrowing {gbp(financeAmount)} over {termYears} years at 9.9% APR (fixed).
+                  Representative example: Borrowing {gbp(financeAmount)} over {termYears} at 9.9% APR (fixed).
                   Monthly repayments of £{monthly}. Total amount repayable: {gbp(totalRepayable)}.
                   Credit is subject to status and affordability.
                 </p>
