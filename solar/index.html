@@ -150,7 +150,7 @@
       font-weight: 600;
     }
     .lw-trust-mini span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-    .lw-trust-mini svg { color: var(--color-primary); }
+    .lw-trust-mini svg { color: #4CAF50; }
     @media (max-width: 640px) {
       .lw-trust-mini { display: none; }
     }
@@ -487,13 +487,13 @@
     /* Two-beat press: punch deep into the page, then rise and settle just below the surface */
     @keyframes card-press {
       0% {
-        transform: translateY(0px);
-        background: #ffffff;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13),
-                    0 2px 6px rgba(0, 0, 0, 0.09),
-                    inset 0 0 18px 8px rgba(255, 255, 255, 0.92),
-                    inset 0 3px 0px rgba(0, 0, 0, 0),
-                    inset 0 0 0px rgba(0, 0, 0, 0);
+        transform: translateY(1px);
+        background: #e8e8e8;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                    0 2px 6px rgba(0, 0, 0, 0),
+                    inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                    inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                    inset 0 2px 4px rgba(0, 0, 0, 0.14);
       }
       35% {
         transform: translateY(5px);
@@ -519,7 +519,7 @@
       animation: content-press 350ms ease-out forwards;
     }
     @keyframes content-press {
-      0%   { transform: translateY(0px); }
+      0%   { transform: translateY(1px); }
       35%  { transform: translateY(2px); }
       100% { transform: translateY(1px); }
     }
@@ -1149,7 +1149,7 @@
       color: var(--color-body);
     }
     .lw-trust-row span { display: inline-flex; align-items: center; gap: 8px; }
-    .lw-trust-row svg { color: var(--color-primary); }
+    .lw-trust-row svg { color: #4CAF50; }
 
     .lw-fade-in { animation: lwFade 250ms ease both; }
     @keyframes lwFade {
