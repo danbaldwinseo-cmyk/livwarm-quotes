@@ -2549,15 +2549,46 @@
       );
     }
 
-    function OptionCard({ option, selected, pressing, selectionTick, onSelect }) {
+    function OptionCard({ option, selected, selectionTick, onPress, disabled }) {
       const ref = useRef(null);
-      const cls = 'lw-card'
-        + (selected ? ' is-selected' : '')
-        + (pressing ? ' is-pressing' : '');
+      // Press is driven entirely by a CSS class toggled on this element via the ref —
+      // NO React state changes during the press, so sibling cards never re-render
+      // (and so never lose their hover state) mid-animation. The selection is only
+      // committed to React state after PRESS_MS, once the press has settled.
+      const timerRef = useRef(null);
+      const doneRef = useRef(false);
+      React.useEffect(() => () => clearTimeout(timerRef.current), []);  // clear on unmount
+
+      const startPress = () => {
+        if (disabled) return;
+        const el = ref.current;
+        if (!el || timerRef.current) return;           // ignore if already pressing
+        doneRef.current = false;
+        el.classList.add('is-pressing');               // pure CSS, synchronous — no re-render
+        timerRef.current = setTimeout(() => {
+          timerRef.current = null;
+          doneRef.current = true;
+          onPress(option);                             // press settled → commit selection
+        }, PRESS_MS);
+      };
+      // Abandoned press (pointer left the card / touch cancelled) before it settled:
+      // drop the class and the pending commit. A normal click/tap keeps the pointer on
+      // the card, so the PRESS_MS timer still fires and the selection commits.
+      const cancelPress = () => {
+        if (doneRef.current || !timerRef.current) return;
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+        const el = ref.current;
+        if (el) el.classList.remove('is-pressing');
+      };
+
+      const cls = 'lw-card' + (selected ? ' is-selected' : '');
       // Re-trigger the shimmer every time this card (re)enters the selected state —
       // including deselect/reselect of the same card. Exactly the requested trick:
       // remove the class, force a reflow, re-add it. selectionTick bumps on each
-      // selection so this replays even when `selected` was already true.
+      // selection so this replays even when `selected` was already true. (React's
+      // className write also clears any lingering is-pressing here, springing the
+      // card from the press straight into the selected state.)
       useLayoutEffect(() => {
         const el = ref.current;
         if (selected && el) {
@@ -2569,8 +2600,15 @@
       return (
         <button
           ref={ref}
+          type="button"
           className={cls}
-          onClick={() => onSelect(option)}
+          onMouseDown={startPress}
+          onMouseLeave={cancelPress}
+          onTouchStart={startPress}
+          onTouchCancel={cancelPress}
+          /* Keyboard activation (Enter/Space) fires click with detail 0 — no mousedown,
+             so commit here. Mouse/touch clicks (detail >= 1) are handled by the press. */
+          onClick={(e) => { if (e.detail === 0 && !disabled && !doneRef.current && !timerRef.current) onPress(option); }}
           aria-pressed={selected}
         >
           <span className="lw-card-icon">
@@ -2585,7 +2623,7 @@
       );
     }
 
-    function Question({ q, currentValue, pressingValue, selectionTick, onSelect }) {
+    function Question({ q, currentValue, selectionTick, onSelect, disabled }) {
       return (
         <div className="lw-fade-in" key={q.key}>
           <h1 className="lw-question">{q.question}</h1>
@@ -2599,9 +2637,9 @@
                 key={opt.value}
                 option={opt}
                 selected={currentValue === opt.value}
-                pressing={pressingValue === opt.value}
                 selectionTick={selectionTick}
-                onSelect={onSelect}
+                onPress={onSelect}
+                disabled={disabled}
               />
             ))}
           </div>
@@ -2794,22 +2832,19 @@
     // A group of answer cards with the full LivWarm interaction (press → glow →
     // shimmer → dim others) but NO auto-advance — the value is committed via onSelect.
     function CardChoice({ options, value, onSelect, onSettle }) {
-      const [pressing, setPressing] = useState(null);
       const [tick, setTick] = useState(0);
       const [busy, setBusy] = useState(false);
+      // OptionCard now owns the press (ref-driven CSS, no re-render during the press).
+      // choose() fires only once the press has settled, so it just commits + advances.
       const choose = (option) => {
         if (busy) return;
         setBusy(true);
-        setPressing(option.value);
-        setTimeout(() => {
-          setPressing(null);
-          onSelect(option.value);            // commit (sub-question, if any, reveals here)
-          setTick((t) => t + 1);
-          setTimeout(() => {                 // after the settle: release + notify parent
-            setBusy(false);
-            if (onSettle) onSettle(option.value);
-          }, SELECT_HOLD_MS);
-        }, PRESS_MS);
+        onSelect(option.value);              // commit (sub-question, if any, reveals here)
+        setTick((t) => t + 1);
+        setTimeout(() => {                   // after the settle: release + notify parent
+          setBusy(false);
+          if (onSettle) onSettle(option.value);
+        }, SELECT_HOLD_MS);
       };
       const cls = 'lw-card-grid'
         + (options.length === 2 ? ' cols-2' : '')
@@ -2821,9 +2856,9 @@
           {options.map((opt) => (
             <OptionCard key={opt.value} option={opt}
               selected={value === opt.value}
-              pressing={pressing === opt.value}
               selectionTick={tick}
-              onSelect={choose} />
+              onPress={choose}
+              disabled={busy} />
           ))}
         </div>
       );
@@ -4779,7 +4814,6 @@
       const [answers, setAnswers] = useState({});   // { house_owner_type: 'Homeowner', ... }
       const [currentIndex, setCurrentIndex] = useState(0);
       const [deadEnd, setDeadEnd] = useState(null);  // { reason }
-      const [pressing, setPressing] = useState(null); // option.value currently pressed
       const [busy, setBusy] = useState(false);        // guards the press→select→advance sequence
       const [selectionTick, setSelectionTick] = useState(0); // bumps on each selection to replay the shimmer
       // Step 2 — electricity usage form state (kept in App so it persists across navigation)
@@ -4817,29 +4851,24 @@
       }, [currentIndex]);
       const handleToggleBreadcrumbs = useCallback(() => setBcExpanded((x) => !x), []);
 
+      // OptionCard drives the press animation itself (ref-toggled CSS, no re-render
+      // during the press). This fires only AFTER the press has settled (PRESS_MS),
+      // so it just commits the answer and schedules the advance.
       const handleSelect = useCallback((option) => {
         if (busy) return;                          // ignore taps mid-animation
         const q = QUESTIONS[currentIndex];
+        if (option.deadEnd) {
+          const label = q.key === 'roof_type' && option.value === 'Flat' ? 'Flat roof' : option.value;
+          setDeadEnd({ reason: DEAD_END_REASONS[label] || "Based on your answer, we're unable to proceed." });
+          return;
+        }
         setBusy(true);
-        setPressing(option.value);                 // → .is-pressing (translateY(3px), shadow collapses)
-        setTimeout(() => {
-          if (option.deadEnd) {
-            setPressing(null);
-            const label = q.key === 'roof_type' && option.value === 'Flat' ? 'Flat roof' : option.value;
-            setDeadEnd({ reason: DEAD_END_REASONS[label] || "Based on your answer, we're unable to proceed." });
-            setBusy(false);
-            return;
-          }
-          // Spring to selected: clearing pressing + setting the answer batches into
-          // one render, so the card goes straight from pressed → selected + pulse.
-          setPressing(null);
-          setAnswers((prev) => ({ ...prev, [q.key]: option.value }));
-          setSelectionTick((t) => t + 1);           // replay shimmer even if reselecting the same card
-          setTimeout(() => {                        // let the pulse play, then advance
-            setCurrentIndex((i) => i + 1);
-            setBusy(false);
-          }, SELECT_HOLD_MS);
-        }, PRESS_MS);
+        setAnswers((prev) => ({ ...prev, [q.key]: option.value }));
+        setSelectionTick((t) => t + 1);           // replay shimmer even if reselecting the same card
+        setTimeout(() => {                        // let the pulse play, then advance
+          setCurrentIndex((i) => i + 1);
+          setBusy(false);
+        }, SELECT_HOLD_MS);
       }, [currentIndex, busy]);
 
       const handleEdit = useCallback((index) => {
@@ -4847,7 +4876,6 @@
         if (index === STEP6_INDEX) {
           setCurrentIndex(STEP6_INDEX);
           setStep6((s) => ({ ...s, phase: 'address' }));
-          setPressing(null);
           setBusy(false);
           return;
         }
@@ -4860,7 +4888,6 @@
           return next;
         });
         setCurrentIndex(index);
-        setPressing(null);
         setBusy(false);
       }, []);
 
@@ -4887,7 +4914,6 @@
           return;
         }
         setCurrentIndex((i) => Math.max(0, i - 1));
-        setPressing(null);
         setBusy(false);
       }, [currentIndex, step6.phase, microCommit, emailGate]);
 
@@ -4895,7 +4921,6 @@
         setAnswers({});
         setCurrentIndex(0);
         setDeadEnd(null);
-        setPressing(null);
         setBusy(false);
         setElectricity({ usage: '', rateMode: 'same', dayRate: '', nightRate: '', used_national_average_kwh: false, used_national_average_rate: false });
         setShowHelp(null);
@@ -5238,9 +5263,9 @@
                     <Question
                       q={currentQuestion}
                       currentValue={answers[currentQuestion.key]}
-                      pressingValue={pressing}
                       selectionTick={selectionTick}
                       onSelect={handleSelect}
+                      disabled={busy}
                     />
                   )}
                   {onUsage && (
