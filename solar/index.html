@@ -1796,13 +1796,14 @@
     .lw-mc-incl-row { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--color-body); }
     .lw-mc-incl-row svg { color: var(--color-cta-green); width: 16px; height: 16px; flex-shrink: 0; }
     .lw-mc-addons { margin-top: 16px; }
+    .lw-mc-addons-h { font-size: 0.8rem; font-weight: 600; color: #4A4A4A; text-transform: uppercase; letter-spacing: 0.05em; margin: 20px 0 8px; }
     .lw-mc-addon { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--color-body); margin-top: 8px; }
     .lw-mc-addon svg { color: var(--color-cta-green); width: 16px; height: 16px; flex-shrink: 0; }
     .lw-mc-div { border: none; border-top: 1px solid var(--color-border); margin: 16px 0; }
     .lw-mc-price-label { font-size: 0.95rem; font-weight: 600; color: var(--color-primary); }
     .lw-mc-monthly { font-size: 3rem; font-weight: 800; color: var(--color-primary); line-height: 1.1; }
     .lw-mc-cash { font-size: 1.1rem; color: var(--color-dark); margin-top: 4px; }
-    .lw-mc-cash--deemph { font-size: 1rem; color: var(--color-body); }
+    .lw-mc-cash--deemph { font-size: 0.95rem; color: var(--color-body); }
     .lw-mc-finterms { font-size: 0.8rem; color: #999; margin-top: 4px; }
     .lw-mc-vat { font-size: 0.75rem; color: #999; margin-top: 4px; }
     .lw-mc-note { font-size: 0.75rem; color: #999; font-style: italic; margin: 12px auto 0; }
@@ -2014,7 +2015,7 @@
       font-style: italic;
       color: #999;
       line-height: 1.5;
-      margin: 0 0 18px;
+      margin: 16px 0 18px;
       text-align: left;
     }
     .lw-fin-select {
@@ -2313,6 +2314,8 @@
     .lw-bsum-k2 { font-size: 0.8rem; color: var(--color-body); }
     .lw-bsum-v2 { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
     .lw-bsum-v2--red { color: var(--color-primary); }
+    .lw-bsum-cashv { font-size: 1.25rem; font-weight: 700; color: var(--color-dark); }
+    .lw-bsum-cashnote { font-size: 0.8rem; color: #999; margin-top: 4px; }
     .lw-bsum-badges {
       display: flex;
       flex-wrap: wrap;
@@ -4147,7 +4150,7 @@
                   Save {gbp(financeSavingVsTotal)} compared to paying monthly over 15 years
                 </div>
                 <button type="button" className="lw-fin-select lw-fin-select--cash" onClick={selectCash}>
-                  Select cash purchase →
+                  Pay in full →
                 </button>
               </div>
             )}
@@ -4527,6 +4530,8 @@
     function MicroCommitment({ sel, warrantyAdded, evChargerInterest, busGrantInterest, financeChoice, onContinue, onEdit }) {
       const total = sel.price + (warrantyAdded ? 199 : 0);
       const fin = financeChoice && financeChoice.financeSelected ? financeChoice : null;
+      // Payment preference selected in the finance modal; default 'finance' (modal skipped).
+      const paymentMethod = financeChoice && financeChoice.financeSelected === false ? 'cash' : 'finance';
       const hideImg = (e) => { e.currentTarget.style.display = 'none'; };
       const images = sel.images || {};
       const included = sel.included || [];
@@ -4579,6 +4584,7 @@
               {/* Row 3 — add-ons (only if any selected) */}
               {(warrantyAdded || busGrantInterest || evChargerInterest) && (
                 <div className="lw-mc-addons">
+                  <div className="lw-mc-addons-h">Added to your system</div>
                   {warrantyAdded && (
                     <div className="lw-mc-addon">{tick}<span>5-Year Workmanship Guarantee included</span></div>
                   )}
@@ -4593,12 +4599,19 @@
 
               <hr className="lw-mc-div" />
 
-              {/* Row 4 — price block (finance-led when a finance quote was selected) */}
+              {/* Row 4 — price block (reflects the selected payment method) */}
               <div className="lw-mc-price-label">Your price</div>
-              <div className="lw-mc-monthly">£{fin ? fin.financeMonthly : sel.monthly}/mo</div>
-              <div className={'lw-mc-cash' + (fin ? ' lw-mc-cash--deemph' : '')}>or pay in full: {gbp(total)}</div>
-              {fin && (
-                <div className="lw-mc-finterms">{gbp(fin.financeDeposit)} deposit · {fin.financeTerm} months · 9.9% APR</div>
+              {paymentMethod === 'cash' ? (
+                <React.Fragment>
+                  <div className="lw-mc-monthly">{gbp(total)}</div>
+                  <div className="lw-mc-cash lw-mc-cash--deemph">or from £{sel.monthly}/mo with finance</div>
+                </React.Fragment>
+              ) : (
+                <React.Fragment>
+                  <div className="lw-mc-monthly">£{fin ? fin.financeMonthly : sel.monthly}/mo</div>
+                  <div className="lw-mc-cash lw-mc-cash--deemph">or pay in full: {gbp(total)}</div>
+                  <div className="lw-mc-finterms">{gbp(fin ? fin.financeDeposit : 0)} deposit · {fin ? fin.financeTerm : 180} months · 9.9% APR</div>
+                </React.Fragment>
               )}
               <div className="lw-mc-vat">All prices include VAT</div>
             </div>
@@ -4871,6 +4884,8 @@
        ============================================================ */
     function ContactDetails({ sel, warrantyAdded, financeChoice, leadFirstName, leadEmail, onSubmit }) {
       const fin = financeChoice && financeChoice.financeSelected ? financeChoice : null;
+      // Payment preference selected in the finance modal; default 'finance' (modal skipped).
+      const paymentMethod = financeChoice && financeChoice.financeSelected === false ? 'cash' : 'finance';
       // Pre-populate from the email-capture gate: if a lead name/email was provided
       // there, seed the matching field (otherwise blank — e.g. the user skipped).
       const [firstName, setFirstName] = useState(leadFirstName || '');
@@ -5017,7 +5032,15 @@
 
                 <hr className="lw-bsum-div" />
 
-                {fin ? (
+                {paymentMethod === 'cash' ? (
+                  <React.Fragment>
+                    <div className="lw-bsum-line">
+                      <span className="lw-bsum-k">Cash price</span>
+                      <span className="lw-bsum-cashv">{gbp(total)}</span>
+                    </div>
+                    <div className="lw-bsum-cashnote">or from £{monthly}/mo with finance</div>
+                  </React.Fragment>
+                ) : fin ? (
                   <React.Fragment>
                     <div className="lw-bsum-mplabel">Monthly payment</div>
                     <div className="lw-bsum-mpfig">£{fin.financeMonthly}/mo</div>
