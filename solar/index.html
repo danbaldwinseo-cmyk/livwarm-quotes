@@ -2110,6 +2110,25 @@
     .lw-cd-left { text-align: left; min-width: 0; }
     .lw-cd-h1 { margin: 0 0 8px; font-size: 1.75rem; font-weight: 800; color: var(--color-dark); }
     .lw-cd-subh { margin: 0 0 24px; font-size: 1rem; color: var(--color-body); line-height: 1.5; }
+    .lw-cd-card {
+      background: #fff;
+      border: 1px solid #E5E5E5;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .lw-cd-cardhead { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .lw-cd-num {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #E8323A;
+      color: #fff;
+      font-size: 0.9rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lw-cd-cardlabel { font-size: 1.1rem; font-weight: 700; color: #2D2D2D; }
     .lw-cd-row { display: flex; gap: 16px; }
     .lw-cd-row .lw-cd-field { flex: 1; min-width: 0; }
     .lw-cd-field { margin-bottom: 18px; }
@@ -2209,9 +2228,6 @@
     .lw-next3 {
       display: flex;
       gap: 16px;
-      margin-top: 28px;
-      padding-top: 24px;
-      border-top: 1px solid var(--color-border);
     }
     .lw-next3-item { flex: 1; display: flex; gap: 10px; align-items: flex-start; }
     .lw-next3-num {
@@ -4810,47 +4826,64 @@
               <h1 className="lw-cd-h1">Secure your free survey</h1>
               <p className="lw-cd-subh">No payment today. Our team will contact you within 24 hours to confirm your installation date.</p>
 
-              <div className="lw-cd-row">
-                <div className="lw-cd-field">
-                  <label className="lw-cd-label" htmlFor="cd-first">First name</label>
-                  <input id="cd-first" className="lw-cd-input" type="text" value={firstName}
-                         onChange={(e) => setFirstName(e.target.value)} />
+              {/* CARD 1 — Your details */}
+              <div className="lw-cd-card">
+                <div className="lw-cd-cardhead">
+                  <span className="lw-cd-num">1</span>
+                  <span className="lw-cd-cardlabel">Your details</span>
+                </div>
+                <div className="lw-cd-row">
+                  <div className="lw-cd-field">
+                    <label className="lw-cd-label" htmlFor="cd-first">First name</label>
+                    <input id="cd-first" className="lw-cd-input" type="text" value={firstName}
+                           onChange={(e) => setFirstName(e.target.value)} />
+                  </div>
+                  <div className="lw-cd-field">
+                    <label className="lw-cd-label" htmlFor="cd-surname">Surname</label>
+                    <input id="cd-surname" className="lw-cd-input" type="text" value={surname}
+                           onChange={(e) => setSurname(e.target.value)} />
+                  </div>
                 </div>
                 <div className="lw-cd-field">
-                  <label className="lw-cd-label" htmlFor="cd-surname">Surname</label>
-                  <input id="cd-surname" className="lw-cd-input" type="text" value={surname}
-                         onChange={(e) => setSurname(e.target.value)} />
+                  <label className="lw-cd-label" htmlFor="cd-email">Email address</label>
+                  <input id="cd-email" className="lw-cd-input" type="email" value={email}
+                         onChange={(e) => setEmail(e.target.value)} />
                 </div>
-              </div>
-              <div className="lw-cd-field">
-                <label className="lw-cd-label" htmlFor="cd-email">Email address</label>
-                <input id="cd-email" className="lw-cd-input" type="email" value={email}
-                       onChange={(e) => setEmail(e.target.value)} />
-              </div>
-              <div className="lw-cd-field">
-                <label className="lw-cd-label" htmlFor="cd-phone">Phone number</label>
-                <input id="cd-phone" className="lw-cd-input" type="tel" value={phone}
-                       onChange={(e) => setPhone(e.target.value)} />
+                <div className="lw-cd-field">
+                  <label className="lw-cd-label" htmlFor="cd-phone">Phone number</label>
+                  <input id="cd-phone" className="lw-cd-input" type="tel" value={phone}
+                         onChange={(e) => setPhone(e.target.value)} />
+                </div>
               </div>
 
-              <div className="lw-cd-field">
-                <label className="lw-cd-label">Preferred installation date</label>
+              {/* CARD 2 — Preferred survey date */}
+              <div className="lw-cd-card">
+                <div className="lw-cd-cardhead">
+                  <span className="lw-cd-num">2</span>
+                  <span className="lw-cd-cardlabel">Preferred survey date</span>
+                </div>
                 <p className="lw-cd-hint">Weekdays only. Our team will confirm availability after your technical review.</p>
                 <CalendarPicker value={date} onSelect={setDate} />
                 {date && <p className="lw-cd-chosen">Selected: {formatIsoLong(date)}</p>}
               </div>
 
-              {/* What happens next? */}
-              <div className="lw-next3">
-                {NEXT.map((s) => (
-                  <div key={s.n} className="lw-next3-item">
-                    <span className="lw-next3-num">{s.n}</span>
-                    <div className="lw-next3-body">
-                      <div className="lw-next3-label">{s.label}</div>
-                      <div className="lw-next3-desc">{s.desc}</div>
+              {/* CARD 3 — What happens next? */}
+              <div className="lw-cd-card">
+                <div className="lw-cd-cardhead">
+                  <span className="lw-cd-num">3</span>
+                  <span className="lw-cd-cardlabel">What happens next?</span>
+                </div>
+                <div className="lw-next3">
+                  {NEXT.map((s) => (
+                    <div key={s.n} className="lw-next3-item">
+                      <span className="lw-next3-num">{s.n}</span>
+                      <div className="lw-next3-body">
+                        <div className="lw-next3-label">{s.label}</div>
+                        <div className="lw-next3-desc">{s.desc}</div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
 
               <button type="button" className="lw-cta lw-cd-cta" disabled={!allValid} onClick={handleBook}>
