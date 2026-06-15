@@ -24,21 +24,22 @@ Each session has:
 
 Key decisions reflected in all prompts:
 
-- Total steps is 9
+- Total steps is now 12 (restructured from 9 - see spec Section 10)
 - No Solar API - panel sizing uses lookup table
-- Postcode lookup uses postcodes.io (free, no API key needed) - decision taken to avoid Ideal Postcodes costs. Returns lat/long and town only, user types street address manually.
+- Postcode lookup uses postcodes.io (free, no API key needed)
 - Landlord is NOT a dead-end
 - No Continue buttons on card-based screens - auto-advance after 500ms
 - Finance APR is 9.9%, default 180 months, Math.ceil on monthly payment
 - All prices VAT-inclusive, "All prices include VAT" footnote on booking and payment screens
-- Finance calculator is on the quote screen (Step 7) as an inline expandable section - NOT a modal on Step 8
-- "Get your quote emailed to you" optional name + email capture is on the quote screen (Step 7) - not a blocking gate
-- Step 8 framed as "Secure your free survey" - no payment, no finance modal
-- Shermin confirmed provider (Stax). `// SHERMIN_INTEGRATION_POINT` in code.
+- Finance calculator is on the quote screen (Step 7) as an inline expandable section
+- paymentMethod state ('finance' or 'cash') set in Step 7 finance modal, carried through all subsequent screens
 - Card interaction system: neutral grey selected state, hover matches selected depth, 300ms transitions, outer shadow fades via zero-opacity placeholder layers, single dark shimmer on click only
+- PRESS_MS = 80, SELECT_HOLD_MS = 500 - do not change
 - Sub-question reveal delayed until press animation completes (Battery, EV steps)
-- Quote screen: no breadcrumbs, no address line, savings bar inside cards with three figures, "or pay in full" wording, "Your price" label
-- Upsell modal addon cards match refined answer card system
+- Shermin confirmed provider (Stax). `// SHERMIN_INTEGRATION_POINT` in code.
+- Stripe for deposit and full payment only. `// STRIPE_INTEGRATION_POINT` in code.
+- Minimum deposit: £199 (TBC with client)
+- Payment model: four options on Step 11 (deposit / full / finance / provisional)
 
 ---
 
@@ -55,337 +56,412 @@ Key decisions reflected in all prompts:
 
 ### Sessions 1-5 - COMPLETE
 
-Steps 1-5 built. Card interaction system built and refined through multiple polish passes.
+Steps 1-5 built. Card interaction system built and refined.
 
 ---
 
 ### Session 6 - COMPLETE
 
-Step 6 built: postcode lookup, satellite map, orientation compass, occupancy. Green "Prepare my quote" button triggers loading overlay.
+Step 6 built: postcode lookup, satellite map, orientation compass, occupancy.
 
 ---
 
 ### Session 7 / Quote Screen - COMPLETE
 
-Quote screen built. solar-products.json deployed. Loading overlay built.
-
----
-
-### Quote Screen Polish Pass - COMPLETE
-
-All layout fixes applied. See spec Section 10 for full list of changes.
+Quote screen built. solar-products.json deployed. Loading overlay built. Finance modal built with savings, FCA example, deposit slider, term pills. paymentMethod state introduced.
 
 ---
 
 ### Session 7A - Upsell Modal + Micro-commitment - COMPLETE
 
-Upsell modal and micro-commitment screen built. Addon card styling refined to match answer card system.
+Upsell modal and micro-commitment screen built. "Added to your system" heading on extras. paymentMethod reflected in price block.
 
 ---
 
-### Session 7B: Quote Screen Additions + Step 8 Contact Details - NEXT SESSION
+### Session 7B + Polish Passes - COMPLETE
 
-**Goal:** Add inline finance calculator and email capture to the quote screen (Step 7), then build Step 8 contact details with revised framing.
+Finance modal savings reordered. Booking summary restored. Calendar auto-advance. Multiple fixes applied. See spec Section 10 for full list.
+
+---
+
+### Session 8A: Restructure Current Step 8 into Steps 8-10 - NEXT SESSION
+
+**Goal:** Replace the existing single Step 8 screen with three focused screens: motivation (Step 8), details (Step 9), and calendar (Step 10). Update the progress bar denominator to 12.
 
 **Pre-session checks:**
-- Session 7A complete and committed
-- Shermin Finance integration method confirmed if possible - if not, build self-contained calculator (see prompt)
-- Reference calculators:
-  - UKEM custom Shermin calculator (primary reference): https://v0-ukem-calculator.vercel.app/
-  - Public Stax calculator: https://www.staxpay.co.uk/finance-calculator
+- All previous sessions committed and deployed to Vercel
+- Read spec Section 6 Steps 8, 9, 10 fully before starting
 
 **Prompt:**
 
 ```
-Read LivWarm_Quote_Forms_Spec.md fully before starting. Steps 1-7 are complete,
-the upsell modal and micro-commitment screen are built. This session has two goals:
-(A) add two new sections to the existing quote screen (Step 7), and
-(B) build Step 8 (contact details) from scratch.
+Read LivWarm_Quote_Forms_Spec.md fully before starting. Steps 1-7 and 7A are
+complete. The current Step 8 is a single two-column screen with contact details,
+calendar, and booking summary. This session replaces it entirely with three
+focused screens. Do not touch any screen before the current Step 8.
 
-Context (relevant to this session):
-- Progress bar, step label and percentage working across 9 total steps
-- Back button top-left of step header on all screens except the first
-- Continue button: solid red pill, auto width, max 380px, centred, no red glow
+IMPORTANT CONTEXT:
+- Total steps is now 12 - update the progress bar denominator from 9 to 12
+- PRESS_MS = 80, SELECT_HOLD_MS = 500 - do not change
+- paymentMethod state ('finance' or 'cash') is already in app state from Step 7
+- warrantyAdded, busGrant, evChargerEnquiry already in app state from Step 7A
+- depositAmount, loanTermMonths already in app state from Step 7 finance modal
+- All CSS variables in :root - never hardcode colours
 - Content block max-width 1100px
-- Total steps: 9
-- Finance APR: 9.9%, terms 36/48/60/84/120/180 months, default 180 months, Math.ceil on monthly payment
-- All prices VAT-inclusive - "All prices include VAT" footnote on booking and payment screens
-- warrantyAdded state is in app state from Session 7A - use it in the booking summary
-- Card interaction system: neutral grey selected state (background #e8e8e8, border 1px solid rgba(0,0,0,0.10), inset shadow), hover matches selected depth, 300ms transitions
-- PRESS_MS = 80, SELECT_HOLD_MS = 500 - do not change these
+- Continue button: solid red pill, auto width, max 380px, centred, no red glow
+- All currency: £X,XXX with commas, no decimals
 
-Do not touch any previously built screens beyond the specific additions to Step 7 described below.
-
----
-
-GOAL A - TWO ADDITIONS TO THE EXISTING QUOTE SCREEN (STEP 7)
-
-Add these two sections below the tier carousel and above the "Continue with this system" CTA.
-Do not change the carousel, tier cards, savings bar, or any other existing quote screen element.
+SLIM SYSTEM REMINDER BAR (used on Steps 8, 9, 10):
+A compact bar shown above the content on each of these three screens.
+Background: #F8F8F8, border: 1px solid #E5E5E5, border-radius: 8px,
+padding: 12px 20px, margin-bottom: 24px, max-width: 560px, centred.
+Content: tier name + panel count (0.875rem, #4A4A4A) on left, price on right.
+Price display: IF paymentMethod === 'finance': "£{monthly}/mo" (red, bold)
+              IF paymentMethod === 'cash': "£{systemPrice}" (dark, bold)
+No images, no savings figures - compact reference only.
 
 ---
 
-ADDITION 1 - INLINE FINANCE CALCULATOR
+NEW STEP 8 - WHAT HAPPENS NEXT (replaces existing Step 8 entirely)
 
-Collapsed by default. Triggered by a link/button labelled "Explore finance options" - 
-0.9rem, red, underlined, centred, sits directly below the tier carousel.
+Progress bar: Step 8 of 12. Label: "What's next".
 
-When expanded, the section slides open (smooth max-height transition, 300ms).
-Background: white, border: 1px solid #E5E5E5, border-radius: 12px, padding: 24px,
-margin: 0 auto, max-width: 560px.
+Single column, centred, max-width 640px.
 
-NOTE ON SHERMIN: Build self-contained calculator. Mark integration point clearly:
-// SHERMIN_INTEGRATION_POINT
+Slim system reminder bar at top.
 
-Payment toggle at top: "Pay monthly" / "Pay in full" - pill style, default "Pay monthly".
-Selected pill: solid red background, white text. Unselected: white, grey border.
+Green tick icon (SVG, 48px, #4CAF50), centred, margin-bottom 16px.
+Headline: "Here's what happens next" - 2rem, bold, #2D2D2D, centred.
+Subheading: "Book a free no-obligation survey. Our engineers will assess
+your roof, confirm your panel layout, and give you a final fixed price -
+with no pressure to proceed." - 1rem, #4A4A4A, centred, max-width 480px.
 
-PAY MONTHLY section:
-- "Your deposit" label, then slider: 0% to 50% of current tier system price, £500 steps.
-  Show deposit amount and percentage below slider in grey.
-- "Loan term" label, then pill selector: 36 / 48 / 60 / 84 / 120 / 180 months. Default 180.
-  Selected pill: solid red, white text.
-- Monthly payment display: large, bold, red. Updates live on every slider/term change.
-  Formula (Math.ceil):
-  monthlyRate = 0.099 / 12
-  financeAmount = systemPrice - depositAmount
-  monthlyPayment = financeAmount * (monthlyRate * (1+monthlyRate)^months) / ((1+monthlyRate)^months - 1)
-- FCA representative example (required by law, updates live):
-  "Representative example: Borrowing £{financeAmount} over {term} years at 9.9% APR (fixed).
-  Monthly repayments of £{monthlyPayment}. Total amount repayable: £{totalRepayable}.
-  Credit is subject to status and affordability."
-  Font size: 0.75rem, colour: #999, italic.
-- "Apply for Finance with Shermin →" button - outlined red pill.
-  // SHERMIN_INTEGRATION_POINT
-  Currently shows: "Finance applications will open shortly. Call 0800 222 9494."
+Three-step cards (row on desktop, stacked on mobile), margin-top 32px:
+Each card: white bg, 1px solid #E5E5E5, border-radius 12px, padding 20px,
+flex-grow 1.
+  Card 1: red circle "1", bold "Provisional booking",
+           grey "We reserve your preferred slot"
+  Card 2: red circle "2", bold "Remote survey",
+           grey "Our experts verify your design using satellite imagery
+           (no home visit needed)"
+  Card 3: red circle "3", bold "Final confirmation",
+           grey "We confirm the system fits your needs and lock in the price"
 
-PAY IN FULL section:
-- "£{systemPrice}" large bold #2D2D2D
-- "Save £{financeSavingVsTotal} compared to paying monthly over 15 years" - 0.875rem, green (#4CAF50)
-- No button needed - user continues with the main CTA below.
-
-The calculator must update its system price dynamically whenever the user swipes to a different
-tier card. It does not need to re-open if collapsed - it simply recalculates internally.
+CTA: "Book my free survey →" - solid red pill, max-width 380px, centred,
+margin-top 32px.
 
 ---
 
-ADDITION 2 - "GET YOUR QUOTE EMAILED TO YOU"
+NEW STEP 9 - YOUR DETAILS
 
-Sits below the finance calculator and above the main CTA. Optional - not a blocking gate.
-If user skips it and hits the CTA, that is fine.
+Progress bar: Step 9 of 12. Label: "Your details".
 
-Container: white, border: 1px solid #E5E5E5, border-radius: 12px, padding: 20px 24px,
-margin: 0 auto, max-width: 560px.
+Single column, centred, max-width 560px.
 
-Heading: "Get your quote emailed to you" - 1rem, bold, #2D2D2D
-Subtext: "We'll send a summary to your inbox so you can review it any time." - 0.875rem, #4A4A4A
+Slim system reminder bar at top.
 
-Two fields inline (50/50 on desktop, stacked on mobile):
-- First name - text input
-- Email address - email input
-Field styling: border 1px solid #E5E5E5, border-radius 8px, padding 10px 14px,
-font-size 1rem (16px minimum).
+Heading: "Your details" - 1.75rem, bold, #2D2D2D.
+Subheading: "We'll use these to confirm your booking and send your
+survey report." - 1rem, #4A4A4A.
 
-Submit button: "Send my quote →" - outlined red pill, auto width, sits below the two fields.
-Disabled until both fields are non-empty and email is valid format.
+Four fields, margin-top 24px:
+Row 1: First name (half width) | Surname (half width)
+Row 2: Email address (full width)
+Row 3: Phone number (full width)
 
-On submit:
-- POST { first_name, email, product_selection, solar_panel_number, payment_total, tier_name }
-  to WordPress AJAX endpoint: /wp-admin/admin-ajax.php?action=livwarm_email_quote
-  (provide a placeholder PHP snippet in comments - full implementation in Session 9)
-- Replace the form with a green tick icon + "Quote sent - check your inbox." message
-- Store first_name and email in app state as lead_first_name and lead_email
-- Set quote_email_captured = true in app state
-
-Pre-population rule: if the user already submitted this form and then navigates back to
-the quote screen, show the success state rather than the form again.
-Pre-populate Step 8 first name and email fields from lead_first_name and lead_email
-if quote_email_captured is true.
-
----
-
-GOAL B - STEP 8: CONTACT DETAILS
-
-Progress bar: Step 8 of 9. Label: "Your details".
-
-Two-column layout (desktop: 55% left / 45% right, stacks to single column below 768px):
-
-LEFT COLUMN - Contact form:
-
-Heading: "Secure your free survey" - 1.75rem, bold, #2D2D2D
-Subheading: "No payment today. Our team will contact you within 24 hours to confirm
-your installation date." - 1rem, #4A4A4A
-
-Form fields (all required, 16px minimum font size, red focus ring on inputs):
-- First name (half width) - pre-populate from lead_first_name if quote_email_captured
-- Surname (half width, same row)
-- Email address (full width) - pre-populate from lead_email if quote_email_captured
-- Phone number (full width)
+Pre-populate first name from lead_first_name if quote_email_captured = true.
+Pre-populate email from lead_email if quote_email_captured = true.
 
 Field styling:
 - Border: 1px solid #E5E5E5 default, 2px solid #E8323A on focus
-- Border-radius: 8px, padding: 12px 16px, background: white
+- Border-radius: 8px, padding: 12px 16px, font-size: 1rem (16px minimum)
 - Label above each field: 0.875rem, font-weight 500, #2D2D2D
 
-Preferred installation date:
-- Label: "Preferred installation date"
-- Subtext: "Weekdays only. Our team will confirm availability after your technical review."
-- Custom calendar picker - monthly grid (do not use browser native date input)
-- Weekdays only - Saturday and Sunday cells visually muted (opacity 0.3, cursor not-allowed)
-- Selected date: red circle, white text
+CTA: "Continue →" - solid red pill, max-width 380px, centred, margin-top 24px.
+Disabled until all four fields non-empty, email valid format,
+phone valid UK format (basic: 10-11 digits, optional leading +44).
+
+On advance: store full_name (first + surname), email, phone in app state.
+
+---
+
+NEW STEP 10 - PREFERRED SURVEY DATE
+
+Progress bar: Step 10 of 12. Label: "Survey date".
+
+Single column, centred, max-width 560px.
+
+Slim system reminder bar at top.
+
+Heading: "Choose a preferred date" - 1.75rem, bold, #2D2D2D.
+Subheading: "Weekdays only. Our team will confirm your slot within
+24 hours - you can reschedule any time." - 1rem, #4A4A4A.
+
+Custom calendar picker, full width of content block, margin-top 24px:
+- Monthly grid, Mon-Sun column headers
+- Weekdays only: Saturday and Sunday cells opacity 0.3, cursor not-allowed,
+  not selectable
+- Selected date: red circle background (#E8323A), white text
 - Today's date: subtle red outline, no fill (unless selected)
-- Month navigation: left/right chevron arrows
+- Month navigation: left/right chevron arrows, month + year label centred
 - Earliest selectable date: 14 days from today
+- On mount: if fewer than 5 selectable weekdays remain in current month
+  after the 14-day cutoff, auto-advance to next month
 - Selected date stored as preferred_date (ISO format YYYY-MM-DD)
 
-"What happens next?" - three-step inline note, sits below the calendar and above the CTA button:
-- Step 1: "Survey booked" - we'll confirm your slot within 24 hours
-- Step 2: "Remote design" - our engineers review your roof and design your system
-- Step 3: "Installation day" - your system is fitted by our MCS-certified team
-Style: three items in a row (stacks on mobile), each with a numbered circle (red, white text),
-label bold, description small grey. Subtle top border above the block.
-
-Continue button at bottom of left column:
-- Label: "Book my free survey →"
-- Solid red pill, full width of left column
-- Disabled until all fields populated and date selected
-- Validates fields (non-empty, email format, UK phone format), then advances to Step 9
-
-RIGHT COLUMN - Booking summary panel:
-
-Sticky (position: sticky, top: 24px).
-Panel: white bg, 1px border #E5E5E5, border-radius 16px, padding 24px,
-box-shadow 0 4px 16px rgba(0,0,0,0.08)
-
-Heading: "Your booking summary" - 1.1rem, bold, #2D2D2D
-
-System section:
-- Tier name - 0.95rem, bold
-- Panel + battery line - 0.875rem, #4A4A4A
-- If warrantyAdded: "5-Year Workmanship Guarantee" with green tick
-
-Horizontal divider
-
-Price section:
-- "System price" + "£{total}" - label 0.875rem #4A4A4A, value 1rem bold #2D2D2D
-- If warrantyAdded: "+£199 warranty" line item in small grey
-- Monthly finance: "or £{monthly}/mo" in red, 0.95rem
-- "at 9.9% APR, 15-year term" - 0.75rem, #999
-
-Horizontal divider
-
-Savings section:
-- "Monthly bill reduction" + "£{monthlySaving} est./mo"
-- "20-year saving" + "£{saving20yr} est."
-- Both: label 0.8rem #4A4A4A, value 0.95rem bold #2D2D2D
-
-Horizontal divider
-
-Trust badges (three inline, centred): MCS Certified / Trustpilot 4.9 ★ / HIES Member
+CTA: "Continue →" - solid red pill, max-width 380px, centred, margin-top 24px.
+Disabled until a date is selected.
 
 ---
 
-IMPORTANT NOTES:
-- All currency: £X,XXX with commas, no decimals
-- Monthly figures: Math.round. Monthly payment: Math.ceil.
-- All prices VAT-inclusive - "All prices include VAT" footnote on booking and payment screens
-- preferred_date stored as YYYY-MM-DD
-- full_name, email, phone stored in app state for Payaca payload
-- Match all existing CSS variables, spacing, and animation patterns exactly
-- No finance modal on Step 8 - the finance calculator lives on the quote screen
+REMOVE the old Step 8 component entirely. The three new screens above
+replace it. Do not leave dead code.
+
+Do not build Step 11 or Step 12 in this session.
 ```
 
-**Done when:** Inline finance calculator on quote screen expands and calculates live, updates when tier changes. Email capture form submits and shows success state. Step 8 at correct progress bar position, two-column layout correct on desktop, heading reads "Secure your free survey", calendar blocks weekends and dates within 14 days, "What happens next?" three-step block visible, CTA reads "Book my free survey →", booking summary shows correct system and pricing including warranty.
+**Done when:** Progress bar shows /12. Step 8 shows motivation screen with three-step cards and correct CTA. Step 9 shows contact form, pre-populates correctly, validates before advancing. Step 10 shows calendar, blocks weekends and sub-14-day dates, auto-advances month correctly. Back navigation works across all three screens.
 
 ---
 
-### Session 8: Step 9 Payment via Stripe - TO BUILD
+### Session 8B: Step 11 - Payment Options - TO BUILD
 
-**Goal:** Stripe Payment Element with Card, Klarna, Revolut Pay.
+**Goal:** Build the four-path payment screen.
 
 **Pre-session checks:**
-- LivWarm Stripe account set up, publishable key available
-- Deposit vs full payment confirmed by client
+- Session 8A complete and committed
+- Stripe publishable key available (or use test key `pk_test_...` as placeholder)
+- Minimum deposit amount confirmed with client (assumed £199)
 
 **Prompt:**
 
 ```
-Read LivWarm_Quote_Forms_Spec.md fully before starting. Steps 1-8 are complete.
-Continue the solar flow build - Session 8 goal only.
+Read LivWarm_Quote_Forms_Spec.md fully before starting. Steps 1-10 are
+complete. Build Step 11 (payment options) only. Do not touch any other screen.
 
-Context:
-- Progress bar working across 9 total steps
-- Content block max-width 1100px
-- All prices VAT-inclusive - "All prices include VAT" footnote on booking and payment screens
-- warrantyAdded, full_name, email, phone, preferred_date, product_selection,
-  solar_panel_number, payment_total all in app state
+CONTEXT:
+- Total steps: 12. Progress bar denominator: 12.
+- PRESS_MS = 80, SELECT_HOLD_MS = 500 - do not change
+- paymentMethod ('finance'/'cash'), depositAmount, loanTermMonths,
+  warrantyAdded, full_name, email, phone, preferred_date,
+  product_selection, solar_panel_number, payment_total all in app state
+- All CSS variables in :root - never hardcode colours
+- All currency: £X,XXX with commas, no decimals
+- All prices VAT-inclusive
 
-Session 8 goal - build Step 9 (payment) only:
-- Progress bar: Step 9 of 9. Label: "Secure your booking"
-- Booking summary recap at top (system, price, date)
-- "How would you like to pay?" heading
-- Two options: "Pay securely online" (Stripe) / "Spread the cost" (Shermin - placeholder URL)
-- Stripe Payment Element: Card, Klarna, Revolut Pay
-- "Your booking is secure" trust line with padlock icon
-- "What happens next?" panel: Provisional Booking / Remote Survey / Final Confirmation
-- Pay button: "Pay £{total}" - solid red pill
-- Footer note: "Payments are securely processed by Stripe. No card details are stored by LivWarm."
-- On successful payment: POST all app state to WordPress AJAX endpoint
-  /wp-admin/admin-ajax.php?action=livwarm_solar_lead
-- On payment failure: show inline error, do not advance
-- All prices VAT-inclusive - "All prices include VAT" footnote
-```
+STEP 11 - PAYMENT OPTIONS
 
-**Done when:** Test card processes in Stripe test mode and success handler fires.
+Progress bar: Step 11 of 12. Label: "Secure your slot".
+
+Single column, centred, max-width 640px.
+
+Slim system reminder bar at top (same pattern as Steps 8-10).
+
+Heading: "How would you like to proceed?" - 1.75rem, bold, #2D2D2D.
+Subheading: "Your slot is provisionally held. Choose how you'd like
+to secure it." - 1rem, #4A4A4A.
+
+Four option cards below, margin-top 24px. Use the existing answer card
+interaction system (raised shadow, press animation, neutral grey selected
+state). Cards do NOT auto-advance - they expand inline on selection to
+reveal additional content. Only one card selected at a time. Selecting a
+new card collapses the previously selected one.
+
+Each card has: title (1rem, bold, #2D2D2D), subtitle (0.875rem, #4A4A4A),
+badge pill (0.75rem, white text, red background, border-radius 20px,
+padding 3px 10px, top-right of card).
 
 ---
 
-### Session 9: Step 10 Confirmation + Payaca Integration - TO BUILD
+CARD 1 - PAY A DEPOSIT
+
+Title: "Pay a deposit to secure your slot"
+Subtitle: "Fully refundable if the final survey price doesn't suit you"
+Badge: "Most flexible"
+
+When selected, expands below the card title row:
+- "Your deposit" label (0.875rem, 500 weight, #2D2D2D)
+- Deposit amount: show £{depositAmount} large (1.5rem, bold, #E8323A)
+  and percentage of system price small grey below
+- Slider: min £199, max = payment_total, step £50
+  Initialise from depositAmount in app state if set, otherwise £199
+- "Balance of £{remainder} due on installation day after survey"
+  (0.875rem, #4A4A4A, margin-top 8px)
+- Horizontal divider
+- // STRIPE_INTEGRATION_POINT
+  Placeholder: white box, 1px solid #E5E5E5, border-radius 8px,
+  padding 20px, text "Stripe payment element loads here"
+- "All prices include VAT" (0.75rem, #999, centred)
+- CTA: "Pay £{depositAmount} deposit →" - solid red pill, full width
+  of expanded area
+
+---
+
+CARD 2 - PAY IN FULL
+
+Title: "Pay in full today"
+Subtitle: "Lock in your price - any spec adjustment after survey is
+refunded"
+Badge: "Best value" - only show if paymentMethod === 'cash',
+       otherwise badge: "Pay today"
+
+When selected, expands:
+- System price: £{payment_total} (1.5rem, bold, #2D2D2D)
+- If warrantyAdded: "+ £199 extended warranty" (0.875rem, #4A4A4A)
+- "All prices include VAT" (0.75rem, #999)
+- Horizontal divider
+- // STRIPE_INTEGRATION_POINT
+  Placeholder: white box, 1px solid #E5E5E5, border-radius 8px,
+  padding 20px, text "Stripe payment element loads here"
+- CTA: "Pay £{payment_total} →" - solid red pill, full width
+
+---
+
+CARD 3 - FINANCE
+
+Title: "Spread the cost with finance"
+Subtitle: "Apply now for an instant decision - no payment today"
+Badge: "From £{monthlyDefault}/mo" where monthlyDefault uses
+loanTermMonths and depositAmount from app state if set,
+otherwise 180 months 0 deposit
+
+When selected, expands:
+- Finance summary box (white bg, 1px #E5E5E5 border, border-radius 8px,
+  padding 16px):
+  - Monthly payment: £{monthly}/mo (1.25rem, bold, #E8323A)
+  - Term: {loanTermMonths} months ({years} years) · 9.9% APR
+  - Deposit: £{depositAmount} ({pct}%)
+  - Total repayable: £{totalRepayable}
+  All figures calculated from app state finance selections.
+- "Edit finance terms →" link (0.875rem, red, underlined)
+  When clicked, shows inline finance calculator (same component as
+  Step 7 - reuse it). Updates app state on change. Collapses on close.
+- FCA representative example (0.75rem, #999, italic, updates live)
+- Horizontal divider
+- // SHERMIN_INTEGRATION_POINT
+  Placeholder box (same style as Stripe placeholder):
+  "Finance applications will open shortly. Call 0800 222 9494."
+- CTA: "Submit finance application →" - outlined red pill, full width,
+  disabled with tooltip: "Finance applications opening soon"
+
+---
+
+CARD 4 - PROVISIONAL
+
+Title: "I'd like an exact price before committing"
+Subtitle: "We'll complete your remote survey and send a fixed quote
+within 48 hours"
+Badge: "No payment today"
+
+When selected, expands:
+- Info box (background: #F8F8F8, border-radius 8px, padding 16px):
+  - "Your slot is provisionally held for 48 hours." (0.875rem, bold)
+  - "Once you receive your fixed quote, you can pay online or apply
+    for finance." (0.875rem, #4A4A4A)
+- CTA: "Hold my slot provisionally →" - solid red pill, full width
+
+---
+
+Below all four cards:
+- "Your booking is secure" with padlock SVG icon, centred,
+  0.875rem, #4A4A4A, margin-top 24px
+- "Payments are securely processed by Stripe. No card details are
+  stored by LivWarm." - 0.75rem, #999, centred
+  (only visible when Card 1 or Card 2 is expanded)
+
+All four CTAs on click:
+- Set paymentOption in app state ('deposit'/'full'/'finance'/'provisional')
+- Set paymentAmount in app state (depositAmount / payment_total / 0 / 0)
+- Advance to Step 12
+
+Do not build Step 12 in this session.
+```
+
+**Done when:** All four cards expand correctly on selection. Deposit slider updates amount and remainder live. Finance summary shows correct figures from app state. All four CTAs advance to a placeholder Step 12.
+
+---
+
+### Session 9: Step 12 - Confirmation + Payaca Integration - TO BUILD
 
 **Goal:** Confirmation screen and server-side lead handoff to Payaca.
 
+**Pre-session checks:**
+- Session 8B complete and committed
+- Payaca credentials confirmed (in payaca_webhook.txt)
+
 **Prompt:**
 
 ```
-Read LivWarm_Quote_Forms_Spec.md fully before starting. Steps 1-9 are complete.
-Continue the solar flow build - Session 9 goal only.
+Read LivWarm_Quote_Forms_Spec.md fully before starting. Steps 1-11 are
+complete. Build Step 12 (confirmation) and the Payaca PHP integration only.
 
-Context:
+CONTEXT:
+- No progress bar on Step 12 - flow is complete
 - All lead data in app state: full_name, email, phone, preferred_date,
   postcode, address_line1, town, latlong, roof_orientation, occupants,
   house_owner_type, house_type, roof_type, house_bedrooms,
   electricity_usage, day_unit_rate, night_unit_rate, rate_type,
   battery_location, battery_location_inside, battery_location_outside,
   has_ev, ev_charging_method, ev_plans, solar_panel_number,
-  product_selection, payment_total, warrantyAdded,
-  quote_email_captured, lead_first_name, lead_email
+  product_selection, payment_total, warrantyAdded, busGrant,
+  evChargerEnquiry, paymentMethod, paymentOption, paymentAmount,
+  depositAmount, loanTermMonths, quote_email_captured,
+  lead_first_name, lead_email
 
-Session 9 goal - confirmation screen and Payaca integration:
+STEP 12 - CONFIRMATION
 
-STEP 10 - CONFIRMATION (no progress bar - flow complete):
-- "You're all booked in!" headline - 2.25rem, bold
-- Green tick animation on load (SVG, 64px, #4CAF50)
-- System summary: tier name, panel count, battery, date confirmed
-- "What happens next?" three-step: survey within 48hrs / MCS paperwork / Installation day
-- "A confirmation has been sent to {email}"
-- LivWarm contact: 0800 222 9494, info@livwarm.co.uk
-- QR code section: placeholder for Payaca follow-up photo submission
+Single column, centred, max-width 560px. No header progress bar.
+
+- Green tick animation on load (SVG, 64px, #4CAF50, draw animation 600ms)
+- Headline: "You're all booked in!" - 2.25rem, bold, #2D2D2D, centred
+- System summary card (white, 1px #E5E5E5 border, border-radius 12px,
+  padding 20px 24px, margin-top 24px):
+  - Tier name (bold) + panel count + battery name
+  - "Preferred date: {preferred_date formatted as 'Mon D Month YYYY'}"
+  - Payment confirmation line (conditional on paymentOption):
+    - deposit: "Deposit of £{paymentAmount} paid. Balance due on
+      installation day."
+    - full: "Payment of £{paymentAmount} confirmed."
+    - finance: "Finance application submitted. Decision within 24 hours."
+    - provisional: "Slot provisionally held. Fixed quote within 48 hours."
+
+- "What happens next?" three-step block (same style as Step 8):
+  1. Survey within 48 hours
+  2. MCS paperwork and final design
+  3. Installation day
+
+- "A confirmation has been sent to {email}" - 0.875rem, #4A4A4A, centred
+- LivWarm contact block: 0800 222 9494 / info@livwarm.co.uk
+
+- QR code placeholder section:
+  White card, border 1px #E5E5E5, border-radius 12px, padding 20px:
+  Heading: "Submit your property photos"
+  Text: "Our team will send you a link to upload photos of your roof
+  and consumer unit. This helps us complete your remote survey faster."
+  Placeholder: grey box 120x120px with "QR code" label
 
 PAYACA INTEGRATION:
-- Create WordPress AJAX endpoint via Code Snippets plugin (provide PHP snippet)
-- Endpoint creates customer + project in Payaca using field map in spec Section 7
-- warrantyAdded maps to custom field "warrantyAdded" in fData
-- quote_email_captured, lead_first_name, lead_email map to fData fields
-- Endpoint URL: /wp-admin/admin-ajax.php?action=livwarm_solar_lead
+On Step 12 mount, POST to /wp-admin/admin-ajax.php?action=livwarm_solar_lead
+
+Provide the PHP snippet to paste into WordPress Code Snippets plugin.
+The snippet must:
+- Create a customer in Payaca using the field map in spec Section 7
+- Create a project under that customer with all fData fields
+- Include warrantyAdded, busGrant, evChargerEnquiry, paymentMethod,
+  paymentOption, paymentAmount, depositAmount, loanTermMonths,
+  quote_email_captured, lead_first_name, lead_email
+- Encrypt projectId and set allowUserSubmissionDate (72 hours) as per
+  existing payaca_webhook.txt pattern
 
 Also provide the PHP snippet for the quote email endpoint:
-- Endpoint URL: /wp-admin/admin-ajax.php?action=livwarm_email_quote
-- Receives: first_name, email, product_selection, solar_panel_number, payment_total, tier_name
-- Creates a partial lead record in Payaca (customer + project stub)
-- Sends a summary email to the user via wp_mail()
+- Endpoint: /wp-admin/admin-ajax.php?action=livwarm_email_quote
+- Receives: first_name, email, product_selection, solar_panel_number,
+  payment_total, tier_name
+- Creates partial Payaca lead (customer + project stub)
+- Sends summary email to user via wp_mail()
 ```
 
-**Done when:** Full test journey Steps 1-10 creates customer and project in Payaca. Confirmation screen displays correctly. Both PHP snippets ready to paste into Code Snippets.
+**Done when:** Full test journey Steps 1-12 creates customer and project in Payaca. Confirmation screen displays correctly for all four paymentOption values. Both PHP snippets ready to paste into Code Snippets.
 
 ---
 
@@ -396,17 +472,18 @@ Also provide the PHP snippet for the quote email endpoint:
 **Prompt:**
 
 ```
-Read LivWarm_Quote_Forms_Spec.md fully before starting. The solar flow build is complete.
-This is the polish session.
+Read LivWarm_Quote_Forms_Spec.md fully before starting. The solar flow
+build is complete. This is the polish session.
 
 Goals:
 1. Test full flow on mobile (375px viewport upward) - fix any layout issues
-2. Step 8 two-column layout stacks correctly below 768px
-3. Carousel cards are swipeable on touch
-4. Check accessibility basics - keyboard navigation, focus states, alt text
-5. Set up WordPress staging deployment via Code Snippets plugin
-6. Remove Vercel domain from Google Maps API key restrictions
-7. Document any final TBC items or known issues
+2. Steps 8-11 single-column layouts correct on all screen sizes
+3. Carousel cards swipeable on touch
+4. Finance calculator and payment cards keyboard accessible
+5. Check accessibility basics - focus states, alt text, colour contrast
+6. Set up WordPress staging deployment via Code Snippets plugin
+7. Remove Vercel domain restriction from Google Maps API key
+8. Document any final TBC items or known issues
 
 No new features. Polish only.
 ```
@@ -423,7 +500,7 @@ Once solar is approved:
 - **Heat Pump / ASHP:** 3-4 sessions
 - **Boiler Upgrade:** 4-5 sessions
 
-Each needs its own products JSON file and Payaca field map. Pricing hardcoded inline from the UKEM spreadsheet.
+Each needs its own products JSON file and Payaca field map. Pricing hardcoded inline from the UKEM spreadsheet. Steps 8-12 (motivation through confirmation) are shared logic - extract to a shared component before building the second flow.
 
 ---
 
@@ -432,7 +509,7 @@ Each needs its own products JSON file and Payaca field map. Pricing hardcoded in
 At the end of every build session, ask Claude Code:
 
 ```
-Write a session handover note covering: what was completed, what was not, any
-TBC items raised, and what the next session should focus on. Add it to Section 11
-of the spec document.
+Write a session handover note covering: what was completed, what was not,
+any TBC items raised, and what the next session should focus on. Add it
+to Section 10 of the spec document.
 ```
