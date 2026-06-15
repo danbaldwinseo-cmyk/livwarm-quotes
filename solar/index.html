@@ -2262,6 +2262,98 @@
     .lw-cal-cell.is-today { border-color: rgba(232, 50, 58, 0.55); }
     .lw-cal-cell.is-selected { background: var(--color-primary); color: #fff; }
 
+    /* ============================================================
+       STEP 11 — Payment options
+       ============================================================ */
+    .lw-pay { width: 100%; max-width: 640px; margin: 0 auto; text-align: left; }
+    .lw-pay-cards { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; }
+    /* Payment cards reuse the answer-card visual language: raised shadow at rest,
+       neutral-grey depressed state when open (no red glow), tactile press dip.
+       They expand inline rather than auto-advancing. */
+    .lw-pay-card {
+      position: relative;
+      background: var(--color-card-bg);
+      border: 1.5px solid transparent;
+      border-radius: 16px;
+      padding: 20px 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09);
+      transition: box-shadow 300ms ease, transform 300ms ease, background-color 300ms ease, border-color 300ms ease;
+    }
+    .lw-pay-card:not(.is-open):hover {
+      background: #e8e8e8;
+      border-color: rgba(0, 0, 0, 0.10);
+      transform: translateY(1px);
+      box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.22), inset 0 2px 4px rgba(0, 0, 0, 0.14);
+    }
+    .lw-pay-card:not(.is-open):active { transform: translateY(3px); box-shadow: none; }
+    .lw-pay-card.is-open {
+      cursor: default;
+      background: #e8e8e8;
+      border-color: rgba(0, 0, 0, 0.10);
+      transform: translateY(1px);
+      box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.22), inset 0 2px 4px rgba(0, 0, 0, 0.14);
+    }
+    .lw-pay-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .lw-pay-title { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
+    .lw-pay-sub { margin-top: 4px; font-size: 0.875rem; color: var(--color-body); line-height: 1.4; }
+    .lw-pay-badge {
+      flex-shrink: 0;
+      font-size: 0.75rem; font-weight: 700;
+      color: var(--color-white);
+      background: var(--color-primary);
+      border-radius: 20px;
+      padding: 3px 10px;
+      white-space: nowrap;
+    }
+    .lw-pay-body { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-border); cursor: default; }
+    .lw-pay-deplabel { font-size: 0.875rem; font-weight: 500; color: var(--color-dark); }
+    .lw-pay-depamt { font-size: 1.5rem; font-weight: 800; color: var(--color-primary); line-height: 1.2; margin-top: 4px; }
+    .lw-pay-deppct { font-size: 0.8rem; color: #999; margin-top: 2px; }
+    .lw-pay-balance { font-size: 0.875rem; color: var(--color-body); margin-top: 8px; }
+    .lw-pay-price { font-size: 1.5rem; font-weight: 800; color: var(--color-dark); line-height: 1.2; }
+    .lw-pay-warr { font-size: 0.875rem; color: var(--color-body); margin-top: 4px; }
+    .lw-pay-vat { font-size: 0.75rem; color: #999; margin-top: 8px; text-align: center; }
+    .lw-pay-div { border: none; border-top: 1px solid var(--color-border); margin: 16px 0; }
+    .lw-pay-stripe {
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      font-size: 0.875rem;
+      color: #999;
+    }
+    .lw-pay-finsum { background: var(--color-white); border: 1px solid var(--color-border); border-radius: 8px; padding: 16px; }
+    .lw-pay-fin-m { font-size: 1.25rem; font-weight: 800; color: var(--color-primary); line-height: 1.1; }
+    .lw-pay-fin-row { display: flex; justify-content: space-between; gap: 12px; font-size: 0.875rem; color: var(--color-body); margin-top: 8px; }
+    .lw-pay-editlink {
+      display: inline-block; margin-top: 12px;
+      background: none; border: none; padding: 0;
+      font-family: inherit; font-size: 0.875rem; font-weight: 700;
+      color: var(--color-primary); text-decoration: underline; cursor: pointer;
+    }
+    .lw-fin-editdone {
+      display: block; margin: 12px 0 0;
+      background: none; border: none; padding: 0;
+      font-family: inherit; font-size: 0.875rem; font-weight: 700;
+      color: var(--color-primary); cursor: pointer;
+    }
+    .lw-pay-info { background: var(--color-card-bg); border-radius: 8px; padding: 16px; }
+    .lw-pay-info-h { font-size: 0.875rem; font-weight: 700; color: var(--color-dark); }
+    .lw-pay-info-b { font-size: 0.875rem; color: var(--color-body); margin-top: 6px; line-height: 1.5; }
+    .lw-pay-cta { width: 100%; margin-top: 16px; }
+    .lw-pay-cta--outline {
+      width: 100%; margin-top: 16px;
+      background: var(--color-white);
+      color: var(--color-primary);
+      border: 2px solid var(--color-primary);
+      box-shadow: none;
+    }
+    .lw-pay-cta--outline:disabled { opacity: 0.45; cursor: not-allowed; }
+    .lw-pay-secure { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 24px; font-size: 0.875rem; color: var(--color-body); }
+    .lw-pay-stripe-note { margin-top: 6px; font-size: 0.75rem; color: #999; text-align: center; }
+
     @media (max-width: 768px) {
       .lw-wn-cards { flex-direction: column; }
     }
@@ -4946,6 +5038,200 @@
     }
 
     /* ============================================================
+       STEP 11 — Payment options
+       ============================================================ */
+    /* One expandable payment card. Mirrors the answer-card visual system but
+       expands inline (no auto-advance). Selecting another card collapses this. */
+    function PaymentCard({ id, selected, onSelect, title, subtitle, badge, children }) {
+      const open = selected === id;
+      return (
+        <div className={'lw-pay-card' + (open ? ' is-open' : '')}
+             onClick={() => { if (!open) onSelect(id); }}>
+          <div className="lw-pay-head">
+            <div>
+              <div className="lw-pay-title">{title}</div>
+              <div className="lw-pay-sub">{subtitle}</div>
+            </div>
+            {badge && <span className="lw-pay-badge">{badge}</span>}
+          </div>
+          {open && <div className="lw-pay-body" onClick={(e) => e.stopPropagation()}>{children}</div>}
+        </div>
+      );
+    }
+
+    /* Inline finance-terms editor — reuses the Step 7 finance maths (financeMonthly,
+       TERM_YEARS) and control styling. Commits to app-state financeChoice on every
+       change so the Card 3 summary + FCA example update live; collapses on "Done". */
+    function FinanceTermsEditor({ systemPrice, term, deposit, onChange, onClose }) {
+      const TERMS = [36, 48, 60, 84, 120, 180];
+      const maxDeposit = Math.floor(Math.min(systemPrice * 0.5, systemPrice - 1000) / 500) * 500;
+      const dep = Math.min(deposit, maxDeposit);
+      const commit = (t, d) => {
+        const clamped = Math.max(0, Math.min(d, maxDeposit));
+        const amt = Math.max(0, systemPrice - clamped);
+        const m = financeMonthly(amt, t);
+        onChange({
+          financeSelected: true,
+          financeDeposit: clamped,
+          financeDepositPct: Math.round((clamped / systemPrice) * 100),
+          financeTerm: t,
+          financeMonthly: m,
+          financeTotalRepayable: m * t,
+        });
+      };
+      return (
+        <div className="lw-fin-body" style={{ marginTop: '12px' }}>
+          <label className="lw-fin-label">Your deposit</label>
+          <input type="range" className="lw-fin-slider" min={0} max={maxDeposit} step={500}
+                 value={dep} onChange={(e) => commit(term, Number(e.target.value))}
+                 aria-label="Deposit amount" />
+          <div className="lw-fin-deposit">
+            <span className="lw-fin-deposit-amt">{gbp(dep)}</span>
+            <span className="lw-fin-deposit-pct">({Math.round((dep / systemPrice) * 100)}%)</span>
+          </div>
+          <label className="lw-fin-label">Loan term</label>
+          <div className="lw-fin-terms">
+            {TERMS.map((t) => (
+              <button key={t} type="button" className={'lw-fin-term' + (t === term ? ' is-on' : '')}
+                      onClick={() => commit(t, dep)}>
+                <span className="lw-fin-term-mo">{t}mo</span>
+                <span className="lw-fin-term-yr">{Math.round(t / 12)} yrs</span>
+              </button>
+            ))}
+          </div>
+          <button type="button" className="lw-fin-editdone" onClick={onClose}>Done →</button>
+        </div>
+      );
+    }
+
+    function PaymentOptionsStep({ sel, financeChoice, warrantyAdded, onSelectFinance, onSubmit }) {
+      const systemPrice = sel.price + (warrantyAdded ? 199 : 0);
+      const paymentMethod = financeChoice && financeChoice.financeSelected === false ? 'cash' : 'finance';
+
+      const [selected, setSelected] = useState(null);   // 'deposit'|'full'|'finance'|'provisional'
+      const [editFin, setEditFin] = useState(false);
+
+      // Card 1 — Stripe deposit (min £199, max system price, £50 steps).
+      const depInit = (financeChoice && financeChoice.financeDeposit >= 199) ? financeChoice.financeDeposit : 199;
+      const [deposit, setDeposit] = useState(Math.min(Math.max(199, depInit), systemPrice));
+      const depositPct = Math.round((deposit / systemPrice) * 100);
+      const remainder = Math.max(0, systemPrice - deposit);
+
+      // Card 3 — finance figures from app state (defaults: 180 months, £0 deposit).
+      const finSet = !!(financeChoice && financeChoice.financeSelected);
+      const term = finSet ? financeChoice.financeTerm : 180;
+      const finDeposit = finSet ? financeChoice.financeDeposit : 0;
+      const monthly = finSet ? financeChoice.financeMonthly : financeMonthly(systemPrice, 180);
+      const totalRepayable = finSet ? financeChoice.financeTotalRepayable : monthly * 180;
+      const finDepositPct = Math.round((finDeposit / systemPrice) * 100);
+      const years = TERM_YEARS[term] || (Math.round(term / 12) + ' years');
+      const financeAmount = Math.max(0, systemPrice - finDeposit);
+
+      const handleSelect = (id) => { setSelected(id); setEditFin(false); };
+
+      return (
+        <div className="lw-pay lw-fade-in">
+          <SlimSystemBar sel={sel} financeChoice={financeChoice} warrantyAdded={warrantyAdded} />
+          <h1 className="lw-step-h">How would you like to proceed?</h1>
+          <p className="lw-step-sub">Your slot is provisionally held. Choose how you'd like to secure it.</p>
+
+          <div className="lw-pay-cards">
+            {/* CARD 1 — Pay a deposit */}
+            <PaymentCard id="deposit" selected={selected} onSelect={handleSelect}
+              title="Pay a deposit to secure your slot"
+              subtitle="Fully refundable if the final survey price doesn't suit you"
+              badge="Most flexible">
+              <div className="lw-pay-deplabel">Your deposit</div>
+              <div className="lw-pay-depamt">{gbp(deposit)}</div>
+              <div className="lw-pay-deppct">{depositPct}% of system price</div>
+              <input type="range" className="lw-fin-slider" min={199} max={systemPrice} step={50}
+                     value={deposit} onChange={(e) => setDeposit(Number(e.target.value))}
+                     aria-label="Deposit amount" />
+              <div className="lw-pay-balance">Balance of {gbp(remainder)} due on installation day after survey</div>
+              <hr className="lw-pay-div" />
+              {/* STRIPE_INTEGRATION_POINT */}
+              <div className="lw-pay-stripe">Stripe payment element loads here</div>
+              <div className="lw-pay-vat">All prices include VAT</div>
+              <button type="button" className="lw-cta lw-pay-cta" onClick={() => onSubmit('deposit', deposit)}>
+                Pay {gbp(deposit)} deposit →
+              </button>
+            </PaymentCard>
+
+            {/* CARD 2 — Pay in full */}
+            <PaymentCard id="full" selected={selected} onSelect={handleSelect}
+              title="Pay in full today"
+              subtitle="Lock in your price - any spec adjustment after survey is refunded"
+              badge={paymentMethod === 'cash' ? 'Best value' : 'Pay today'}>
+              <div className="lw-pay-price">{gbp(systemPrice)}</div>
+              {warrantyAdded && <div className="lw-pay-warr">+ £199 extended warranty</div>}
+              <div className="lw-pay-vat" style={{ textAlign: 'left' }}>All prices include VAT</div>
+              <hr className="lw-pay-div" />
+              {/* STRIPE_INTEGRATION_POINT */}
+              <div className="lw-pay-stripe">Stripe payment element loads here</div>
+              <button type="button" className="lw-cta lw-pay-cta" onClick={() => onSubmit('full', systemPrice)}>
+                Pay {gbp(systemPrice)} →
+              </button>
+            </PaymentCard>
+
+            {/* CARD 3 — Finance */}
+            <PaymentCard id="finance" selected={selected} onSelect={handleSelect}
+              title="Spread the cost with finance"
+              subtitle="Apply now for an instant decision - no payment today"
+              badge={'From £' + monthly + '/mo'}>
+              <div className="lw-pay-finsum">
+                <div className="lw-pay-fin-m">£{monthly}/mo</div>
+                <div className="lw-pay-fin-row"><span>Term</span><span>{term} months ({years}) · 9.9% APR</span></div>
+                <div className="lw-pay-fin-row"><span>Deposit</span><span>{gbp(finDeposit)} ({finDepositPct}%)</span></div>
+                <div className="lw-pay-fin-row"><span>Total repayable</span><span>{gbp(totalRepayable)}</span></div>
+              </div>
+              {editFin
+                ? <FinanceTermsEditor systemPrice={systemPrice} term={term} deposit={finDeposit}
+                    onChange={onSelectFinance} onClose={() => setEditFin(false)} />
+                : <button type="button" className="lw-pay-editlink" onClick={() => setEditFin(true)}>Edit finance terms →</button>}
+              <p className="lw-fin-rep">
+                Representative example: Borrowing {gbp(financeAmount)} over {years} at 9.9% APR (fixed).
+                Monthly repayments of £{monthly}. Total amount repayable: {gbp(totalRepayable)}.
+                Credit is subject to status and affordability.
+              </p>
+              <hr className="lw-pay-div" />
+              {/* SHERMIN_INTEGRATION_POINT */}
+              <div className="lw-pay-stripe">Finance applications will open shortly. Call 0800 222 9494.</div>
+              <button type="button" className="lw-cta lw-pay-cta--outline" disabled
+                      title="Finance applications opening soon">
+                Submit finance application →
+              </button>
+            </PaymentCard>
+
+            {/* CARD 4 — Provisional */}
+            <PaymentCard id="provisional" selected={selected} onSelect={handleSelect}
+              title="I'd like an exact price before committing"
+              subtitle="We'll complete your remote survey and send a fixed quote within 48 hours"
+              badge="No payment today">
+              <div className="lw-pay-info">
+                <div className="lw-pay-info-h">Your slot is provisionally held for 48 hours.</div>
+                <div className="lw-pay-info-b">Once you receive your fixed quote, you can pay online or apply for finance.</div>
+              </div>
+              <button type="button" className="lw-cta lw-pay-cta" onClick={() => onSubmit('provisional', 0)}>
+                Hold my slot provisionally →
+              </button>
+            </PaymentCard>
+          </div>
+
+          <div className="lw-pay-secure">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            Your booking is secure
+          </div>
+          {(selected === 'deposit' || selected === 'full') && (
+            <p className="lw-pay-stripe-note">Payments are securely processed by Stripe. No card details are stored by LivWarm.</p>
+          )}
+        </div>
+      );
+    }
+
+    /* ============================================================
        APP
        ============================================================ */
     function App() {
@@ -5255,9 +5541,14 @@
         }));
         setCurrentIndex((i) => i + 1);
       }, []);
-      // Step 10 (Survey date) — commit preferred date, then advance to Step 11 (placeholder).
+      // Step 10 (Survey date) — commit preferred date, then advance to Step 11.
       const handleSurveyDateContinue = useCallback((preferredDate) => {
         setAnswers((prev) => ({ ...prev, preferred_date: preferredDate }));
+        setCurrentIndex((i) => i + 1);
+      }, []);
+      // Step 11 (Payment options) — record the chosen path + amount, then advance to Step 12.
+      const handlePaymentContinue = useCallback((option, amount) => {
+        setAnswers((prev) => ({ ...prev, paymentOption: option, paymentAmount: amount }));
         setCurrentIndex((i) => i + 1);
       }, []);
 
@@ -5305,7 +5596,8 @@
       const onWhatsNext = currentIndex === QUOTE_INDEX + 1;  // Step 8 what happens next
       const onDetails = currentIndex === QUOTE_INDEX + 2;    // Step 9 your details
       const onSurveyDate = currentIndex === QUOTE_INDEX + 3; // Step 10 preferred survey date
-      const isComplete = currentIndex > QUOTE_INDEX + 3;     // handover (placeholder for Steps 11-12)
+      const onPayment = currentIndex === QUOTE_INDEX + 4;    // Step 11 payment options
+      const isComplete = currentIndex > QUOTE_INDEX + 4;     // handover (placeholder for Step 12)
       const currentQuestion = inQualifier ? QUESTIONS[currentIndex] : null;
       const step = inQualifier ? { number: 1, name: 'Home Details' }
         : onUsage ? { number: 2, name: 'Electricity Usage' }
@@ -5317,7 +5609,8 @@
         : onWhatsNext ? { number: 8, name: "What's next" }
         : onDetails ? { number: 9, name: 'Your details' }
         : onSurveyDate ? { number: 10, name: 'Survey date' }
-        : { number: 11, name: 'Secure Your Booking' };
+        : onPayment ? { number: 11, name: 'Secure your slot' }
+        : { number: 12, name: 'Confirmation' };
 
       // Breadcrumb pills: answers for screens *before* the current one (so the current
       // screen's value shows in-place rather than duplicated as a pill above).
@@ -5393,8 +5686,10 @@
         percent = 8 * segment;                                   // Steps 1–8 done; on "your details"
       } else if (onSurveyDate) {
         percent = 9 * segment;                                   // Steps 1–9 done; on "survey date"
+      } else if (onPayment) {
+        percent = 10 * segment;                                  // Steps 1–10 done; on payment options
       } else {
-        percent = 10 * segment;                                  // Steps 1–10 done
+        percent = 11 * segment;                                  // Steps 1–11 done
       }
 
       return (
@@ -5413,7 +5708,7 @@
                     canGoBack={!isComplete && currentIndex > 0}
                     onBack={handleBack}
                   />
-                  {!isComplete && !onQuote && !onWhatsNext && !onDetails && !onSurveyDate && !emailGate && <Breadcrumbs answered={breadcrumbItems} onEdit={handleEdit}
+                  {!isComplete && !onQuote && !onWhatsNext && !onDetails && !onSurveyDate && !onPayment && !emailGate && <Breadcrumbs answered={breadcrumbItems} onEdit={handleEdit}
                     expanded={bcExpanded} onToggle={handleToggleBreadcrumbs} />}
                   {inQualifier && (
                     <Question
@@ -5528,6 +5823,15 @@
                       warrantyAdded={!!answers.warrantyAdded}
                       initialDate={answers.preferred_date}
                       onContinue={handleSurveyDateContinue}
+                    />
+                  )}
+                  {onPayment && quoteSel && (
+                    <PaymentOptionsStep
+                      sel={quoteSel}
+                      financeChoice={financeChoice}
+                      warrantyAdded={!!answers.warrantyAdded}
+                      onSelectFinance={setFinanceChoice}
+                      onSubmit={handlePaymentContinue}
                     />
                   )}
                   {isComplete && <StepComplete answers={answers} onRestart={handleRestart} />}
