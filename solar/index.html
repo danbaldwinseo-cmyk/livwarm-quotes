@@ -1385,7 +1385,7 @@
     .lw-show-card > * { position: relative; z-index: 1; }
     /* Performance active — red border + soft red elevation (no background tint).
        Keeps the standard raised drop shadow so the centre card doesn't read flat. */
-    .lw-show-card--performance.is-active { border: 1.5px solid rgba(232, 50, 58, 0.55); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 18px 8px rgba(232, 50, 58, 0.06); }
+    .lw-show-card--performance.is-active { background: #ffffff; border: 1.5px solid rgba(232, 50, 58, 0.55); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 18px 8px rgba(232, 50, 58, 0.06); }
     /* header (left-aligned) */
     .lw-show-head { text-align: left; }
     .lw-show-title { font-size: 1.4rem; font-weight: 700; color: var(--color-dark); line-height: 1.2; }
@@ -1888,7 +1888,7 @@
     }
     .lw-show-finbtn:hover { background: rgba(232, 50, 58, 0.05); }
     /* Modal panel — reuses .lw-modal-overlay; custom panel width + close button */
-    .lw-modal--finance { max-width: 520px; }
+    .lw-modal--finance { max-width: 520px; display: flex; flex-direction: column; max-height: 85vh; padding-bottom: 0; }
     .lw-finmodal-close {
       position: absolute;
       top: 16px;
@@ -2278,9 +2278,10 @@
     .lw-bsum-cell {
       flex: 1; height: 90px; background: #F8F8F8;
       display: flex; align-items: center; justify-content: center;
+      padding: 12px;
     }
     .lw-bsum-cell + .lw-bsum-cell { border-left: 1px solid #E5E5E5; }
-    .lw-bsum-cell img { max-height: 70px; max-width: 85%; object-fit: contain; }
+    .lw-bsum-cell img { max-height: 66px; max-width: 80%; object-fit: contain; }
     .lw-bsum-h { margin: 0 0 16px; font-size: 1.1rem; font-weight: 800; color: var(--color-dark); }
     .lw-bsum-tier { font-size: 0.95rem; font-weight: 800; color: var(--color-dark); }
     .lw-bsum-spec { font-size: 0.875rem; color: var(--color-body); margin-top: 2px; }
@@ -3799,10 +3800,6 @@
       const battery = products && products.batteries ? products.batteries[data.battery] : null;
       const batteryName = (battery && battery.name) || BATTERY_NAME[data.battery];
       const batteryCap = battery && battery.capacity_kwh ? battery.capacity_kwh : 0;
-      // Essential card shows a faded (greyscale, low-opacity) EP6 / 5kW battery image to
-      // signal that storage is available but not included. Always resolves to a URL
-      // (products if loaded, else the hardcoded fallback) so the img always renders.
-      const faded5kwImg = (products && products.batteries && products.batteries['5kw'] && products.batteries['5kw'].image) || BATTERY_IMG['5kw'];
 
       const panelsCost = getPrice(data.panels, 'none');
       const batteryCost = data.price - panelsCost;
@@ -3852,8 +3849,13 @@
             </div>
             <div className="lw-comp">
               {data.battery === 'none'
-                ? <img className="lw-comp-img" src={faded5kwImg} alt=""
-                       style={{ filter: 'grayscale(100%) opacity(0.25)' }} onError={hideImg} />
+                ? <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '90px', width: '100%' }}>
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none"
+                      stroke="#E8323A" strokeWidth="2.5" strokeLinecap="round"
+                      strokeLinejoin="round" aria-hidden="true">
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </div>
                 : (battery && battery.image && <img className="lw-comp-img" src={battery.image} alt="" onError={hideImg} />)}
               <div className="lw-comp-text">
                 <div className="lw-comp-name">{hasBattery ? batteryName : 'No Battery Storage'}</div>
@@ -4057,6 +4059,7 @@
                       onClick={() => setMode('full')}>Pay in full</button>
             </div>
 
+            <div style={{ overflowY: 'auto', flex: 1, padding: '0 0 24px' }}>
             {mode === 'monthly' ? (
               <div className="lw-fin-body">
                 <label className="lw-fin-label">Your deposit</label>
@@ -4146,6 +4149,7 @@
                 </button>
               </div>
             )}
+            </div>
           </div>
         </div>
       );
@@ -4893,10 +4897,29 @@
               <h1 className="lw-cd-h1">Secure your free survey</h1>
               <p className="lw-cd-subh">No payment today. Our team will contact you within 24 hours to confirm your installation date.</p>
 
-              {/* CARD 1 — Your details */}
+              {/* CARD 1 — What happens next? */}
               <div className="lw-cd-card">
                 <div className="lw-cd-cardhead">
                   <span className="lw-cd-num">1</span>
+                  <span className="lw-cd-cardlabel">What happens next?</span>
+                </div>
+                <div className="lw-next3">
+                  {NEXT.map((s) => (
+                    <div key={s.n} className="lw-next3-item">
+                      <span className="lw-next3-num">{s.n}</span>
+                      <div className="lw-next3-body">
+                        <div className="lw-next3-label">{s.label}</div>
+                        <div className="lw-next3-desc">{s.desc}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* CARD 2 — Your details */}
+              <div className="lw-cd-card">
+                <div className="lw-cd-cardhead">
+                  <span className="lw-cd-num">2</span>
                   <span className="lw-cd-cardlabel">Your details</span>
                 </div>
                 <div className="lw-cd-row">
@@ -4923,34 +4946,15 @@
                 </div>
               </div>
 
-              {/* CARD 2 — Preferred survey date */}
+              {/* CARD 3 — Preferred survey date */}
               <div className="lw-cd-card">
                 <div className="lw-cd-cardhead">
-                  <span className="lw-cd-num">2</span>
+                  <span className="lw-cd-num">3</span>
                   <span className="lw-cd-cardlabel">Preferred survey date</span>
                 </div>
                 <p className="lw-cd-hint">Weekdays only. Our team will confirm availability after your technical review.</p>
                 <CalendarPicker value={date} onSelect={setDate} />
                 {date && <p className="lw-cd-chosen">Selected: {formatIsoLong(date)}</p>}
-              </div>
-
-              {/* CARD 3 — What happens next? */}
-              <div className="lw-cd-card">
-                <div className="lw-cd-cardhead">
-                  <span className="lw-cd-num">3</span>
-                  <span className="lw-cd-cardlabel">What happens next?</span>
-                </div>
-                <div className="lw-next3">
-                  {NEXT.map((s) => (
-                    <div key={s.n} className="lw-next3-item">
-                      <span className="lw-next3-num">{s.n}</span>
-                      <div className="lw-next3-body">
-                        <div className="lw-next3-label">{s.label}</div>
-                        <div className="lw-next3-desc">{s.desc}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
 
               <button type="button" className="lw-cta lw-cd-cta" disabled={!allValid} onClick={handleBook}>
