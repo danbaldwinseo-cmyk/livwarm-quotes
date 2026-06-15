@@ -1,0 +1,2320 @@
+    /* ============================================================
+       BRAND FONT — IBrand (Section 3)
+       woff2/woff supplied in /fonts/. Path is relative to /solar/.
+       When deployed to WordPress, update the url() paths to the
+       theme/uploads location where the fonts are hosted.
+       Falls back to Nunito, then system sans-serif.
+       ============================================================ */
+    @font-face {
+      font-family: 'IBrand';
+      src: url('../fonts/Ibrand.woff2') format('woff2'),
+           url('../fonts/Ibrand.woff') format('woff'),
+           url('../fonts/Ibrand.ttf') format('truetype');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* ============================================================
+       BRAND TOKENS (Section 3)
+       ============================================================ */
+    :root {
+      /* Colours */
+      --color-primary: #E8323A;        /* LivWarm red - dominant brand colour */
+      --color-primary-light: #F05A5F;  /* Lighter red - buttons, step numbers */
+      --color-cta-green: #4CAF50;      /* CTA buttons on red backgrounds */
+      --color-dark: #2D2D2D;           /* Headings on white */
+      --color-body: #4A4A4A;           /* Body text */
+      --color-grey-bg: #3D3D3D;        /* Dark section backgrounds */
+      --color-white: #FFFFFF;
+      --color-card-bg: #F8F8F8;        /* Light card backgrounds in form */
+      --color-border: #E5E5E5;         /* Subtle borders */
+      --color-selected: #E8323A;       /* Selected card state */
+
+      /* Red wash for the selected card fill (low-opacity primary) */
+      --color-selected-fill: rgba(232, 50, 58, 0.08);
+
+      /* Typography */
+      --font-brand: 'IBrand', 'Nunito', sans-serif;
+      --text-display: 2.5rem;   /* Quote results headline */
+      --text-h1: 2rem;          /* Step question */
+      --text-h2: 1.5rem;        /* Section headers */
+      --text-body: 1rem;        /* Body copy - minimum 16px always */
+      --text-small: 0.875rem;   /* Labels, captions */
+
+      /* UI language */
+      --radius-card: 12px;
+      --radius-btn: 8px;
+      --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.10);
+      --shadow-card-hover: 0 10px 24px rgba(0, 0, 0, 0.16);
+      --transition: 150ms ease;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--color-white);
+      color: var(--color-body);
+      font-family: var(--font-brand);
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============================================================
+       APP SHELL
+       ============================================================ */
+    .lw-app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .lw-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;            /* lock the content block to the middle of the viewport */
+      width: 100%;
+      padding: 40px 80px;                 /* symmetric → content truly centred in the viewport */
+    }
+    .lw-content {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Ultra-wide monitors: cap so it stays readable */
+    @media (min-width: 1400px) {
+      .lw-content { max-width: 1200px; }
+    }
+    /* Smaller desktops/tablets: reduce side padding so it doesn't squeeze */
+    @media (max-width: 1024px) {
+      .lw-main { padding: 40px 40px; }
+    }
+
+    /* ---------- Header ---------- */
+    .lw-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-border);
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .lw-logo {
+      display: inline-flex;
+      align-items: baseline;
+      font-weight: 800;
+      font-size: 1.6rem;
+      letter-spacing: -0.5px;
+      color: var(--color-dark);
+      text-decoration: none;
+      line-height: 1;
+    }
+    .lw-logo .liv { color: var(--color-dark); }
+    .lw-logo .warm { color: var(--color-primary); }
+    .lw-logo .dot { color: var(--color-primary); }
+
+    /* Header trust strip (improvement #2 — trust signals from Step 1 onward) */
+    .lw-trust-mini {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: var(--text-small);
+      color: var(--color-body);
+      font-weight: 600;
+    }
+    .lw-trust-mini span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .lw-trust-mini svg { color: #4CAF50; }
+    @media (max-width: 640px) {
+      .lw-trust-mini { display: none; }
+    }
+
+    /* ---------- Progress bar (improvement #3 — bold red, % + step name) ---------- */
+    .lw-progress-wrap {
+      width: 100%;
+    }
+    .lw-progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    .lw-back-button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #888;
+      padding: 0;
+      font-family: inherit;
+      transition: color 150ms ease;
+    }
+    .lw-back-button:hover { color: #333; }
+    .lw-back-button svg { width: 16px; height: 16px; }
+    .lw-progress-step {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #E8323A;
+    }
+    .lw-progress-step .lw-step-count { color: var(--color-primary); }
+    .lw-progress-pct {
+      font-weight: 800;
+      font-size: var(--text-small);
+      color: var(--color-primary);
+    }
+    .lw-progress-track {
+      height: 8px;
+      background: #f0f0f0;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .lw-progress-fill {
+      height: 100%;
+      background: #E8323A;
+      border-radius: 99px;
+      transition: width 400ms ease;
+      min-width: 0;
+    }
+
+    /* ---------- Answer breadcrumb pills (improvement, Section 7) ---------- */
+    .lw-breadcrumbs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .lw-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: #f5f5f5;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #444;
+      font-family: inherit;
+      line-height: 1.2;
+    }
+    .lw-pill .lw-pill-label {
+      color: #444;
+      font-weight: 600;
+    }
+    .lw-pill .lw-pill-value {
+      color: #E8323A;
+      font-weight: 700;
+    }
+    .lw-pill .lw-pill-edit {
+      color: #aaa;
+      font-size: 11px;
+      cursor: pointer;
+      transition: color 150ms ease;
+      display: inline-flex;
+    }
+    .lw-pill .lw-pill-edit:hover { color: #E8323A; }
+    /* Collapse toggle — identical pill styling, just a pointer cursor */
+    .lw-pill-toggle { cursor: pointer; }
+
+    /* Summary-screen pills — the hero of the completion screen: larger + roomier */
+    .lw-summary-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .lw-summary-pills .lw-pill {
+      padding: 10px 18px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 10px;
+      background: #f5f5f5;
+    }
+    .lw-summary-pills .lw-pill .lw-pill-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #E8323A;
+    }
+
+    /* ---------- Question + cards ---------- */
+    .lw-question {
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 800;
+      line-height: 1.2;
+      margin: 0 0 10px;
+      color: #1a1a1a;
+      text-align: center;
+    }
+    .lw-question-sub {
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: var(--color-body);
+      margin: 0 0 32px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .lw-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      width: 100%;
+      max-width: 100%;
+    }
+    .lw-card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    /* Exactly 5 options: 3 across the top row, the bottom 2 centred. A 6-column
+       grid (each card spans 2) lets cards 4 & 5 sit in the middle four columns. */
+    .lw-card-grid.grid-5 { grid-template-columns: repeat(6, 1fr); }
+    .lw-card-grid.grid-5 .lw-card { grid-column: span 2; }
+    .lw-card-grid.grid-5 .lw-card:nth-child(4) { grid-column: 2 / span 2; }
+    .lw-card-grid.grid-5 .lw-card:nth-child(5) { grid-column: 4 / span 2; }
+    /* 4 options in a single row (battery inside locations) */
+    .lw-card-grid.grid-4 { grid-template-columns: repeat(4, 1fr); }
+    /* Exactly two cards: more generous padding so they don't read as thin strips */
+    .lw-card-grid:has(.lw-card:nth-child(2):last-child) .lw-card {
+      padding: 48px 32px;
+      min-height: 220px;
+    }
+    /* Exactly two cards: constrain + centre so they don't span the full column */
+    .lw-card-grid:has(.lw-card:nth-child(2):last-child) {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    @media (max-width: 560px) {
+      .lw-card-grid,
+      .lw-card-grid.cols-2,
+      .lw-card-grid.grid-4,
+      .lw-card-grid.grid-5 { grid-template-columns: repeat(2, 1fr); }
+      .lw-card-grid.grid-5 .lw-card,
+      .lw-card-grid.grid-5 .lw-card:nth-child(4),
+      .lw-card-grid.grid-5 .lw-card:nth-child(5) { grid-column: auto; }
+      .lw-main { padding: 32px 20px; }
+    }
+
+    /* 3-state card interaction (Section 7 #9) */
+    .lw-card {
+      position: relative;
+      overflow: hidden;                          /* clip the shimmer pseudo-element to the card edges */
+      background: var(--color-card-bg);
+      border: 1.5px solid transparent;
+      border-radius: 16px;
+      padding: 40px 32px;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13),
+                  0 2px 6px rgba(0, 0, 0, 0.09),
+                  inset 0 0 18px 8px rgba(255, 255, 255, 0.92),
+                  inset 0 3px 0px rgba(0, 0, 0, 0),
+                  inset 0 0 0px rgba(0, 0, 0, 0);   /* DEFAULT */
+      transition: box-shadow 300ms ease,
+                  transform 300ms ease,
+                  background-color 300ms ease,
+                  border-color 300ms ease,
+                  opacity 200ms ease,
+                  filter 200ms ease;     /* smooth fade for the hover/selection dimming */
+      font-family: inherit;
+      color: var(--color-body);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      min-height: 200px;
+      justify-content: center;
+    }
+    /* Fine dot grid fading in from the lower-right corner (default + hover);
+       shifts darker on the selected/depressed state. */
+    .lw-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 65%;
+      height: 65%;
+      background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
+      background-size: 10px 10px;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%;
+      mask-size: 100% 100%, 100% 100%, 100% 100%;
+      -webkit-mask-composite: destination-in, destination-in, destination-in;
+      mask-composite: intersect;
+      pointer-events: none;
+      border-radius: inherit;
+      z-index: 0;
+      transition: opacity 150ms ease;
+    }
+    .lw-card.is-selected::before {
+      background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
+      opacity: 1;
+    }
+    /* Card content sits above the corner texture */
+    .lw-card .lw-card-icon,
+    .lw-card .lw-card-label {
+      position: relative;
+      z-index: 1;
+    }
+    /* Hover shimmer — a single diagonal light sweep that plays once when the cursor
+       enters the card (does not loop). Reuses the shimmer-sweep keyframes defined
+       further below for the selected state. Needs the base overflow/position above. */
+    .lw-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.65) 50%,
+        transparent 80%
+      );
+      pointer-events: none;
+      transition: none;
+    }
+    /* Non-selected cards dim/desaturate only AFTER a selection is made in the group,
+       so cards start at full brightness on load (no dimming before any choice). */
+    .lw-card-grid.has-selection .lw-card:not(.is-selected) {
+      opacity: 0.6;
+      filter: saturate(0.4);
+      transition: opacity 300ms ease, filter 300ms ease;
+    }
+    /* Hovering a card subtly darkens its siblings — a lighter "being considered"
+       cue than the post-selection dimming above. :has() does all the work. */
+    .lw-card-grid:has(.lw-card:hover) .lw-card:not(:hover) {
+      opacity: 0.75;
+      filter: saturate(0.7);
+      transition: opacity 200ms ease, filter 200ms ease;
+    }
+    .lw-card:focus-visible {
+      outline: 3px solid var(--color-primary-light);
+      outline-offset: 2px;
+    }
+    /* HOVER — clearly sinks: darker fill, drops 2px, shadow compresses + darkens */
+    .lw-card:not(.is-selected):not(.is-pressing):hover {
+      background: #e8e8e8;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                  0 2px 6px rgba(0, 0, 0, 0),
+                  inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                  inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                  inset 0 2px 4px rgba(0, 0, 0, 0.14);
+      transform: translateY(1px);
+      transition: box-shadow 300ms ease,
+                  transform 300ms ease,
+                  background-color 300ms ease,
+                  border-color 300ms ease,
+                  opacity 300ms ease,
+                  filter 300ms ease;
+    }
+    /* PRESS — :active gives the mouse-held tactile dip. */
+    .lw-card:not(.is-selected):active {
+      transform: translateY(3px);
+      box-shadow: none;                           /* shadow collapses on press */
+    }
+    /* The press sequence is driven entirely by DOM classes (no React state change until
+       it completes): is-pressing plays the punch animation, then is-settled holds the
+       depressed resting state through the select-hold, then React applies is-selected. */
+    .lw-card.is-pressing {
+      animation: card-press 350ms ease-out forwards;
+    }
+    .lw-card.is-settled {
+      background: #e8e8e8;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                  0 2px 6px rgba(0, 0, 0, 0),
+                  inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                  inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                  inset 0 2px 4px rgba(0, 0, 0, 0.14);
+      transform: translateY(1px);
+    }
+    /* SELECTED — resting state: warm white card, soft red ambient glow, hairline
+       red border (via box-shadow). No hard red fill, no thick border.
+       Keeps the 1.02 scale pulse; the shimmer sweep is on ::after below. */
+    .lw-card.is-selected {
+      background: #e8e8e8;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                  0 2px 6px rgba(0, 0, 0, 0),
+                  inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                  inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                  inset 0 2px 4px rgba(0, 0, 0, 0.14);
+      transform: translateY(1px);
+      animation: card-press 350ms ease-out forwards;
+    }
+    /* Two-beat press: punch deep into the page, then rise and settle just below the surface */
+    @keyframes card-press {
+      0% {
+        transform: translateY(1px);
+        background: #e8e8e8;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                    0 2px 6px rgba(0, 0, 0, 0),
+                    inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                    inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                    inset 0 2px 4px rgba(0, 0, 0, 0.14);
+      }
+      35% {
+        transform: translateY(5px);
+        background: #dcdcdc;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                    0 2px 6px rgba(0, 0, 0, 0),
+                    inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                    inset 0 8px 20px rgba(0, 0, 0, 0.28),
+                    inset 0 3px 6px rgba(0, 0, 0, 0.18);
+      }
+      100% {
+        transform: translateY(1px);
+        background: #e8e8e8;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                    0 2px 6px rgba(0, 0, 0, 0),
+                    inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                    inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                    inset 0 2px 4px rgba(0, 0, 0, 0.14);
+      }
+    }
+    .lw-card.is-selected .lw-card-icon,
+    .lw-card.is-selected .lw-card-label {
+      animation: content-press 350ms ease-out forwards;
+    }
+    @keyframes content-press {
+      0%   { transform: translateY(1px); }
+      35%  { transform: translateY(2px); }
+      100% { transform: translateY(1px); }
+    }
+    /* SHIMMER — single diagonal light sweep, plays once on selection then settles */
+    .lw-card.is-selected::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      /* Darker wash than the hover shimmer — a distinct "press confirmed" sweep
+         that reads against the white selected-card background. */
+      background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(0, 0, 0, 0.08) 50%,
+        transparent 80%
+      );
+      animation: shimmer-sweep-click 400ms ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes shimmer-sweep-click {
+      0%   { left: -60%; }
+      100% { left: 130%; }
+    }
+    .lw-card-icon {
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+      line-height: 1;
+      transition: filter 200ms ease;
+    }
+    .lw-card-icon svg {
+      width: 64px;
+      height: 64px;
+    }
+    /* On hover the icon brightens/saturates with a very tight glow that hugs the
+       outline (and the numeral on bedroom cards). Transition is on .lw-card-icon above. */
+    .lw-card:hover .lw-card-icon {
+      filter: brightness(1.15) saturate(1.3)
+              drop-shadow(0 0 1px rgba(232, 50, 58, 0.4));
+    }
+    .lw-card-label {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+      transition: font-weight var(--transition);
+    }
+    .lw-card.is-selected .lw-card-label { font-weight: 800; }   /* label goes bold */
+    .lw-card-num {
+      font-size: 44px;
+      font-weight: 800;
+      color: var(--color-primary);
+      line-height: 1;
+    }
+
+    /* ---------- Buttons ---------- */
+    .lw-btn {
+      font-family: inherit;
+      font-weight: 800;
+      font-size: var(--text-body);
+      border-radius: var(--radius-btn);
+      padding: 14px 26px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lw-btn-primary {
+      background: var(--color-primary);
+      color: var(--color-white);
+    }
+    .lw-btn-primary:hover { background: var(--color-primary-light); }
+    .lw-btn-ghost {
+      background: transparent;
+      color: var(--color-primary);
+      border: 1.5px solid var(--color-primary);
+    }
+    .lw-btn-ghost:hover { background: var(--color-selected-fill); }
+
+    /* ---------- Step-complete (end of Step 1) ---------- */
+    .lw-complete {
+      text-align: center;
+      padding: 16px 0;
+    }
+    .lw-complete h2 {
+      font-size: var(--text-h2);
+      color: var(--color-dark);
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+    .lw-complete p { color: var(--color-body); margin: 0 0 24px; }
+    .lw-next-note {
+      margin-top: 18px;
+      font-size: var(--text-small);
+      color: var(--color-body);
+      opacity: 0.8;
+    }
+
+    /* ---------- Dead-end screen ---------- */
+    .lw-deadend {
+      max-width: 560px;
+      margin: 24px auto;
+      text-align: center;
+      background: var(--color-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 48px 32px;
+    }
+    .lw-deadend-icon {
+      color: var(--color-primary);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .lw-deadend h1 {
+      font-size: var(--text-h1);
+      color: var(--color-dark);
+      font-weight: 800;
+      margin: 0 0 12px;
+    }
+    .lw-deadend p { color: var(--color-body); margin: 0 0 28px; }
+
+    /* ---------- Step 2 — Electricity Usage form ---------- */
+    .lw-eu {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    .lw-field { margin-bottom: 22px; text-align: left; }
+    .lw-field-row { display: flex; gap: 16px; }
+    .lw-field-row .lw-field { flex: 1; margin-bottom: 22px; }
+    .lw-field-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-dark);
+      margin-bottom: 8px;
+    }
+    .lw-field-opt { color: #999; font-weight: 600; }
+    .lw-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1.5px solid var(--color-border);
+      border-radius: 8px;
+      padding: 0 16px;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .lw-input-row:focus-within {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(232, 50, 58, 0.12);
+    }
+    .lw-input-row input {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-dark);
+      padding: 14px 0;
+    }
+    .lw-input-row input::placeholder { color: #b3b3b3; font-weight: 500; }
+    .lw-input-unit { font-size: 15px; font-weight: 700; color: #888; white-space: nowrap; }
+    /* text links (Where do I find this? / national averages) */
+    .lw-link {
+      display: inline-block;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-top: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-primary);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .lw-link:hover { color: var(--color-primary-light); }
+    .lw-link-center { display: block; width: 100%; text-align: center; margin: 4px 0 24px; }
+    /* day/night segmented toggle */
+    .lw-toggle { display: flex; gap: 12px; }
+    .lw-toggle-opt {
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      color: #444;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 24px 20px;
+      cursor: pointer;
+      line-height: 1.3;
+      transition: all 150ms ease, box-shadow 200ms ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04), inset 0 0 18px 8px rgba(255, 255, 255, 0.92);
+    }
+    .lw-toggle-opt::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 65%;
+      height: 65%;
+      background-image: radial-gradient(circle, #d8d8d8 1px, transparent 1px);
+      background-size: 10px 10px;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%;
+      mask-size: 100% 100%, 100% 100%, 100% 100%;
+      -webkit-mask-composite: destination-in, destination-in, destination-in;
+      mask-composite: intersect;
+      pointer-events: none;
+      border-radius: inherit;
+      z-index: 0;
+    }
+    .lw-toggle-opt span {
+      position: relative;
+      z-index: 1;
+    }
+    .lw-toggle-opt.selected {
+      background: rgba(232, 50, 58, 0.04);
+      border: 1.5px solid rgba(232, 50, 58, 0.4);
+      color: #E8323A;
+      font-weight: 700;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.10),
+                  inset 0 0 18px 8px rgba(232, 50, 58, 0.06);
+    }
+    .lw-toggle-opt.selected::before {
+      background-image: radial-gradient(circle, rgba(232, 50, 58, 0.25) 1px, transparent 1px);
+      background-size: 10px 10px;
+    }
+    .lw-toggle-opt:hover:not(.selected) {
+      border: 1px solid transparent;
+      background: #f4f4f4;
+      color: #222;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 0 18px 8px rgba(210, 210, 210, 0.50);
+      transform: translateY(1px);
+    }
+    /* full-width solid red pill CTA */
+    .lw-cta {
+      display: block;
+      width: 100%;
+      margin-top: 8px;
+      padding: 16px 24px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15),
+                  0 2px 4px rgba(0, 0, 0, 0.10);
+      transition: background 150ms ease, box-shadow 150ms ease, transform 150ms ease, opacity 150ms ease;
+    }
+    /* press-down on hover/active (matches the main LivWarm site) — no float/lighten */
+    .lw-cta:hover:not(:disabled) {
+      background: #C8232B;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+      transform: translateY(1px);
+    }
+    .lw-cta:active:not(:disabled) {
+      background: #B01E24;
+      box-shadow: none;
+      transform: translateY(2px);
+    }
+    .lw-cta:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Outlined pill — same footprint as the CTA, sits directly above it */
+    .lw-cta-outline {
+      display: block;
+      width: 80%;
+      margin: 8px auto 12px;
+      padding: 16px 24px;
+      background: #ffffff;
+      color: var(--color-primary);
+      border: 1.5px solid rgba(232, 50, 58, 0.3);
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .lw-cta-outline:hover { background: rgba(232, 50, 58, 0.05); }
+
+    /* ---------- Steps 4 & 5 — card question + same-screen sub-question ---------- */
+    .lw-subq { animation: lwSubFade 200ms ease both; }
+    @keyframes lwSubIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes lwSubFade {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    /* IMPROVEMENT 1 — staged entry: heading fades first (250ms), card row 50ms later (300ms) */
+    .lw-subq .lw-question-sub { animation: lwSubIn 250ms ease-out both; }
+    .lw-subq .lw-card-grid { animation: lwSubIn 300ms ease-out 50ms both; }
+    .lw-subq-title {
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 800;
+      line-height: 1.2;
+      color: #1a1a1a;
+      text-align: center;
+      margin: 36px 0 18px;
+      animation: lwSubIn 250ms ease-out both;
+    }
+    .lw-step-continue { max-width: 420px; margin: 36px auto 0; }
+
+    /* ---------- Help modal ---------- */
+    .lw-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 1000;
+      animation: lwFade 200ms ease both;
+    }
+    .lw-modal {
+      position: relative;
+      background: #fff;
+      border-radius: 16px;
+      max-width: 480px;
+      width: 100%;
+      max-height: 90vh;
+      overflow: auto;
+      padding: 32px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+      text-align: left;
+    }
+    .lw-modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 150ms ease;
+    }
+    .lw-modal-close:hover { background: var(--color-primary-light); }
+    .lw-modal-title { font-size: 22px; font-weight: 800; color: var(--color-dark); margin: 0 0 6px; padding-right: 36px; }
+    .lw-modal-sub { font-size: 15px; color: var(--color-body); margin: 0 0 20px; line-height: 1.5; }
+    .lw-modal-caption { font-size: 14px; color: var(--color-body); margin: 16px 0 0; line-height: 1.5; }
+    /* annotated example bill (placeholder) */
+    .lw-bill { border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; }
+    .lw-bill-head {
+      background: var(--color-grey-bg);
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      padding: 12px 16px;
+    }
+    .lw-bill-lines { padding: 10px 14px 14px; }
+    .lw-bill-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 10px;
+      font-size: 14px;
+      color: var(--color-body);
+      border-bottom: 1px dashed var(--color-border);
+    }
+    .lw-bill-line:last-child { border-bottom: none; }
+    .lw-bill-line span:last-child { font-weight: 700; color: var(--color-dark); }
+    .lw-bill-line.highlight {
+      background: rgba(232, 50, 58, 0.07);
+      border: 1.5px solid var(--color-primary);
+      border-radius: 8px;
+      margin: 8px 0 2px;
+    }
+    .lw-bill-callout {
+      color: var(--color-primary);
+      font-weight: 800;
+      font-size: 12.5px;
+      margin: 0 0 8px 6px;
+    }
+
+    /* ---------- Step 6 — Address, Map, Orientation, Occupancy ---------- */
+    /* Wider container than the kWh/tariff forms so the map has room to breathe */
+    .lw-step6 { width: 100%; max-width: 760px; margin: 0 auto; }
+
+    /* Postcode + Find button row */
+    .lw-find-row { display: flex; gap: 12px; align-items: stretch; }
+    .lw-find-row .lw-input-row { flex: 1; }
+    .lw-find-btn {
+      flex: 0 0 auto;
+      padding: 0 28px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 150ms ease, transform 150ms ease;
+    }
+    .lw-find-btn:hover:not(:disabled) { background: #C8232B; }
+    .lw-find-btn:active:not(:disabled) { transform: translateY(1px); }
+    .lw-find-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .lw-input-error { color: var(--color-primary); font-size: 14px; font-weight: 600; margin: 10px 0 0; }
+    /* Auto-populated postcode is read-only but must match the other fields' text colour */
+    .lw-input-readonly input { color: var(--color-dark); }
+
+    /* Satellite map */
+    .lw-map-wrap {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+    .lw-map { width: 100%; height: 500px; background: #e9e9e9; }
+    @media (max-width: 768px) { .lw-map { height: 380px; } }
+    @media (max-width: 560px) { .lw-map { height: 300px; } }
+    .lw-map-fallback {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      color: #777;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    /* Frosted instruction label at the lower edge of the orientation map */
+    .lw-map-label {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: calc(100% - 32px);
+      text-align: center;
+      background: rgba(0, 0, 0, 0.45);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.4;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      pointer-events: none;
+      z-index: 3;
+    }
+    /* Responsive instruction wording: compass sits to the right ≥768px, below under that */
+    .lw-map-label .lw-instr-narrow { display: none; }
+    @media (max-width: 767px) {
+      .lw-map-label .lw-instr-wide { display: none; }
+      .lw-map-label .lw-instr-narrow { display: inline; }
+    }
+
+    /* Orientation screen — compass overlaid on the right half of the map.
+       Frosted-glass disc; a ring of eight tappable direction segments. */
+    .lw-rose {
+      position: absolute;
+      top: 50%;
+      right: 6%;
+      transform: translateY(-50%);
+      width: 290px;
+      height: 290px;
+      border-radius: 50%;
+      /* Domed face — light from above-left */
+      background: radial-gradient(ellipse at 35% 35%, #ffffff 0%, #f0f0f0 55%, #e4e4e4 100%);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      /* Instrument-panel bezel */
+      border: 2px solid rgba(200, 200, 200, 0.7);
+      /* 3D depth: heavier grounded lift + bright inner rim + deeper inner-bowl feel */
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55),
+                  0 6px 16px rgba(0, 0, 0, 0.40),
+                  inset 0 0 0 2px rgba(255, 255, 255, 0.85),
+                  inset 0 3px 10px rgba(0, 0, 0, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+    .lw-rose svg { width: 290px; height: 290px; display: block; }
+    .lw-seg { cursor: pointer; }
+    .lw-seg:focus { outline: none; }
+    /* Segment 3-state, mirroring the answer-card press system.
+       Default: raised (outer drop shadow). Hover: sinks (inset). Selected: fully
+       depressed (deeper inset) + darker red. Shadows are SVG filters (see <defs> in markup).
+       Hover is PURE CSS :hover — independent of React state, active from first render. */
+    .lw-seg .seg-fill {
+      fill: rgba(0, 0, 0, 0.06);
+      /* raised proud of the face (two-layer outer drop shadow) */
+      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.22)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.15));
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: fill 320ms ease, opacity 150ms ease;
+    }
+    /* Hover inset lives on a separate overlay path that fades in over 150ms, so the
+       sink animates smoothly (SVG filter: url() can't be CSS-transitioned). The overlay
+       is clipPath-clipped to the exact pie-slice → pixel-perfect, no filter bleed. */
+    .lw-seg .seg-inset {
+      opacity: 0;
+      transition: opacity 320ms ease;
+      pointer-events: none;
+    }
+    .lw-seg:hover .seg-inset { opacity: 1; }
+    /* Selected segment shows the deep inset permanently — identical at rest and on hover */
+    .lw-seg.selected .seg-inset { opacity: 1; }
+    .seg-dots { pointer-events: none; }                        /* dot texture sits behind interactions */
+    .lw-seg.selected .seg-fill {
+      fill: var(--color-primary);                              /* #E8323A — complements the Continue button */
+      filter: url(#segInsetSel);                               /* fully depressed */
+      animation: seg-press 350ms ease-out;                     /* two-beat punch on click */
+    }
+    /* Two-beat punch: drive deep (0.96) → brief bounce (1.02) → settle, like the cards */
+    @keyframes seg-press {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(0.96); }
+      70%  { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+    .lw-seg .seg-label {
+      fill: #444444;
+      transition: fill 150ms ease, opacity 150ms ease;
+      pointer-events: none;
+    }
+    .lw-seg.selected .seg-label { fill: #fff; }
+    /* One-time pulse on first load to signal the labels are tappable (FIX 1) */
+    .seg-label.lw-pulse {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: lw-label-pulse 600ms ease-out both;
+    }
+    @keyframes lw-label-pulse {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+    /* Unselected segments dim to 60% once a selection is made (mirrors card desaturation) */
+    .lw-seg.dim { opacity: 0.6; }
+    .lw-seg.dim:hover { opacity: 1; }
+    .lw-seg-divider { stroke: rgba(180, 180, 180, 0.6); stroke-width: 1; pointer-events: none; }
+    /* Red compass needle — sweeps smoothly toward the hovered/selected direction.
+       Gradient fill (defined in markup) gives a raised triangular cross-section. */
+    .lw-needle {
+      transition: transform 200ms ease-out;
+      transform-box: view-box;
+      transform-origin: 110px 110px;
+      pointer-events: none;
+      filter: drop-shadow(1px 2px 3px rgba(0, 0, 0, 0.35));
+    }
+    /* Central hub — raised dome (HTML element so it can use box-shadow + inset highlight) */
+    .lw-hub {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle at 40% 35%, #E8E8E8, #AAAAAA);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.30),
+                  inset 0 1px 2px rgba(255, 255, 255, 0.80);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* Confirmation + Continue, centred below the map */
+    .lw-orient-facing {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-primary);
+      margin: 16px 0 0;
+    }
+    .lw-orient-actions { max-width: 560px; margin: 20px auto 0; }
+
+    /* Mobile: map stays full width, compass stays overlaid on the right half */
+    @media (max-width: 768px) {
+      .lw-rose { width: 240px; height: 240px; right: 4%; }
+      .lw-rose svg { width: 240px; height: 240px; }
+    }
+
+    /* ---------- Footer trust strip ---------- */
+    .lw-footer {
+      border-top: 1px solid var(--color-border);
+      padding: 18px 20px;
+    }
+    .lw-trust-row {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      font-size: var(--text-small);
+      font-weight: 700;
+      color: var(--color-body);
+    }
+    .lw-trust-row span { display: inline-flex; align-items: center; gap: 8px; }
+    .lw-trust-row svg { color: #4CAF50; }
+
+    .lw-fade-in { animation: lwFade 250ms ease both; }
+    @keyframes lwFade {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================================
+       STEP 7 — Quote screen (Your Solar Potential)
+       ============================================================ */
+    .lw-quote { text-align: center; }
+    /* 1 — price headline */
+    .lw-quote-title {
+      font-size: var(--text-h1);
+      font-weight: 700;
+      color: var(--color-dark);
+      margin: 0 0 6px;
+    }
+    .lw-quote-address {
+      font-size: 0.9rem;
+      color: var(--color-body);
+      margin: 0 0 18px;
+    }
+    /* two prices side by side — monthly is the conversion hero (red) */
+    .lw-quote-prices {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      margin: 6px 0 0;
+    }
+    .lw-quote-cash { font-size: 2.5rem; font-weight: 700; color: var(--color-dark); line-height: 1.05; }
+    .lw-quote-or { font-size: 1rem; color: #999; margin: 0 12px; }
+    .lw-quote-monthly { font-size: 2.5rem; font-weight: 700; color: var(--color-primary); line-height: 1.05; }
+    .lw-quote-survey { font-size: 0.75rem; color: #999; font-style: italic; margin: 8px 0 0; text-align: center; }
+    /* system summary line under the address */
+    .lw-quote-summary { font-size: 0.95rem; color: var(--color-body); margin: 4px 0 0; text-align: center; }
+    .lw-quote-strike { text-decoration: line-through; }
+    /* "Potential savings" — label + two stat boxes */
+    .lw-savings-label {
+      font-size: 1.1rem; font-weight: 700; color: var(--color-dark);
+      text-align: center; margin: 32px 0 16px;
+    }
+    .lw-savings-boxes { display: flex; gap: 12px; max-width: 640px; margin: 0 auto; }
+    .lw-savings-box {
+      flex: 1; text-align: center; padding: 24px 28px; border: none; border-radius: 16px;
+      background: linear-gradient(145deg, #FFFFFF 0%, #F8F7F7 100%);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.05);
+      transition: all 200ms ease;
+    }
+    .lw-savings-box:hover {
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+      transform: translateY(-2px);
+    }
+    .lw-savings-box-label { font-size: 0.85rem; font-weight: 500; color: var(--color-body); }
+    .lw-savings-box-val { font-size: 1.75rem; font-weight: 700; color: var(--color-dark); line-height: 1.1; margin-top: 6px; }
+    .lw-savings-box-val--red { color: var(--color-primary); }
+    /* quiet "est." qualifier after a figure */
+    .lw-est { font-size: 0.75rem; font-weight: 400; color: #999; }
+    @media (max-width: 560px) { .lw-savings-boxes { flex-direction: column; } }
+    /* bill drop + payback, shown on each carousel card */
+    .lw-show-payback { font-size: 0.8rem; color: var(--color-body); margin-top: 4px; }
+    .lw-quote-sep { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 24px 0; }
+    /* Quote top — compact centred price/summary block */
+    .lw-quote-top { max-width: 680px; margin: 0 auto; text-align: center; }
+    .lw-qt-heading { font-size: 0.875rem; font-weight: 500; color: var(--color-body); margin: 0 0 4px; }
+    .lw-qt-priceline { display: flex; justify-content: center; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .lw-qt-cash { font-size: 2.5rem; font-weight: 800; color: var(--color-dark); line-height: 1.05; }
+    .lw-qt-monthly { font-size: 2.5rem; font-weight: 700; color: var(--color-primary); line-height: 1.05; }
+    .lw-qt-or { font-size: 1rem; font-weight: 500; }
+    .lw-qt-summary { font-size: 0.875rem; color: var(--color-body); margin: 8px 0 0; }
+    .lw-qt-survey { font-size: 0.75rem; color: #999; font-style: italic; margin: 4px 0 0; }
+    /* section heading above the tier cards */
+    .lw-tier-heading-wrap { text-align: center; margin: 16px 0 12px; }
+    .lw-tier-heading { font-size: 1.5rem; font-weight: 700; color: var(--color-dark); margin: 0; }
+    .lw-tier-subheading { font-size: 0.9rem; color: var(--color-body); margin: 6px 0 0; }
+    /* staged reveal — each block rises 12px (hero: 20px) and fades in on first mount */
+    .lw-reveal { opacity: 0; transform: translateY(12px); transition: opacity 400ms ease-out, transform 400ms ease-out; }
+    .lw-reveal--hero { transform: translateY(20px); }
+    .lw-reveal.is-in { opacity: 1; transform: translateY(0); }
+    /* keep tier cards stretched to equal height when wrapped in a reveal */
+    .lw-tier-grid > .lw-reveal { display: flex; }
+    .lw-tier-grid > .lw-reveal > .lw-card { flex: 1; }
+    /* 3 — tier cards (full answer-card interaction, no auto-advance) */
+    .lw-tier-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+    @media (max-width: 760px) {
+      .lw-tier-grid { grid-template-columns: 1fr; }
+    }
+    /* unselected tiers dim to 60% (matches the answer-card 3-state system) */
+    .lw-tier-grid.has-selection .lw-card:not(.is-selected) {
+      opacity: 0.6;
+      filter: saturate(0.4);
+      transition: opacity 300ms ease, filter 300ms ease;
+    }
+    /* layout overrides on top of the shared .lw-card visual states */
+    .lw-tier-card {
+      align-items: stretch;
+      justify-content: flex-start;
+      text-align: left;
+      padding: 22px 22px 24px;
+      min-height: 0;
+      gap: 10px;
+      border-radius: var(--radius-card);
+    }
+    .lw-tier-card > * { position: relative; z-index: 1; }
+    .lw-tier-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    /* Essential/Custom are secondary: smaller, lighter heading, grey price.
+       Performance is the conversion target: larger bold heading, red price (overrides below). */
+    .lw-tier-name { font-size: 1rem; font-weight: 500; color: var(--color-dark); }
+    .lw-tier-badge {
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    /* main row: spec/who_for on the left, product shot on the right */
+    .lw-tier-main { display: flex; align-items: flex-start; gap: 12px; }
+    .lw-tier-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+    .lw-tier-spec { color: var(--color-body); font-size: 0.95rem; line-height: 1.5; }
+    .lw-tier-spec div { font-weight: 600; }
+    /* product shot — battery on Performance, panel on Essential; right side, vertically centred.
+       Explicit width/height attrs in the markup set the box; object-fit contain preserves aspect. */
+    .lw-tier-img {
+      flex-shrink: 0;
+      max-width: 160px;
+      object-fit: contain;
+      align-self: center;
+    }
+    .lw-tier-img--ph {
+      width: 84px;
+      height: 96px;
+      border-radius: 8px;
+      background: #ededed;
+    }
+    /* who_for blurb (all cards) */
+    .lw-tier-whofor { font-style: italic; font-size: 0.875rem; color: var(--color-body); line-height: 1.45; margin: 0; }
+    .lw-tier-whofor-ph { height: 46px; border-radius: 6px; background: #ededed; }
+    .lw-tier-gen { color: var(--color-body); font-size: 0.85rem; }
+    .lw-tier-price { font-size: 1.4rem; font-weight: 800; color: var(--color-body); margin-top: 4px; }
+    .lw-tier-breakdown { font-size: 0.8rem; color: var(--color-body); margin-top: -2px; }
+    .lw-tier-finance { font-size: 0.85rem; color: var(--color-body); }
+    /* condensed "What's included" list on each card */
+    .lw-tier-incl { margin-top: 12px; }
+    .lw-tier-incl-head { font-size: 0.8rem; font-weight: 600; color: var(--color-dark); margin-bottom: 4px; }
+    .lw-tier-incl-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; font-size: 0.8rem; color: var(--color-dark); }
+    .lw-tier-incl-row svg { color: var(--color-primary); flex-shrink: 0; width: 12px; height: 12px; }
+    /* full specification toggle + expandable card below the tier grid */
+    .lw-spec-toggle-wrap { text-align: center; margin-bottom: 24px; }
+    .lw-spec-toggle {
+      background: none; border: none; font-family: inherit;
+      font-size: 0.875rem; font-weight: 600; color: var(--color-primary);
+      cursor: pointer; padding: 4px 8px;
+    }
+    .lw-spec-toggle:hover { color: var(--color-primary-light); }
+
+    /* ---------- Step 7 — tier carousel ---------- */
+    .lw-carousel-wrap { max-width: 940px; margin: 0 auto 8px; }
+    .lw-carousel { position: relative; overflow: hidden; padding: 24px 0; }
+    .lw-carousel-track { display: flex; gap: 16px; transition: transform 300ms ease-in-out; will-change: transform; align-items: stretch; }
+    .lw-carousel-slide { flex: 0 0 auto; display: flex; }
+    .lw-carousel-slide:not(.is-active) { cursor: pointer; }
+    .lw-carousel-slide > .lw-show-card { flex: 1; }
+    /* gradient fades over the peeking neighbours */
+    .lw-carousel-fade { position: absolute; top: 0; bottom: 0; pointer-events: none; z-index: 2; }
+    .lw-carousel-fade--l { left: 0; background: linear-gradient(to left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 100%); }
+    .lw-carousel-fade--r { right: 0; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 100%); }
+    /* nav arrows — large, clearly visible, half-overlapping the card edge (left/right set inline) */
+    .lw-carousel-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: #fff; border: 1.5px solid #D0D0D0;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), 0 1px 4px rgba(0, 0, 0, 0.10);
+      color: var(--color-dark);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      padding: 0; transition: all 150ms ease;
+    }
+    .lw-carousel-arrow:hover {
+      background: var(--color-card-bg); color: var(--color-primary);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22), 0 1px 4px rgba(0, 0, 0, 0.12);
+    }
+    /* dot indicators */
+    /* labelled navigation indicators above the carousel */
+    .lw-carousel-nav { display: flex; justify-content: center; align-items: flex-start; gap: 32px; margin: 6px 0 8px; }
+    .lw-carousel-ind { background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .lw-ind-dot { width: 8px; height: 8px; border-radius: 50%; background: #D0D0D0; transition: width 200ms ease, height 200ms ease, background 200ms ease; }
+    .lw-carousel-ind.is-active .lw-ind-dot { width: 10px; height: 10px; background: var(--color-primary); }
+    .lw-ind-label { font-size: 0.75rem; font-weight: 500; color: #999; transition: color 200ms ease; }
+    .lw-carousel-ind.is-active .lw-ind-label { color: var(--color-primary); }
+
+    /* ---------- Step 7 — product-showcase card ---------- */
+    .lw-show-card {
+      box-sizing: border-box; width: 100%; position: relative; overflow: hidden;
+      background: var(--color-card-bg); border: 1px solid var(--color-border);
+      border-radius: var(--radius-card); padding: 24px 28px;
+      display: flex; flex-direction: column; gap: 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 0 18px 8px rgba(255, 255, 255, 0.92);
+      transition: box-shadow 200ms ease, border-color 200ms ease, transform 150ms ease, background-color 150ms ease;
+    }
+    /* dot texture lower-right — identical to the answer cards throughout the form */
+    .lw-show-card::before {
+      content: ''; position: absolute; bottom: 0; right: 0; width: 65%; height: 65%;
+      background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
+      background-size: 10px 10px;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%;
+      mask-size: 100% 100%, 100% 100%, 100% 100%;
+      -webkit-mask-composite: destination-in, destination-in, destination-in;
+      mask-composite: intersect;
+      pointer-events: none; border-radius: inherit; z-index: 0;
+    }
+    .lw-show-card > * { position: relative; z-index: 1; }
+    /* Performance active — red border + soft red elevation (no background tint).
+       Keeps the standard raised drop shadow so the centre card doesn't read flat. */
+    .lw-show-card--performance.is-active { background: #ffffff; border: 1.5px solid rgba(232, 50, 58, 0.55); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 18px 8px rgba(232, 50, 58, 0.06); }
+    /* header (left-aligned) */
+    .lw-show-head { text-align: left; }
+    .lw-show-title { font-size: 1.4rem; font-weight: 700; color: var(--color-dark); line-height: 1.2; }
+    .lw-show-sub { font-size: 0.9rem; color: var(--color-body); margin-top: 2px; }
+    .lw-show-bestmatch { font-size: 0.8rem; color: var(--color-primary); font-weight: 500; margin-top: 4px; }
+    /* component row — three equal columns, image over text, vertical dividers between */
+    .lw-comp-row { display: flex; flex-direction: row; align-items: stretch; }
+    .lw-comp { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 12px; }
+    .lw-comp + .lw-comp { border-left: 1px solid var(--color-border); }
+    .lw-comp-img { height: 90px; max-width: 100%; object-fit: contain; }
+    .lw-comp-text { display: flex; flex-direction: column; }
+    .lw-comp-name { font-size: 0.9rem; font-weight: 600; color: var(--color-primary); margin-top: 10px; line-height: 1.3; }
+    .lw-comp-spec { font-size: 0.8rem; color: var(--color-body); }
+    .lw-show-div { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 20px 0; }
+    /* FIX 3 — branded savings bar inside Essential & Performance tier cards */
+    .lw-show-savings {
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+      background: linear-gradient(115deg, #E8323A 45%, #d44a2a 100%);
+      border-radius: 8px; padding: 12px 20px;
+    }
+    .lw-show-savings::before {
+      content: ''; position: absolute; bottom: 0; right: 0; width: 60%; height: 100%;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+      background-size: 10px 10px;
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.9) 0%, transparent 70%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.9) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .lw-show-savings-head { position: relative; z-index: 1; font-size: 0.95rem; font-weight: 700; color: #fff; opacity: 1; margin-bottom: 12px; text-align: center; }
+    .lw-show-savings-figs { position: relative; z-index: 1; display: flex; }
+    .lw-show-saving-fig { flex: 1; }
+    .lw-show-saving-val { font-size: 1.4rem; font-weight: 800; color: #fff; line-height: 1.1; }
+    .lw-show-saving-est { font-size: 0.75rem; font-weight: 400; opacity: 0.8; }
+    .lw-show-saving-label { font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); margin-top: 2px; }
+    @media (max-width: 600px) {
+      .lw-comp-row { flex-direction: column; }
+      .lw-comp { padding: 12px 0; }
+      .lw-comp + .lw-comp { border-left: none; border-top: 1px solid var(--color-border); }
+    }
+    /* what's included */
+    .lw-show-incl-wrap { max-width: 560px; text-align: left; }
+    .lw-show-incl-head { font-size: 0.875rem; font-weight: 600; color: var(--color-dark); margin-bottom: 6px; text-align: left; }
+    .lw-show-incl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; }
+    .lw-show-incl-row { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--color-dark); }
+    .lw-show-incl-row svg { color: var(--color-cta-green); width: 18px; height: 18px; stroke-width: 2.5; flex-shrink: 0; }
+    /* diagonal gold "Recommended" corner ribbon (Performance card only) */
+    .lw-show-ribbon {
+      position: absolute; top: 24px; right: -38px; width: 160px; z-index: 2;
+      transform: rotate(45deg); pointer-events: none;
+      background: linear-gradient(135deg, #C9A84C 0%, #B8962E 100%);
+      color: #fff; text-align: center;
+      font-size: 0.85rem; font-weight: 800; letter-spacing: 0.03em; padding: 8px 0;
+    }
+    /* summary (left) + monthly-price hero (right), bottom-aligned */
+    .lw-show-foot { display: flex; gap: 24px; align-items: flex-end; margin-top: 20px; }
+    .lw-show-summary { flex: 1 1 60%; text-align: left; }
+    .lw-show-summary-label { font-size: 0.85rem; font-weight: 600; color: var(--color-primary); margin-bottom: 6px; }
+    .lw-show-summary-text { font-size: 0.9rem; color: var(--color-body); line-height: 1.6; margin: 0; }
+    .lw-show-datasheets { font-size: 0.8rem; color: var(--color-body); margin-top: 10px; }
+    .lw-show-ds-label { font-weight: 600; color: var(--color-body); }
+    .lw-show-ds-link { color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+    .lw-show-price-block { flex: 1 1 40%; text-align: right; }
+    .lw-show-price-hero { font-size: 2.5rem; font-weight: 700; color: var(--color-primary); line-height: 1.1; }
+    .lw-show-price-cash { font-size: 1.25rem; font-weight: 500; color: var(--color-dark); margin-top: 2px; }
+    @media (max-width: 600px) {
+      .lw-show-card { padding: 20px 18px; }
+      .lw-show-incl { grid-template-columns: 1fr; }
+      .lw-show-foot { flex-direction: column; gap: 14px; }
+      .lw-show-summary, .lw-show-price-block { text-align: center; }
+    }
+    /* Performance — stronger visual weight */
+    .lw-tier-card--performance .lw-tier-name { font-size: 1.15rem; font-weight: 700; }
+    .lw-tier-card--performance .lw-tier-price { color: var(--color-primary); }
+    .lw-tier-card--performance.is-selected {
+      background: rgba(232, 50, 58, 0.03);
+      border: 2px solid rgba(232, 50, 58, 0.9);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.08),
+                  inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    /* Essential/Custom selected — neutral border, not red */
+    .lw-tier-card--essential.is-selected,
+    .lw-tier-card--custom.is-selected { border: 1px solid var(--color-border); }
+    /* custom-tier dropdowns — match the existing input style */
+    .lw-tier-custom { display: flex; flex-direction: column; gap: 10px; }
+    .lw-tier-field { display: flex; flex-direction: column; gap: 4px; }
+    .lw-tier-field span { font-size: 12px; font-weight: 700; color: var(--color-dark); }
+    .lw-tier-field select {
+      width: 100%;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-dark);
+      background: #fff;
+      border: 1.5px solid var(--color-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .lw-tier-field select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(232, 50, 58, 0.12); }
+    /* full specification — expandable card (two-column grid) below the tier cards */
+    .lw-incl {
+      text-align: left;
+      max-width: 860px;
+      margin: 16px auto 0;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 24px 32px;
+    }
+    .lw-incl-title { font-size: 1.25rem; font-weight: 600; color: var(--color-dark); margin: 0 0 16px; }
+    .lw-incl-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 32px; }
+    @media (max-width: 600px) { .lw-incl-grid { grid-template-columns: 1fr; } }
+    .lw-incl-row { display: flex; align-items: center; gap: 12px; padding: 7px 0; font-size: 1rem; color: var(--color-dark); font-weight: 600; }
+    .lw-incl-row svg { color: var(--color-primary); flex-shrink: 0; width: 16px; height: 16px; }
+    /* ---------- Step 7 — expanded full specification card (LivWarm package-card style) ---------- */
+    .lw-spec-card {
+      background: #fff; border: 1px solid var(--color-border); border-radius: 12px;
+      padding: 32px; max-width: 860px; margin: 16px auto 0; text-align: left;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+    .lw-spec-header { font-size: 1.25rem; font-weight: 700; color: var(--color-primary); }
+    .lw-spec-rule { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 12px 0 0; }
+    .lw-spec-subtitle { font-size: 1rem; font-weight: 700; color: var(--color-dark); margin-top: 16px; }
+    .lw-spec-comp-row { margin-top: 20px; }
+    .lw-spec-comp-row .lw-comp { padding: 0 24px; }
+    .lw-spec-comp-row .lw-comp-img { height: 100px; }
+    .lw-spec-summary-label { font-size: 0.9rem; font-weight: 600; color: var(--color-primary); margin-top: 24px; }
+    .lw-spec-summary { font-size: 0.9rem; color: var(--color-dark); line-height: 1.7; max-width: 600px; margin: 6px 0 0; }
+    .lw-spec-includes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 24px; margin-top: 20px; }
+    .lw-spec-includes .lw-show-incl-row { font-size: 0.85rem; }
+    .lw-spec-datasheets { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .lw-spec-ds-label { font-size: 0.85rem; font-weight: 600; color: var(--color-primary); }
+    .lw-spec-ds-link { font-size: 0.85rem; color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; }
+    .lw-spec-ds-link:hover { color: var(--color-primary-light); }
+    .lw-spec-price { text-align: right; margin-top: 16px; }
+    .lw-spec-price-val { font-size: 1.75rem; font-weight: 700; color: var(--color-primary); line-height: 1.1; }
+    .lw-spec-price-mo { font-size: 0.875rem; color: var(--color-body); }
+    @media (max-width: 600px) {
+      .lw-spec-card { padding: 22px 18px; }
+      .lw-spec-includes { grid-template-columns: 1fr; }
+      .lw-spec-comp-row .lw-comp { padding: 12px 0; }
+    }
+    /* 5 — trust signals */
+    .lw-trust-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 32px; }
+    .lw-trust-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--color-border);
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 0.875rem;
+      color: var(--color-body);
+      font-weight: 600;
+    }
+    /* IMPROVEMENT 4 — headline price breakdown line */
+    .lw-quote-breakdown { font-size: 0.85rem; color: var(--color-body); margin: 4px 0 0; }
+    /* Quote-screen Continue button — narrower, centred (not full width) */
+    .lw-cta-quote {
+      display: block;
+      width: auto;
+      min-width: 320px;
+      max-width: 380px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media (max-width: 420px) {
+      .lw-cta-quote { min-width: 0; width: 100%; }
+    }
+
+    /* Green CTA — same pill/shadow as .lw-cta, green fill (Step 6 → quote trigger) */
+    .lw-cta-green {
+      background: var(--color-cta-green);
+      display: block;
+      width: auto;
+      min-width: 400px;
+      max-width: 560px;
+      margin: 32px auto 0;
+    }
+    /* keep it from overflowing the content box on narrow screens */
+    @media (max-width: 480px) {
+      .lw-cta-green { min-width: 0; width: 100%; }
+    }
+    /* occupancy screen — keep the bottom row of cards clear of the button */
+    .lw-occ { padding-bottom: 32px; }
+    .lw-occ .lw-card-grid { margin-bottom: 8px; }
+    .lw-cta-green:hover:not(:disabled) { background: #43A047; }
+    .lw-cta-green:active:not(:disabled) { background: #388E3C; }
+
+    /* ============================================================
+       Step 7A — Upsell modal + micro-commitment screen
+       ============================================================ */
+    /* Upsell modal — reuses .lw-modal-overlay / .lw-modal / .lw-modal-close,
+       just a touch wider than the help modal. */
+    .lw-modal--upsell { max-width: 620px; padding: 32px; }
+    .lw-upsell-title { font-size: 1.75rem; font-weight: 700; color: var(--color-dark); margin: 0 0 4px; padding-right: 36px; }
+    .lw-upsell-sub { font-size: 0.95rem; color: var(--color-body); margin: 0 0 24px; }
+
+    /* Add-on card — same three-state visual language as the form answer cards
+       (raised default → sinking hover w/ shimmer → depressed selected). */
+    .lw-addon-row {
+      position: relative;
+      overflow: hidden;                              /* clip shimmer + dot texture to edges */
+      display: grid;
+      grid-template-columns: 1fr auto;
+      column-gap: 16px;
+      padding: 20px 24px;
+      width: 100%;
+      margin-bottom: 16px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 0 18px 8px rgba(255, 255, 255, 0.92);   /* DEFAULT */
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      transition: box-shadow 200ms ease, transform 150ms ease, background-color 150ms ease, border-color 150ms ease;
+    }
+    /* Dot texture, lower-right corner */
+    .lw-addon-row::before {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 65%; height: 65%;
+      background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
+      background-size: 10px 10px;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.28) 38%, rgba(0, 0, 0, 0.06) 62%, transparent 72%);
+      -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%;
+      mask-size: 100% 100%, 100% 100%, 100% 100%;
+      -webkit-mask-composite: destination-in, destination-in, destination-in;
+      mask-composite: intersect;
+      pointer-events: none;
+      border-radius: inherit;
+      z-index: 0;
+      transition: opacity 150ms ease;
+    }
+    /* keep all card content above the texture layer */
+    .lw-addon-row > * { position: relative; z-index: 1; }
+    /* HOVER (not selected, non-green cards) — sinks to the selected depth */
+    .lw-addon-row:not(.is-on):not(.lw-addon-bus):hover {
+      background: #e8e8e8;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      transform: translateY(1px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                  0 2px 6px rgba(0, 0, 0, 0),
+                  inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                  inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                  inset 0 2px 4px rgba(0, 0, 0, 0.14);
+      transition: box-shadow 300ms ease,
+                  transform 300ms ease,
+                  background-color 300ms ease,
+                  border-color 300ms ease;
+    }
+    /* SELECTED — neutral grey depression */
+    .lw-addon-row.is-on {
+      background: #e8e8e8;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                  0 2px 6px rgba(0, 0, 0, 0),
+                  inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                  inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                  inset 0 2px 4px rgba(0, 0, 0, 0.14);
+    }
+
+    /* Card layout — label+desc stacked left, price+toggle a tight pair top-right,
+       selling copy full-width below both columns. */
+    .lw-addon-text { grid-column: 1; grid-row: 1; min-width: 0; }
+    .lw-addon-right { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+    .lw-addon-label { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
+    .lw-addon-desc { font-size: 0.875rem; color: var(--color-body); margin-top: 2px; line-height: 1.4; }
+    .lw-addon-pricearea { text-align: right; white-space: nowrap; }
+    .lw-addon-sell { grid-column: 1 / -1; grid-row: 2; font-size: 0.875rem; color: var(--color-body); margin-top: 10px; line-height: 1.45; }
+
+    /* Price/badge variants */
+    .lw-addon-price { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
+    .lw-addon-price--enquire { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-body); }
+    .lw-addon-grant-val { font-size: 1rem; font-weight: 800; color: #4CAF50; line-height: 1.1; }
+    .lw-addon-grant-sub { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #4CAF50; }
+    /* green "Get £7,500" suffix in the grant card heading (inherits bold + size from .lw-addon-label) */
+    .lw-addon-label-grant { color: #4CAF50; }
+
+    /* Heat Pump Government Grant card — green tint + green dot texture in every state */
+    .lw-addon-bus { background: rgba(76, 175, 80, 0.06); border: 1px solid rgba(76, 175, 80, 0.25); }
+    .lw-addon-bus::before { background-image: radial-gradient(circle, rgba(76, 175, 80, 0.25) 1px, transparent 1px); }
+    .lw-addon-bus:not(.is-on):hover {
+      background: rgba(76, 175, 80, 0.09);
+      border: 1px solid rgba(76, 175, 80, 0.30);
+      transform: translateY(1px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                  0 2px 6px rgba(0, 0, 0, 0),
+                  inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                  inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                  inset 0 2px 4px rgba(0, 0, 0, 0.14);
+      transition: box-shadow 300ms ease,
+                  transform 300ms ease,
+                  background-color 300ms ease,
+                  border-color 300ms ease;
+    }
+    .lw-addon-bus.is-on {
+      background: rgba(76, 175, 80, 0.08);
+      border: 1.5px solid rgba(76, 175, 80, 0.55);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0),
+                  0 2px 6px rgba(0, 0, 0, 0),
+                  inset 0 0 18px 8px rgba(255, 255, 255, 0),
+                  inset 0 4px 12px rgba(0, 0, 0, 0.22),
+                  inset 0 2px 4px rgba(0, 0, 0, 0.14);
+    }
+    .lw-addon-bus.is-on::before { background-image: radial-gradient(circle, rgba(76, 175, 80, 0.45) 1px, transparent 1px); }
+    .lw-bus-badge {
+      display: inline-flex; align-items: center; justify-content: center; background: #4CAF50; color: #fff;
+      font-weight: 700; font-size: 0.8rem; vertical-align: middle;
+      height: 26px;
+      padding: 4px 12px 6px 12px;
+      line-height: 1;
+      border-radius: 20px; margin-left: 10px;
+      white-space: nowrap;
+      position: static; top: auto;
+    }
+
+    /* Toggle switch */
+    .lw-switch {
+      position: relative; width: 46px; height: 26px; border-radius: 999px;
+      background: #CFCFCF; border: none; flex-shrink: 0; padding: 0; cursor: pointer;
+      transition: background 160ms ease;
+    }
+    .lw-switch.is-on { background: var(--color-primary); }
+    .lw-switch::after {
+      content: ''; position: absolute; top: 3px; left: 3px;
+      width: 20px; height: 20px; border-radius: 50%; background: #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); transition: transform 160ms ease;
+    }
+    .lw-switch.is-on::after { transform: translateX(20px); }
+
+    /* Modal button row */
+    .lw-upsell-btns { display: flex; gap: 12px; margin-top: 24px; }
+    .lw-upsell-decline {
+      flex: 0 0 auto; padding: 14px 22px; background: #fff;
+      color: var(--color-body); border: 1.5px solid var(--color-body);
+      border-radius: 999px; font-family: inherit; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: background 150ms ease;
+    }
+    .lw-upsell-decline:hover { background: #F5F5F5; }
+    .lw-upsell-go {
+      flex: 1; padding: 14px 22px; background: var(--color-primary); color: #fff;
+      border: none; border-radius: 999px; font-family: inherit; font-size: 15px; font-weight: 800;
+      cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+    }
+    .lw-upsell-go:hover { background: #C8232B; transform: translateY(1px); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10); }
+    .lw-upsell-go:active { background: #B01E24; transform: translateY(2px); box-shadow: none; }
+
+    /* Micro-commitment screen — premium product card */
+    .lw-mc { max-width: 860px; margin: 0 auto; text-align: center; }
+    .lw-mc-tick { color: var(--color-cta-green); display: block; margin: 8px auto 16px; }
+    .lw-mc-h { font-size: 2rem; font-weight: 800; color: var(--color-dark); margin: 0 0 8px; }
+    .lw-mc-sub { font-size: 1rem; color: var(--color-body); margin: 0 0 32px; }
+    .lw-mc-card {
+      position: relative;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      text-align: left;
+    }
+    .lw-mc-dots {
+      position: absolute; bottom: 0; right: 0;
+      width: 65%; height: 65%;
+      background-image: radial-gradient(circle, #b8b8b8 1px, transparent 1px);
+      background-size: 10px 10px;
+      -webkit-mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      mask-image: radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .lw-mc-imgs { display: flex; position: relative; z-index: 1; }
+    .lw-mc-cell {
+      flex: 1; height: 180px; background: #F8F8F8;
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .lw-mc-cell + .lw-mc-cell { border-left: 1px solid var(--color-border); }
+    .lw-mc-cell img { max-height: 140px; max-width: 90%; object-fit: contain; }
+    .lw-mc-cell-empty { font-size: 0.85rem; font-weight: 600; color: #999; }
+    .lw-mc-body { padding: 32px; position: relative; z-index: 1; }
+    .lw-mc-pill {
+      display: inline-block;
+      background: rgba(232, 50, 58, 0.08);
+      color: var(--color-primary);
+      font-size: 0.8rem; font-weight: 600;
+      border-radius: 20px; padding: 4px 12px;
+      margin-bottom: 8px;
+    }
+    .lw-mc-spec { font-size: 0.95rem; color: var(--color-body); }
+    .lw-mc-incl {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px;
+      margin-top: 16px;
+    }
+    .lw-mc-incl-row { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--color-body); }
+    .lw-mc-incl-row svg { color: var(--color-cta-green); width: 16px; height: 16px; flex-shrink: 0; }
+    .lw-mc-addons { margin-top: 16px; }
+    .lw-mc-addons-h { font-size: 0.8rem; font-weight: 600; color: #4A4A4A; text-transform: uppercase; letter-spacing: 0.05em; margin: 20px 0 8px; }
+    .lw-mc-addon { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--color-body); margin-top: 8px; }
+    .lw-mc-addon svg { color: var(--color-cta-green); width: 16px; height: 16px; flex-shrink: 0; }
+    .lw-mc-div { border: none; border-top: 1px solid var(--color-border); margin: 16px 0; }
+    .lw-mc-price-label { font-size: 0.95rem; font-weight: 600; color: var(--color-primary); }
+    .lw-mc-monthly { font-size: 3rem; font-weight: 800; color: var(--color-primary); line-height: 1.1; }
+    .lw-mc-cash { font-size: 1.1rem; color: var(--color-dark); margin-top: 4px; }
+    .lw-mc-cash--deemph { font-size: 0.95rem; color: var(--color-body); }
+    .lw-mc-finterms { font-size: 0.8rem; color: #999; margin-top: 4px; }
+    .lw-mc-vat { font-size: 0.75rem; color: #999; margin-top: 4px; }
+    .lw-mc-note { font-size: 0.75rem; color: #999; font-style: italic; margin: 12px auto 0; }
+    .lw-mc-cta { width: auto; min-width: 280px; margin: 24px auto 0; }
+    @media (max-width: 360px) { .lw-mc-cta { min-width: 0; width: 100%; } }
+    .lw-mc-edit {
+      display: block; margin: 12px auto 0; background: none; border: none;
+      color: var(--color-primary); font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    .lw-mc-edit:hover { color: var(--color-primary-light); }
+    @media (max-width: 480px) {
+      .lw-mc-incl { grid-template-columns: 1fr; }
+    }
+
+    /* ============================================================
+       "Preparing your quote" transition overlay (Step 6 → Step 7)
+       ============================================================ */
+    .lw-prep {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      animation: none;                 /* appear instantly so it covers Step 6 on mount */
+    }
+    .lw-prep.is-leaving { animation: lw-prep-out 500ms ease both; }
+    @keyframes lw-prep-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes lw-prep-out { from { opacity: 1; } to { opacity: 0; } }
+    .lw-prep-logo { margin-bottom: 36px; }
+    .lw-prep-sun { color: var(--color-primary); margin-bottom: 18px; animation: lw-spin 3s linear infinite; }
+    @keyframes lw-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .lw-prep-title { font-size: 2.25rem; font-weight: 700; color: var(--color-dark); margin: 0 0 28px; }
+    .lw-prep-bar {
+      width: 100%;
+      max-width: 500px;
+      height: 10px;
+      border-radius: 5px;
+      background: var(--color-border);
+      overflow: hidden;
+    }
+    .lw-prep-bar-fill {
+      height: 100%;
+      width: 0;
+      background: var(--color-primary);
+      border-radius: 5px;
+      transition: width 6000ms linear;
+    }
+    .lw-prep-bar-fill.is-full { width: 100%; }
+    .lw-prep-msg {
+      margin: 16px 0;
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--color-dark);
+      text-align: center;
+      min-height: 1.4em;
+      animation: lw-msg-in 200ms ease both;
+    }
+    @keyframes lw-msg-in { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ============================================================
+       STEP 7 — Finance options modal (opened from each tier card footer)
+       ============================================================ */
+    /* Footer trigger button inside the tier card price block */
+    .lw-show-finbtn {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 8px 20px;
+      background: #fff;
+      color: var(--color-primary);
+      border: 1.5px solid var(--color-primary);
+      border-radius: 20px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .lw-show-finbtn:hover { background: rgba(232, 50, 58, 0.05); }
+    /* Modal panel — reuses .lw-modal-overlay; custom panel width + close button */
+    .lw-modal--finance { max-width: 520px; display: flex; flex-direction: column; max-height: 85vh; padding-bottom: 0; }
+    .lw-finmodal-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      line-height: 1;
+      color: var(--color-body);
+      cursor: pointer;
+      padding: 4px;
+    }
+    .lw-finmodal-title { font-size: 1.25rem; font-weight: 800; color: var(--color-dark); margin: 0 0 24px; padding-right: 28px; }
+    .lw-fin-note { font-size: 0.8rem; color: var(--color-primary); margin: -12px 0 20px; text-align: left; }
+    .lw-fin-modes {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .lw-fin-mode {
+      flex: 1;
+      border: 1px solid var(--color-border);
+      background: #fff;
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-body);
+      cursor: pointer;
+      transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+    }
+    .lw-fin-mode.is-on { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+    .lw-fin-label {
+      display: block;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--color-dark);
+      margin: 0 0 10px;
+    }
+    .lw-fin-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: #e5e5e5;
+      outline: none;
+      margin: 0 0 8px;
+    }
+    .lw-fin-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      border: 3px solid #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+      cursor: pointer;
+    }
+    .lw-fin-slider::-moz-range-thumb {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      border: 3px solid #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+      cursor: pointer;
+    }
+    .lw-fin-meta {
+      text-align: left;
+      font-size: 0.8rem;
+      color: #888;
+      margin: 0 0 20px;
+    }
+    .lw-fin-deposit {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 8px 0 20px;
+    }
+    .lw-fin-deposit-amt { font-size: 1.5rem; font-weight: 700; color: #2D2D2D; }
+    .lw-fin-deposit-pct { font-size: 0.9rem; font-weight: 400; color: #999; }
+    .lw-fin-terms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .lw-fin-term {
+      flex: 1 1 auto;
+      min-width: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      border: 1px solid var(--color-border);
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: inherit;
+      color: var(--color-dark);
+      cursor: pointer;
+      transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+    }
+    .lw-fin-term-mo { font-size: 0.9rem; font-weight: 700; line-height: 1.2; }
+    .lw-fin-term-yr { font-size: 0.75rem; font-weight: 400; color: #999; line-height: 1.2; }
+    .lw-fin-term.is-on { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+    .lw-fin-term.is-on .lw-fin-term-yr { color: rgba(255, 255, 255, 0.8); }
+    .lw-fin-payment {
+      text-align: center;
+      margin: 18px 0 0;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 2px;
+    }
+    .lw-fin-payment-fig { font-size: 2rem; font-weight: 800; color: var(--color-primary); line-height: 1; }
+    .lw-fin-payment-unit { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); }
+    .lw-fin-total { margin: 8px 0 16px; font-size: 1.1rem; font-weight: 700; color: #2D2D2D; text-align: center; }
+    .lw-fin-rep {
+      font-size: 0.75rem;
+      font-style: italic;
+      color: #999;
+      line-height: 1.5;
+      margin: 16px 0 18px;
+      text-align: left;
+    }
+    .lw-fin-select {
+      display: block;
+      width: 100%;
+      margin-top: 20px;                /* breathing room above the button (FCA text sits above) */
+      padding: 14px 20px;
+      background: #E8323A;
+      color: #fff;
+      border: none;
+      border-radius: 24px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .lw-fin-select:hover { background: #C8232B; }
+    .lw-fin-select--cash { margin-top: 16px; }
+    .lw-fin-confirm {
+      margin: 0;
+      padding: 14px 0;
+      text-align: center;
+      color: #4CAF50;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    /* Estimated savings section (always visible in the monthly view) */
+    .lw-fin-sav {
+      background: rgba(76, 175, 80, 0.06);
+      border: 1px solid rgba(76, 175, 80, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .lw-fin-sav-h { font-size: 0.9rem; font-weight: 700; color: #2D2D2D; margin: 0 0 12px; }
+    .lw-fin-sav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .lw-fin-sav-label { font-size: 0.75rem; color: #4A4A4A; }
+    .lw-fin-sav-label--green { color: #4CAF50; display: inline-flex; align-items: center; gap: 4px; }
+    .lw-fin-sav-val { font-size: 1rem; font-weight: 700; color: #2D2D2D; margin-top: 2px; }
+    .lw-fin-sav-val--green { color: #4CAF50; }
+    .lw-fin-sav-note { font-size: 0.7rem; color: #999; font-style: italic; margin: 8px 0 0; }
+    .lw-fin-full { text-align: center; padding: 8px 0; }
+    .lw-fin-full-price { font-size: 2rem; font-weight: 800; color: var(--color-dark); line-height: 1.1; }
+    .lw-fin-full-save { font-size: 0.875rem; color: var(--color-cta-green); font-weight: 700; margin-top: 8px; }
+
+    /* ============================================================
+       STEP 6 → 7 transition — "Where shall we send your quote?"
+       ============================================================ */
+    .lw-egate { max-width: 560px; margin: 0 auto; width: 100%; }
+    .lw-egate-h1 {
+      margin: 0 0 12px;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-dark);
+      text-align: center;
+    }
+    .lw-egate-sub {
+      margin: 0 0 32px;
+      font-size: 1rem;
+      color: var(--color-body);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .lw-egate-input {
+      display: block;
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-dark);
+      background: #fff;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .lw-egate-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(232, 50, 58, 0.12);
+    }
+    .lw-egate-input::placeholder { color: #b3b3b3; font-weight: 500; }
+    .lw-egate-skip {
+      display: block;
+      width: 100%;
+      margin-top: 16px;
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 0.875rem;
+      color: var(--color-body);
+      text-align: center;
+      cursor: pointer;
+    }
+    .lw-egate-skip:hover { color: var(--color-dark); }
+
+    /* ============================================================
+       STEP 8 — Contact details + booking summary
+       ============================================================ */
+    .lw-contact { width: 100%; }
+    .lw-contact-grid {
+      display: grid;
+      grid-template-columns: 55% 45%;
+      gap: 40px;
+      align-items: start;
+    }
+    .lw-cd-left { text-align: left; min-width: 0; }
+    .lw-cd-h1 { margin: 0 0 8px; font-size: 1.75rem; font-weight: 800; color: var(--color-dark); }
+    .lw-cd-subh { margin: 0 0 24px; font-size: 1rem; color: var(--color-body); line-height: 1.5; }
+    .lw-cd-card {
+      background: #fff;
+      border: 1px solid #E5E5E5;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .lw-cd-cardhead { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .lw-cd-num {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #E8323A;
+      color: #fff;
+      font-size: 0.9rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lw-cd-cardlabel { font-size: 1.1rem; font-weight: 700; color: #2D2D2D; }
+    .lw-cd-row { display: flex; gap: 16px; }
+    .lw-cd-row .lw-cd-field { flex: 1; min-width: 0; }
+    .lw-cd-field { margin-bottom: 18px; }
+    .lw-cd-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-dark);
+      margin-bottom: 6px;
+    }
+    .lw-cd-input {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-dark);
+      background: #fff;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .lw-cd-input:focus {
+      outline: none;
+      border: 2px solid var(--color-primary);
+      padding: 11px 15px;                              /* compensate for the +1px border */
+      box-shadow: 0 0 0 3px rgba(232, 50, 58, 0.12);
+    }
+    .lw-cd-hint { margin: 0 0 12px; font-size: 0.8rem; color: #888; }
+    .lw-cd-chosen { margin: 12px 0 0; font-size: 0.9rem; font-weight: 700; color: var(--color-dark); }
+    .lw-cd-cta { margin-top: 24px; }
+    .lw-cd-err { margin: 10px 0 0; font-size: 0.85rem; font-weight: 600; color: var(--color-primary); text-align: center; }
+
+    /* Custom calendar */
+    .lw-cal {
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fff;
+    }
+    .lw-cal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .lw-cal-title { font-size: 1rem; font-weight: 800; color: var(--color-dark); }
+    .lw-cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--color-dark);
+      cursor: pointer;
+      transition: background 150ms ease, opacity 150ms ease;
+    }
+    .lw-cal-nav:hover:not(:disabled) { background: #f4f4f4; }
+    .lw-cal-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+    .lw-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .lw-cal-dow { margin-bottom: 4px; }
+    .lw-cal-dowcell {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #999;
+      padding: 4px 0;
+    }
+    .lw-cal-cell {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      border-radius: 50%;
+      background: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-dark);
+      cursor: pointer;
+      transition: background 150ms ease, color 150ms ease;
+    }
+    .lw-cal-cell.is-empty { cursor: default; }
+    .lw-cal-cell:not(.is-disabled):not(.is-selected):hover { background: rgba(232, 50, 58, 0.08); }
+    .lw-cal-cell.is-disabled { opacity: 0.3; cursor: not-allowed; color: #aaa; }
+    .lw-cal-cell.is-today { border-color: rgba(232, 50, 58, 0.55); }
+    .lw-cal-cell.is-selected { background: var(--color-primary); color: #fff; }
+
+    /* What happens next? */
+    .lw-next3 {
+      display: flex;
+      gap: 16px;
+    }
+    .lw-next3-item { flex: 1; display: flex; gap: 10px; align-items: flex-start; }
+    .lw-next3-num {
+      flex-shrink: 0;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lw-next3-label { font-size: 0.9rem; font-weight: 800; color: var(--color-dark); }
+    .lw-next3-desc { font-size: 0.8rem; color: #888; line-height: 1.4; margin-top: 2px; }
+
+    /* Booking summary panel */
+    .lw-cd-right { min-width: 0; }
+    .lw-bsum {
+      position: sticky;
+      top: 24px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      text-align: left;
+      overflow: hidden;                /* clip the flush product-images row's top corners */
+    }
+    /* Product images row — flush to the panel top (breaks out of the 24px padding) */
+    .lw-bsum-imgs { display: flex; margin: -24px -24px 24px; }
+    .lw-bsum-cell {
+      flex: 1; height: 110px; background: #F8F8F8;
+      display: flex; align-items: center; justify-content: center;
+      padding: 12px;
+    }
+    .lw-bsum-cell + .lw-bsum-cell { border-left: 1px solid #E5E5E5; }
+    .lw-bsum-cell img { max-height: 86px; max-width: 85%; object-fit: contain; }
+    .lw-bsum-h { margin: 0 0 16px; font-size: 1.1rem; font-weight: 800; color: var(--color-dark); }
+    .lw-bsum-tier { font-size: 0.95rem; font-weight: 800; color: var(--color-dark); }
+    .lw-bsum-spec { font-size: 0.875rem; color: var(--color-body); margin-top: 2px; }
+    .lw-bsum-warr {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--color-cta-green);
+    }
+    .lw-bsum-warr svg { color: var(--color-cta-green); flex-shrink: 0; }
+    .lw-bsum-div { border: none; border-top: 1px solid var(--color-border); margin: 16px 0; }
+    .lw-bsum-line { display: flex; align-items: baseline; justify-content: space-between; }
+    .lw-bsum-k { font-size: 0.875rem; color: var(--color-body); }
+    .lw-bsum-v { font-size: 1rem; font-weight: 800; color: var(--color-dark); }
+    .lw-bsum-item { font-size: 0.8rem; color: #888; margin-top: 2px; }
+    .lw-bsum-monthly { font-size: 0.95rem; font-weight: 700; color: var(--color-primary); margin-top: 8px; }
+    .lw-bsum-apr { font-size: 0.75rem; color: #999; margin-top: 2px; }
+    /* Finance-led price section (when a finance quote was selected) */
+    .lw-bsum-mplabel { font-size: 0.875rem; color: var(--color-body); }
+    .lw-bsum-mpfig { font-size: 1.5rem; font-weight: 800; color: var(--color-primary); line-height: 1.1; margin: 2px 0 10px; }
+    .lw-bsum-tr { font-size: 0.875rem; font-weight: 700; color: var(--color-dark); }
+    .lw-bsum-cash { font-size: 0.875rem; color: #999; }
+    .lw-bsum-finnote { font-size: 0.8rem; color: #999; font-style: italic; margin: 12px 0 0; line-height: 1.5; }
+    .lw-bsum-line + .lw-bsum-line { margin-top: 8px; }
+    .lw-bsum-k2 { font-size: 0.8rem; color: var(--color-body); }
+    .lw-bsum-v2 { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
+    .lw-bsum-v2--red { color: var(--color-primary); }
+    .lw-bsum-cashv { font-size: 1.25rem; font-weight: 700; color: var(--color-dark); }
+    .lw-bsum-cashnote { font-size: 0.8rem; color: #999; margin-top: 4px; }
+    .lw-bsum-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-body);
+    }
+    .lw-bsum-badges span { display: inline-flex; align-items: center; gap: 4px; }
+    .lw-bsum-vat { margin-top: 14px; font-size: 0.7rem; color: #999; text-align: center; }
+
+    @media (max-width: 768px) {
+      .lw-contact-grid { grid-template-columns: 1fr; gap: 28px; }
+      .lw-bsum { position: static; }
+      .lw-next3 { flex-direction: column; gap: 14px; }
+    }
+    @media (max-width: 480px) {
+      .lw-cd-row { flex-direction: column; gap: 0; }
+    }
