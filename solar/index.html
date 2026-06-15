@@ -523,8 +523,11 @@
       35%  { transform: translateY(2px); }
       100% { transform: translateY(1px); }
     }
-    /* SHIMMER — single diagonal light sweep, plays once on selection then settles */
-    .lw-card.is-selected::after {
+    /* SHIMMER — single diagonal light sweep, plays once per click. Triggered on the
+       is-settled press-hold state (added by startSeq on EVERY card press, ~80–580ms)
+       so it fires for all answer cards — including ones that auto-advance and unmount
+       before the post-commit is-selected state would ever render. */
+    .lw-card.is-settled::after {
       content: '';
       position: absolute;
       top: 0;
@@ -532,7 +535,7 @@
       width: 60%;
       height: 100%;
       /* Darker wash than the hover shimmer — a distinct "press confirmed" sweep
-         that reads against the white selected-card background. */
+         that reads against the depressed grey card background. */
       background: linear-gradient(
         105deg,
         transparent 20%,
@@ -1576,9 +1579,10 @@
     .lw-occ .lw-card-grid { margin-bottom: 8px; }
     /* Occupancy cards persist visibly after selection (no auto-advance), so the
        shared `.lw-card.is-selected` card-press punch would replay a second time on
-       commit (after the press punch) — reading as a double animation. Suppress only
-       that second punch here; the press feedback (is-pressing) and the single shimmer
-       sweep (on .lw-card.is-selected::after) are untouched. Scoped to .lw-occ only. */
+       commit — a second animation cycle after the press. Suppress only that second
+       punch here; the press feedback (is-pressing) and the single shimmer sweep
+       (now on .lw-card.is-settled::after, during the press hold) are untouched.
+       Scoped to .lw-occ only. */
     .lw-occ .lw-card.is-selected { animation: none; }
     .lw-cta-green:hover:not(:disabled) { background: #43A047; }
     .lw-cta-green:active:not(:disabled) { background: #388E3C; }
@@ -2323,14 +2327,6 @@
     .lw-pay-info-h { font-size: 0.875rem; font-weight: 700; color: var(--color-dark); }
     .lw-pay-info-b { font-size: 0.875rem; color: var(--color-body); margin-top: 6px; line-height: 1.5; }
     .lw-pay-cta { width: 100%; margin-top: 16px; }
-    .lw-pay-cta--outline {
-      width: 100%; margin-top: 16px;
-      background: var(--color-white);
-      color: var(--color-primary);
-      border: 2px solid var(--color-primary);
-      box-shadow: none;
-    }
-    .lw-pay-cta--outline:disabled { opacity: 0.45; cursor: not-allowed; }
     .lw-pay-stripe-note { margin-top: 12px; font-size: 0.75rem; color: #999; text-align: center; }
     /* Finance "coming soon" modal (Card 3 — placeholder until Shermin goes live) */
     .lw-finsoon-overlay {
@@ -5206,7 +5202,7 @@
               <hr className="lw-pay-div" />
               {/* SHERMIN_INTEGRATION_POINT — when Shermin goes live, replace the
                   "Finance coming soon" modal below with the real application flow. */}
-              <button type="button" className="lw-cta lw-pay-cta--outline" onClick={() => setFinModal(true)}>
+              <button type="button" className="lw-cta lw-pay-cta" onClick={() => setFinModal(true)}>
                 Submit finance application →
               </button>
             </PaymentCard>
