@@ -2035,14 +2035,6 @@
     }
     .lw-fin-select:hover { background: #C8232B; }
     .lw-fin-select--cash { margin-top: 16px; }
-    .lw-fin-confirm {
-      margin: 0;
-      padding: 14px 0;
-      text-align: center;
-      color: #4CAF50;
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
     /* Estimated savings section (always visible in the monthly view) */
     .lw-fin-sav {
       background: rgba(76, 175, 80, 0.06);
@@ -2243,33 +2235,28 @@
        STEP 11 — Payment options
        ============================================================ */
     .lw-pay { width: 100%; max-width: 640px; margin: 0 auto; text-align: left; }
-    .lw-pay-cards { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; }
-    /* Payment cards reuse the answer-card visual language: raised shadow at rest,
-       neutral-grey depressed state when open (no red glow), tactile press dip.
-       They expand inline rather than auto-advancing. */
+    .lw-pay-cards { margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
+    /* Expandable option panels (NOT answer cards): static white panels that expand
+       inline on selection — no press animation, shimmer, dot texture, or depression. */
     .lw-pay-card {
       position: relative;
-      background: var(--color-card-bg);
-      border: 1.5px solid transparent;
-      border-radius: 16px;
+      background: var(--color-white);
+      border: 1px solid #EEEEEE;
+      border-radius: 12px;
       padding: 20px 24px;
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
-      transition: box-shadow 300ms ease, transform 300ms ease, background-color 300ms ease, border-color 300ms ease;
+      transition: box-shadow 200ms ease, border-color 200ms ease, background-color 200ms ease;
     }
     .lw-pay-card:not(.is-open):hover {
-      background: #e8e8e8;
-      border-color: rgba(0, 0, 0, 0.10);
-      transform: translateY(1px);
-      box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.22), inset 0 2px 4px rgba(0, 0, 0, 0.14);
+      border-color: #E0E0E0;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.10);
     }
-    .lw-pay-card:not(.is-open):active { transform: translateY(3px); box-shadow: none; }
     .lw-pay-card.is-open {
       cursor: default;
-      background: #e8e8e8;
-      border-color: rgba(0, 0, 0, 0.10);
-      transform: translateY(1px);
-      box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.22), inset 0 2px 4px rgba(0, 0, 0, 0.14);
+      background: rgba(232, 50, 58, 0.02);
+      border: 1.5px solid rgba(232, 50, 58, 0.4);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
     }
     .lw-pay-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
     .lw-pay-title { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
@@ -3791,7 +3778,7 @@
 
     // A single product-showcase card for the carousel. The active card shows the full
     // layout; inactive (peek) cards render the same markup, clipped + faded by the carousel.
-    function CarouselCard({ data, products, custom, onCustomChange, isActive, currentBill, onExploreFinance }) {
+    function CarouselCard({ data, products, custom, onCustomChange, isActive, currentBill, financeChoice, onExploreFinance }) {
       const isCustom = data.id === 'custom';
       const hasBattery = data.battery !== 'none';
       const hideImg = (e) => { e.currentTarget.style.display = 'none'; };
@@ -3977,7 +3964,7 @@
               }}>
                 Your price
               </div>
-              <div className="lw-show-price-hero">£{data.monthly}/mo</div>
+              <div className="lw-show-price-hero">£{(financeChoice && financeChoice.financeSelected && financeChoice.financeSystemPrice === data.price) ? financeChoice.financeMonthly : data.monthly}/mo</div>
               <div className="lw-show-price-cash">or pay in full: {gbp(data.price)}</div>
               <button type="button" className="lw-show-finbtn"
                       onClick={(e) => { e.stopPropagation(); onExploreFinance({ systemPrice: data.price, annualSaving: data.annualSaving, annualGeneration: data.gen, breakEvenYear: data.breakEvenYear }); }}>
@@ -4000,7 +3987,6 @@
       const [mode, setMode] = useState('monthly');     // 'monthly' | 'full'
       const [term, setTerm] = useState(180);           // months; default 15 years
       const [deposit, setDeposit] = useState(0);
-      const [confirmed, setConfirmed] = useState(false);  // brief "selected ✓" before closing
       const TERMS = [36, 48, 60, 84, 120, 180];
 
       // Deposit cap: largest clean £500 multiple that satisfies BOTH Shermin constraints —
@@ -4030,18 +4016,20 @@
       const full15Monthly = financeMonthly(systemPrice, 180);
       const financeSavingVsTotal = Math.max(0, full15Monthly * 180 - systemPrice);
 
-      // Commit the selected finance terms to app state, confirm briefly, then close.
+      // Commit the selected finance terms to app state and close immediately so the
+      // quote screen's headline + matching tier card show the updated monthly figure.
+      // financeSystemPrice tags which tier (by price) this monthly was calculated for.
       const selectFinance = () => {
         onSelectFinance({
           financeSelected: true,
+          financeSystemPrice: systemPrice,
           financeDeposit: deposit,
           financeDepositPct: depositPct,
           financeTerm: term,
           financeMonthly: monthly,
           financeTotalRepayable: totalRepayable,
         });
-        setConfirmed(true);
-        setTimeout(onClose, 1500);
+        onClose();
       };
       // Choose cash purchase: clear any finance selection and close.
       const selectCash = () => {
@@ -4136,12 +4124,10 @@
                 </p>
 
                 {/* SHERMIN_INTEGRATION_POINT — the live Shermin/Stax application embed drops
-                    in once credentials are confirmed; for now the user selects the quote. */}
-                {confirmed
-                  ? <p className="lw-fin-confirm">Finance quote selected ✓</p>
-                  : <button type="button" className="lw-fin-select" onClick={selectFinance}>
-                      Select this finance quote →
-                    </button>}
+                    in once credentials are confirmed; for now this updates the quote price. */}
+                <button type="button" className="lw-fin-select" onClick={selectFinance}>
+                  Update quote →
+                </button>
               </div>
             ) : (
               <div className="lw-fin-body lw-fin-full">
@@ -4196,7 +4182,7 @@
       );
     }
 
-    function QuoteStep({ answers, onContinue, onSelectFinance }) {
+    function QuoteStep({ answers, onContinue, onSelectFinance, financeChoice }) {
       // Sensible initial Custom selection: the Performance system, clamped to 6–22.
       const init = buildTiers(answers, { panels: 6, battery: 'none' }).defaults;
       const [custom, setCustom] = useState({
@@ -4225,6 +4211,12 @@
 
       const tiers = buildTiers(answers, custom);
       const active = tiers[order[activeCard]];
+
+      // Monthly figure for a tier: use the finance modal's calculated monthly when the
+      // user has "Update quote"-d that tier (matched by price); otherwise the default.
+      const monthlyFor = (t) => (financeChoice && financeChoice.financeSelected
+        && financeChoice.financeSystemPrice === t.price)
+        ? financeChoice.financeMonthly : t.monthly;
 
       // IMPROVEMENT 4 — headline price breakdown for the active tier.
       const activePanelsCost = getPrice(active.panels, 'none');
@@ -4359,7 +4351,7 @@
               <div className="lw-qt-heading">Your instant quote</div>
               <div className="lw-qt-priceline">
                 <span className="lw-qt-cash">{gbp(active.price)}</span>
-                <span className="lw-qt-monthly"><span className="lw-qt-or">or</span> £{active.monthly}/mo</span>
+                <span className="lw-qt-monthly"><span className="lw-qt-or">or</span> £{monthlyFor(active)}/mo</span>
               </div>
               <p className="lw-qt-summary">{summaryLine}</p>
               <p className="lw-qt-survey">Subject to survey and final system confirmation</p>
@@ -4394,7 +4386,7 @@
                          onClick={() => { if (i !== activeCard) setActiveCard(i); }}>
                       <CarouselCard data={tiers[id]} products={products} currentBill={currentBill}
                         custom={custom} onCustomChange={onCustomChange} isActive={i === activeCard}
-                        onExploreFinance={setFinanceData} />
+                        financeChoice={financeChoice} onExploreFinance={setFinanceData} />
                     </div>
                   ))}
                 </div>
@@ -4982,7 +4974,7 @@
       const [date, setDate] = useState(initialDate || '');
       return (
         <div className="lw-step-narrow lw-fade-in">
-          <h1 className="lw-step-h">Choose a preferred date</h1>
+          <h1 className="lw-step-h">Choose your survey date</h1>
           <p className="lw-step-sub">Weekdays only. Our team will confirm your slot within 24 hours - you can reschedule any time.</p>
           <div style={{ marginTop: '24px' }}>
             <CalendarPicker value={date} onSelect={setDate} />
@@ -5729,7 +5721,7 @@
                   )}
                   {onQuote && !microCommit && (
                     <QuoteStep answers={answers} onContinue={handleQuoteContinue}
-                      onSelectFinance={setFinanceChoice} />
+                      onSelectFinance={setFinanceChoice} financeChoice={financeChoice} />
                   )}
                   {onQuote && microCommit && quoteSel && (
                     <MicroCommitment
