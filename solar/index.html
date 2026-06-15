@@ -1574,6 +1574,12 @@
     /* occupancy screen — keep the bottom row of cards clear of the button */
     .lw-occ { padding-bottom: 32px; }
     .lw-occ .lw-card-grid { margin-bottom: 8px; }
+    /* Occupancy cards persist visibly after selection (no auto-advance), so the
+       shared `.lw-card.is-selected` card-press punch would replay a second time on
+       commit (after the press punch) — reading as a double animation. Suppress only
+       that second punch here; the press feedback (is-pressing) and the single shimmer
+       sweep (on .lw-card.is-selected::after) are untouched. Scoped to .lw-occ only. */
+    .lw-occ .lw-card.is-selected { animation: none; }
     .lw-cta-green:hover:not(:disabled) { background: #43A047; }
     .lw-cta-green:active:not(:disabled) { background: #388E3C; }
 
@@ -2128,8 +2134,9 @@
       background: var(--color-white);
       border: none;
       border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
-      padding: 28px 24px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.06);
+      padding: 32px 28px;
+      min-height: 200px;
     }
     .lw-wn-step { font-size: 1.375rem; font-weight: 700; color: var(--color-primary); margin-bottom: 8px; }
     .lw-wn-card-label { font-size: 1.0625rem; font-weight: 700; color: var(--color-dark); margin-bottom: 12px; }
@@ -2279,14 +2286,23 @@
     .lw-pay-warr { font-size: 0.875rem; color: var(--color-body); margin-top: 4px; }
     .lw-pay-vat { font-size: 0.75rem; color: #999; margin-top: 8px; text-align: center; }
     .lw-pay-div { border: none; border-top: 1px solid var(--color-border); margin: 16px 0; }
-    .lw-pay-stripe {
-      background: var(--color-white);
+    /* Stripe payment element placeholder (Cards 1 & 2) — swap contents for the real
+       Stripe Payment Element at integration time. */
+    .lw-pay-stripe-box {
       border: 1px solid var(--color-border);
       border-radius: 8px;
       padding: 20px;
-      text-align: center;
-      font-size: 0.875rem;
-      color: #999;
+      min-height: 80px;
+      background: var(--color-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lw-pay-stripe-wm { flex-shrink: 0; }
+    .lw-pay-stripe-txt { font-size: 0.8rem; color: #999; margin-left: 8px; }
+    .lw-pay-finlabel {
+      font-size: 0.75rem; font-weight: 600; color: var(--color-body);
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
     }
     .lw-pay-finsum { background: var(--color-white); border: 1px solid var(--color-border); border-radius: 8px; padding: 16px; }
     .lw-pay-fin-m { font-size: 1.25rem; font-weight: 800; color: var(--color-primary); line-height: 1.1; }
@@ -2316,6 +2332,24 @@
     }
     .lw-pay-cta--outline:disabled { opacity: 0.45; cursor: not-allowed; }
     .lw-pay-stripe-note { margin-top: 12px; font-size: 0.75rem; color: #999; text-align: center; }
+    /* Finance "coming soon" modal (Card 3 — placeholder until Shermin goes live) */
+    .lw-finsoon-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .lw-finsoon {
+      background: var(--color-white);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 420px;
+      width: 100%;
+      text-align: left;
+    }
+    .lw-finsoon-h { margin: 0 0 12px; font-size: 1.25rem; font-weight: 800; color: var(--color-dark); }
+    .lw-finsoon-b { margin: 0 0 24px; font-size: 0.875rem; color: var(--color-body); line-height: 1.5; }
+    .lw-finsoon-cta { width: 100%; }
 
     @media (max-width: 768px) {
       .lw-wn-cards { flex-direction: column; }
@@ -5064,6 +5098,7 @@
 
       const [selected, setSelected] = useState(null);   // 'deposit'|'full'|'finance'|'provisional'
       const [editFin, setEditFin] = useState(false);
+      const [finModal, setFinModal] = useState(false);  // "Finance coming soon" placeholder modal
 
       // Card 1 — Stripe deposit (min £199, max 50% of system price, £50 steps).
       const depMax = Math.floor(systemPrice * 0.5 / 50) * 50;
@@ -5103,8 +5138,17 @@
                      aria-label="Deposit amount" />
               <div className="lw-pay-balance">Balance of {gbp(remainder)} due on installation day after survey</div>
               <hr className="lw-pay-div" />
-              {/* STRIPE_INTEGRATION_POINT */}
-              <div className="lw-pay-stripe">Stripe payment element loads here</div>
+              {/* STRIPE_INTEGRATION_POINT
+                  Replace this div's contents with:
+                  <StripePaymentElement /> after loading Stripe.js with publishable key
+                  pk_test_... (replace with pk_live_... before launch) */}
+              <div id="stripe-payment-element-deposit" className="lw-pay-stripe-box">
+                <svg className="lw-pay-stripe-wm" width="60" height="24" viewBox="0 0 60 24" aria-label="Stripe">
+                  <rect width="60" height="24" rx="6" fill="#635BFF" />
+                  <text x="30" y="16" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="700" fontFamily="inherit">stripe</text>
+                </svg>
+                <span className="lw-pay-stripe-txt">Secure payment · Card, Klarna, Revolut Pay</span>
+              </div>
               <div className="lw-pay-vat">All prices include VAT</div>
               <button type="button" className="lw-cta lw-pay-cta" onClick={() => onSubmit('deposit', deposit)}>
                 Pay {gbp(deposit)} deposit →
@@ -5121,8 +5165,17 @@
               {warrantyAdded && <div className="lw-pay-warr">+ £199 extended warranty</div>}
               <div className="lw-pay-vat" style={{ textAlign: 'left' }}>All prices include VAT</div>
               <hr className="lw-pay-div" />
-              {/* STRIPE_INTEGRATION_POINT */}
-              <div className="lw-pay-stripe">Stripe payment element loads here</div>
+              {/* STRIPE_INTEGRATION_POINT
+                  Replace this div's contents with:
+                  <StripePaymentElement /> after loading Stripe.js with publishable key
+                  pk_test_... (replace with pk_live_... before launch) */}
+              <div id="stripe-payment-element-full" className="lw-pay-stripe-box">
+                <svg className="lw-pay-stripe-wm" width="60" height="24" viewBox="0 0 60 24" aria-label="Stripe">
+                  <rect width="60" height="24" rx="6" fill="#635BFF" />
+                  <text x="30" y="16" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="700" fontFamily="inherit">stripe</text>
+                </svg>
+                <span className="lw-pay-stripe-txt">Secure payment · Card, Klarna, Revolut Pay</span>
+              </div>
               <button type="button" className="lw-cta lw-pay-cta" onClick={() => onSubmit('full', systemPrice)}>
                 Pay {gbp(systemPrice)} →
               </button>
@@ -5134,6 +5187,7 @@
               title="Spread the cost with finance"
               subtitle="Apply now for an instant decision - no payment today"
               badge={'From £' + monthly + '/mo'}>
+              <div className="lw-pay-finlabel">Your finance selection</div>
               <div className="lw-pay-finsum">
                 <div className="lw-pay-fin-m">£{monthly}/mo</div>
                 <div className="lw-pay-fin-row"><span>Term</span><span>{term} months ({years}) · 9.9% APR</span></div>
@@ -5150,10 +5204,9 @@
                 Credit is subject to status and affordability.
               </p>
               <hr className="lw-pay-div" />
-              {/* SHERMIN_INTEGRATION_POINT */}
-              <div className="lw-pay-stripe">Finance applications will open shortly. Call 0800 222 9494.</div>
-              <button type="button" className="lw-cta lw-pay-cta--outline" disabled
-                      title="Finance applications opening soon">
+              {/* SHERMIN_INTEGRATION_POINT — when Shermin goes live, replace the
+                  "Finance coming soon" modal below with the real application flow. */}
+              <button type="button" className="lw-cta lw-pay-cta--outline" onClick={() => setFinModal(true)}>
                 Submit finance application →
               </button>
             </PaymentCard>
@@ -5172,6 +5225,21 @@
               </button>
             </PaymentCard>
           </div>
+
+          {/* Finance "coming soon" modal — placeholder until Shermin/Stax goes live. */}
+          {finModal && (
+            <div className="lw-finsoon-overlay" onClick={() => setFinModal(false)}>
+              <div className="lw-finsoon" role="dialog" aria-modal="true" aria-label="Finance coming soon"
+                   onClick={(e) => e.stopPropagation()}>
+                <h2 className="lw-finsoon-h">Finance coming soon</h2>
+                <p className="lw-finsoon-b">Our finance application portal will be live at launch. Your details and finance selection have been saved - our team will be in touch to complete your application.</p>
+                <button type="button" className="lw-cta lw-finsoon-cta"
+                        onClick={() => { setFinModal(false); onSubmit('finance', 0); }}>
+                  Continue to confirmation →
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       );
     }
