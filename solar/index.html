@@ -2041,6 +2041,21 @@
       font-size: 0.95rem;
       font-weight: 700;
     }
+    /* Estimated savings section (always visible in the monthly view) */
+    .lw-fin-sav {
+      background: rgba(76, 175, 80, 0.06);
+      border: 1px solid rgba(76, 175, 80, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .lw-fin-sav-h { font-size: 0.9rem; font-weight: 700; color: #2D2D2D; margin: 0 0 12px; }
+    .lw-fin-sav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .lw-fin-sav-label { font-size: 0.75rem; color: #4A4A4A; }
+    .lw-fin-sav-label--green { color: #4CAF50; display: inline-flex; align-items: center; gap: 4px; }
+    .lw-fin-sav-val { font-size: 1rem; font-weight: 700; color: #2D2D2D; margin-top: 2px; }
+    .lw-fin-sav-val--green { color: #4CAF50; }
+    .lw-fin-sav-note { font-size: 0.7rem; color: #999; font-style: italic; margin: 8px 0 0; }
     .lw-fin-full { text-align: center; padding: 8px 0; }
     .lw-fin-full-price { font-size: 2rem; font-weight: 800; color: var(--color-dark); line-height: 1.1; }
     .lw-fin-full-save { font-size: 0.875rem; color: var(--color-cta-green); font-weight: 700; margin-top: 8px; }
@@ -3785,8 +3800,9 @@
       const batteryName = (battery && battery.name) || BATTERY_NAME[data.battery];
       const batteryCap = battery && battery.capacity_kwh ? battery.capacity_kwh : 0;
       // Essential card shows a faded (greyscale, low-opacity) EP6 / 5kW battery image to
-      // signal that storage is available but not included.
-      const faded5kwImg = products && products.batteries && products.batteries['5kw'] ? products.batteries['5kw'].image : null;
+      // signal that storage is available but not included. Always resolves to a URL
+      // (products if loaded, else the hardcoded fallback) so the img always renders.
+      const faded5kwImg = (products && products.batteries && products.batteries['5kw'] && products.batteries['5kw'].image) || BATTERY_IMG['5kw'];
 
       const panelsCost = getPrice(data.panels, 'none');
       const batteryCost = data.price - panelsCost;
@@ -3835,12 +3851,10 @@
               </div>
             </div>
             <div className="lw-comp">
-              {hasBattery && battery && battery.image
-                ? <img className="lw-comp-img" src={battery.image} alt="" onError={hideImg} />
-                : (data.battery === 'none' && faded5kwImg
-                    ? <img className="lw-comp-img" src={faded5kwImg} alt=""
-                           style={{ filter: 'grayscale(100%) opacity(0.25)' }} onError={hideImg} />
-                    : null)}
+              {data.battery === 'none'
+                ? <img className="lw-comp-img" src={faded5kwImg} alt=""
+                       style={{ filter: 'grayscale(100%) opacity(0.25)' }} onError={hideImg} />
+                : (battery && battery.image && <img className="lw-comp-img" src={battery.image} alt="" onError={hideImg} />)}
               <div className="lw-comp-text">
                 <div className="lw-comp-name">{hasBattery ? batteryName : 'No Battery Storage'}</div>
                 <div className="lw-comp-spec">{hasBattery ? (batteryCap ? batteryCap + 'kWh storage' : 'Battery storage') : 'Add storage anytime'}</div>
@@ -3959,7 +3973,7 @@
               <div className="lw-show-price-hero">£{data.monthly}/mo</div>
               <div className="lw-show-price-cash">or pay in full: {gbp(data.price)}</div>
               <button type="button" className="lw-show-finbtn"
-                      onClick={(e) => { e.stopPropagation(); onExploreFinance(data.price); }}>
+                      onClick={(e) => { e.stopPropagation(); onExploreFinance({ systemPrice: data.price, annualSaving: data.annualSaving, annualGeneration: data.gen, breakEvenYear: data.breakEvenYear }); }}>
                 Explore finance options
               </button>
             </div>
@@ -3975,7 +3989,7 @@
        ============================================================ */
     // Loan term (months) → year label for the FCA representative example.
     const TERM_YEARS = { 36: '3 years', 48: '4 years', 60: '5 years', 84: '7 years', 120: '10 years', 180: '15 years' };
-    function FinanceModal({ systemPrice, onClose, onSelectFinance }) {
+    function FinanceModal({ systemPrice, annualSaving, annualGeneration, breakEvenYear, onClose, onSelectFinance }) {
       const [mode, setMode] = useState('monthly');     // 'monthly' | 'full'
       const [term, setTerm] = useState(180);           // months; default 15 years
       const [deposit, setDeposit] = useState(0);
@@ -3997,6 +4011,13 @@
       const totalRepayable = monthly * term;            // total repayable on the borrowed sum
       const termYears = TERM_YEARS[term] || (Math.round(term / 12) + ' years');
       const overMaxLoan = financeAmount > 25000;        // max loan £25,000 (defensive)
+
+      // Savings case over the selected term (annual figures × years; not affected by deposit).
+      const billSavings = annualSaving * term / 12;
+      const genTotalK = Math.round(annualGeneration * term / 12 / 1000);  // total kWh, in thousands
+      const netCost = Math.max(0, totalRepayable - billSavings);
+      const paidOff = totalRepayable - billSavings <= 0;
+      const withinTerm = breakEvenYear <= term / 12;
 
       // Saving from paying in full vs financing the full price over 15 years.
       const full15Monthly = financeMonthly(systemPrice, 180);
@@ -4074,6 +4095,38 @@
                   Credit is subject to status and affordability.
                 </p>
 
+                {/* Estimated savings case over the selected term */}
+                <div className="lw-fin-sav">
+                  <div className="lw-fin-sav-h">Your estimated savings over {termYears}</div>
+                  <div className="lw-fin-sav-grid">
+                    <div className="lw-fin-sav-cell">
+                      <div className="lw-fin-sav-label">Bill savings</div>
+                      <div className="lw-fin-sav-val lw-fin-sav-val--green">{gbp(billSavings)} est.</div>
+                    </div>
+                    <div className="lw-fin-sav-cell">
+                      <div className="lw-fin-sav-label">Electricity generated</div>
+                      <div className="lw-fin-sav-val">{genTotalK}k kWh est.</div>
+                    </div>
+                    <div className="lw-fin-sav-cell">
+                      <div className="lw-fin-sav-label">Net cost after savings</div>
+                      {paidOff
+                        ? <div className="lw-fin-sav-val lw-fin-sav-val--green">System pays for itself</div>
+                        : <div className="lw-fin-sav-val">{gbp(netCost)} est.</div>}
+                    </div>
+                    <div className="lw-fin-sav-cell">
+                      {withinTerm
+                        ? <div className="lw-fin-sav-label lw-fin-sav-label--green">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                            Pays off within term
+                          </div>
+                        : <div className="lw-fin-sav-label">Break-even</div>}
+                      <div className={'lw-fin-sav-val' + (withinTerm ? ' lw-fin-sav-val--green' : '')}>Year {Math.ceil(breakEvenYear)} est.</div>
+                    </div>
+                  </div>
+                  <p className="lw-fin-sav-note">Savings estimates are based on current energy prices and your usage data. Actual savings may vary.</p>
+                </div>
+
                 {/* SHERMIN_INTEGRATION_POINT — the live Shermin/Stax application embed drops
                     in once credentials are confirmed; for now the user selects the quote. */}
                 {confirmed
@@ -4143,9 +4196,10 @@
       });
       const order = ['essential', 'performance', 'custom'];
       const [activeCard, setActiveCard] = useState(1);   // 0 Essential · 1 Performance · 2 Custom
-      // Finance modal — holds the system price of the tier whose footer button was
-      // clicked (null = closed). Reopening from another tier passes that tier's price.
-      const [financePrice, setFinancePrice] = useState(null);
+      // Finance modal — holds the selected tier's finance inputs (price + savings data)
+      // for whichever footer button was clicked (null = closed). Reopening from another
+      // tier passes that tier's data.
+      const [financeData, setFinanceData] = useState(null);
 
       // IMPROVEMENT 1 — product data (brand names, capacities, images, who_for).
       // Silent fallback to the hardcoded values if the fetch fails.
@@ -4331,7 +4385,7 @@
                          onClick={() => { if (i !== activeCard) setActiveCard(i); }}>
                       <CarouselCard data={tiers[id]} products={products} currentBill={currentBill}
                         custom={custom} onCustomChange={onCustomChange} isActive={i === activeCard}
-                        onExploreFinance={setFinancePrice} />
+                        onExploreFinance={setFinanceData} />
                     </div>
                   ))}
                 </div>
@@ -4365,8 +4419,12 @@
           </Reveal>
 
           {/* Finance options modal — reflects the tier whose footer button was clicked */}
-          {financePrice != null && (
-            <FinanceModal systemPrice={financePrice} onClose={() => setFinancePrice(null)}
+          {financeData != null && (
+            <FinanceModal systemPrice={financeData.systemPrice}
+              annualSaving={financeData.annualSaving}
+              annualGeneration={financeData.annualGeneration}
+              breakEvenYear={financeData.breakEvenYear}
+              onClose={() => setFinanceData(null)}
               onSelectFinance={onSelectFinance} />
           )}
         </div>
