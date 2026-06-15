@@ -2020,6 +2020,7 @@
     .lw-fin-select {
       display: block;
       width: 100%;
+      margin-top: 20px;                /* breathing room above the button (FCA text sits above) */
       padding: 14px 20px;
       background: #E8323A;
       color: #fff;
@@ -2276,12 +2277,12 @@
     /* Product images row — flush to the panel top (breaks out of the 24px padding) */
     .lw-bsum-imgs { display: flex; margin: -24px -24px 24px; }
     .lw-bsum-cell {
-      flex: 1; height: 90px; background: #F8F8F8;
+      flex: 1; height: 110px; background: #F8F8F8;
       display: flex; align-items: center; justify-content: center;
       padding: 12px;
     }
     .lw-bsum-cell + .lw-bsum-cell { border-left: 1px solid #E5E5E5; }
-    .lw-bsum-cell img { max-height: 66px; max-width: 80%; object-fit: contain; }
+    .lw-bsum-cell img { max-height: 86px; max-width: 85%; object-fit: contain; }
     .lw-bsum-h { margin: 0 0 16px; font-size: 1.1rem; font-weight: 800; color: var(--color-dark); }
     .lw-bsum-tier { font-size: 0.95rem; font-weight: 800; color: var(--color-dark); }
     .lw-bsum-spec { font-size: 0.875rem; color: var(--color-body); margin-top: 2px; }
@@ -2310,7 +2311,8 @@
     .lw-bsum-finnote { font-size: 0.8rem; color: #999; font-style: italic; margin: 12px 0 0; line-height: 1.5; }
     .lw-bsum-line + .lw-bsum-line { margin-top: 8px; }
     .lw-bsum-k2 { font-size: 0.8rem; color: var(--color-body); }
-    .lw-bsum-v2 { font-size: 0.95rem; font-weight: 800; color: var(--color-dark); }
+    .lw-bsum-v2 { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
+    .lw-bsum-v2--red { color: var(--color-primary); }
     .lw-bsum-badges {
       display: flex;
       flex-wrap: wrap;
@@ -4092,13 +4094,7 @@
                 </div>
                 <div className="lw-fin-total">Total repayable: {gbp(totalRepayable)}</div>
 
-                <p className="lw-fin-rep">
-                  Representative example: Borrowing {gbp(financeAmount)} over {termYears} at 9.9% APR (fixed).
-                  Monthly repayments of £{monthly}. Total amount repayable: {gbp(totalRepayable)}.
-                  Credit is subject to status and affordability.
-                </p>
-
-                {/* Estimated savings case over the selected term */}
+                {/* Estimated savings case over the selected term (moved above the FCA example) */}
                 <div className="lw-fin-sav">
                   <div className="lw-fin-sav-h">Your estimated savings over {termYears}</div>
                   <div className="lw-fin-sav-grid">
@@ -4129,6 +4125,12 @@
                   </div>
                   <p className="lw-fin-sav-note">Savings estimates are based on current energy prices and your usage data. Actual savings may vary.</p>
                 </div>
+
+                <p className="lw-fin-rep">
+                  Representative example: Borrowing {gbp(financeAmount)} over {termYears} at 9.9% APR (fixed).
+                  Monthly repayments of £{monthly}. Total amount repayable: {gbp(totalRepayable)}.
+                  Credit is subject to status and affordability.
+                </p>
 
                 {/* SHERMIN_INTEGRATION_POINT — the live Shermin/Stax application embed drops
                     in once credentials are confirmed; for now the user selects the quote. */}
@@ -4794,6 +4796,19 @@
       const minDate = new Date(today.getTime()); minDate.setDate(minDate.getDate() + 14);  // earliest = 14 days out
       const [view, setView] = useState({ y: minDate.getFullYear(), m: minDate.getMonth() });
 
+      // On mount: if the opening month has fewer than 5 selectable weekdays remaining
+      // after the 14-day cutoff, advance to the next month so it doesn't open near-empty.
+      React.useEffect(() => {
+        const dim = new Date(view.y, view.m + 1, 0).getDate();
+        let selectable = 0;
+        for (let d = 1; d <= dim; d++) {
+          const dt = new Date(view.y, view.m, d); dt.setHours(0, 0, 0, 0);
+          const dow = dt.getDay();
+          if (dt >= minDate && dow !== 0 && dow !== 6) selectable++;
+        }
+        if (selectable < 5) setView((v) => v.m === 11 ? { y: v.y + 1, m: 0 } : { y: v.y, m: v.m + 1 });
+      }, []);
+
       const firstOfMonth = new Date(view.y, view.m, 1);
       const startOffset = (firstOfMonth.getDay() + 6) % 7;          // Monday-based leading blanks
       const daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
@@ -5041,7 +5056,7 @@
 
                 <div className="lw-bsum-line">
                   <span className="lw-bsum-k2">Monthly bill reduction</span>
-                  <span className="lw-bsum-v2">{gbp(sel.monthlySaving)} est./mo</span>
+                  <span className="lw-bsum-v2 lw-bsum-v2--red">{gbp(sel.monthlySaving)} est./mo</span>
                 </div>
                 <div className="lw-bsum-line">
                   <span className="lw-bsum-k2">20-year saving</span>
