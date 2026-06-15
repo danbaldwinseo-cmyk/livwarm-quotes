@@ -2115,37 +2115,60 @@
     .lw-egate-skip:hover { color: var(--color-dark); }
 
     /* ============================================================
-       STEP 8 — Contact details + booking summary
+       STEPS 8-10 — What's next / Your details / Survey date
        ============================================================ */
-    .lw-contact { width: 100%; }
-    .lw-contact-grid {
-      display: grid;
-      grid-template-columns: 55% 45%;
-      gap: 40px;
-      align-items: start;
+    /* Slim system reminder bar (Steps 8, 9, 10) */
+    .lw-slimbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: 560px;
+      margin: 0 auto 24px;
+      background: var(--color-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 12px 20px;
     }
-    .lw-cd-left { text-align: left; min-width: 0; }
-    .lw-cd-h1 { margin: 0 0 8px; font-size: 1.75rem; font-weight: 800; color: var(--color-dark); }
-    .lw-cd-subh { margin: 0 0 24px; font-size: 1rem; color: var(--color-body); line-height: 1.5; }
-    .lw-cd-card {
-      background: #fff;
-      border: 1px solid #E5E5E5;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
-      padding: 28px;
-      margin-bottom: 20px;
+    .lw-slimbar-sys { font-size: 0.875rem; color: var(--color-body); }
+    .lw-slimbar-price { font-size: 1rem; font-weight: 700; color: var(--color-primary); white-space: nowrap; }
+    .lw-slimbar-price--cash { color: var(--color-dark); }
+
+    /* Shared narrow-column step scaffolding (Steps 9-10) */
+    .lw-step-narrow { width: 100%; max-width: 560px; margin: 0 auto; text-align: left; }
+    .lw-step-h { margin: 0 0 8px; font-size: 1.75rem; font-weight: 800; color: var(--color-dark); }
+    .lw-step-sub { margin: 0 0 24px; font-size: 1rem; color: var(--color-body); line-height: 1.5; }
+    /* Continue/CTA on Steps 8-10 — solid red pill, auto width, capped, centred (no red glow) */
+    .lw-step-cta { width: auto; max-width: 380px; margin: 24px auto 0; }
+
+    /* Step 8 — What happens next */
+    .lw-wn { width: 100%; max-width: 640px; margin: 0 auto; text-align: center; }
+    .lw-wn-tick { color: var(--color-cta-green); display: block; margin: 0 auto 16px; }
+    .lw-wn-h { margin: 0 0 12px; font-size: 2rem; font-weight: 800; color: var(--color-dark); }
+    .lw-wn-sub { margin: 0 auto; max-width: 480px; font-size: 1rem; color: var(--color-body); line-height: 1.5; }
+    .lw-wn-cards { display: flex; gap: 16px; margin-top: 32px; text-align: left; }
+    .lw-wn-card {
+      flex: 1 1 0;
+      min-width: 0;
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 20px;
     }
-    .lw-cd-cardhead { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-    .lw-cd-num {
-      flex-shrink: 0;
-      width: 32px; height: 32px;
+    .lw-wn-num {
+      width: 28px; height: 28px;
       border-radius: 50%;
-      background: #E8323A;
-      color: #fff;
-      font-size: 0.9rem; font-weight: 700;
+      background: var(--color-primary);
+      color: var(--color-white);
+      font-size: 0.85rem; font-weight: 800;
       display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
     }
-    .lw-cd-cardlabel { font-size: 1.1rem; font-weight: 700; color: #2D2D2D; }
+    .lw-wn-card-label { font-size: 1rem; font-weight: 800; color: var(--color-dark); }
+    .lw-wn-card-desc { margin-top: 4px; font-size: 0.85rem; color: var(--color-body); line-height: 1.45; }
+    .lw-wn-cta { width: auto; max-width: 380px; margin: 32px auto 0; }
+
+    /* Step 9 — form fields (shared input styling) */
     .lw-cd-row { display: flex; gap: 16px; }
     .lw-cd-row .lw-cd-field { flex: 1; min-width: 0; }
     .lw-cd-field { margin-bottom: 18px; }
@@ -2174,9 +2197,7 @@
       padding: 11px 15px;                              /* compensate for the +1px border */
       box-shadow: 0 0 0 3px rgba(232, 50, 58, 0.12);
     }
-    .lw-cd-hint { margin: 0 0 12px; font-size: 0.8rem; color: #888; }
     .lw-cd-chosen { margin: 12px 0 0; font-size: 0.9rem; font-weight: 700; color: var(--color-dark); }
-    .lw-cd-cta { margin-top: 24px; }
     .lw-cd-err { margin: 10px 0 0; font-size: 0.85rem; font-weight: 600; color: var(--color-primary); text-align: center; }
 
     /* Custom calendar */
@@ -2241,97 +2262,8 @@
     .lw-cal-cell.is-today { border-color: rgba(232, 50, 58, 0.55); }
     .lw-cal-cell.is-selected { background: var(--color-primary); color: #fff; }
 
-    /* What happens next? */
-    .lw-next3 {
-      display: flex;
-      gap: 16px;
-    }
-    .lw-next3-item { flex: 1; display: flex; gap: 10px; align-items: flex-start; }
-    .lw-next3-num {
-      flex-shrink: 0;
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      background: var(--color-primary);
-      color: #fff;
-      font-size: 0.85rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .lw-next3-label { font-size: 0.9rem; font-weight: 800; color: var(--color-dark); }
-    .lw-next3-desc { font-size: 0.8rem; color: #888; line-height: 1.4; margin-top: 2px; }
-
-    /* Booking summary panel */
-    .lw-cd-right { min-width: 0; }
-    .lw-bsum {
-      position: sticky;
-      top: 24px;
-      background: #fff;
-      border: 1px solid var(--color-border);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-      text-align: left;
-      overflow: hidden;                /* clip the flush product-images row's top corners */
-    }
-    /* Product images row — flush to the panel top (breaks out of the 24px padding) */
-    .lw-bsum-imgs { display: flex; margin: -24px -24px 24px; }
-    .lw-bsum-cell {
-      flex: 1; height: 110px; background: #F8F8F8;
-      display: flex; align-items: center; justify-content: center;
-      padding: 12px;
-    }
-    .lw-bsum-cell + .lw-bsum-cell { border-left: 1px solid #E5E5E5; }
-    .lw-bsum-cell img { max-height: 86px; max-width: 85%; object-fit: contain; }
-    .lw-bsum-h { margin: 0 0 16px; font-size: 1.1rem; font-weight: 800; color: var(--color-dark); }
-    .lw-bsum-tier { font-size: 0.95rem; font-weight: 800; color: var(--color-dark); }
-    .lw-bsum-spec { font-size: 0.875rem; color: var(--color-body); margin-top: 2px; }
-    .lw-bsum-warr {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 10px;
-      font-size: 0.875rem;
-      font-weight: 700;
-      color: var(--color-cta-green);
-    }
-    .lw-bsum-warr svg { color: var(--color-cta-green); flex-shrink: 0; }
-    .lw-bsum-div { border: none; border-top: 1px solid var(--color-border); margin: 16px 0; }
-    .lw-bsum-line { display: flex; align-items: baseline; justify-content: space-between; }
-    .lw-bsum-k { font-size: 0.875rem; color: var(--color-body); }
-    .lw-bsum-v { font-size: 1rem; font-weight: 800; color: var(--color-dark); }
-    .lw-bsum-item { font-size: 0.8rem; color: #888; margin-top: 2px; }
-    .lw-bsum-monthly { font-size: 0.95rem; font-weight: 700; color: var(--color-primary); margin-top: 8px; }
-    .lw-bsum-apr { font-size: 0.75rem; color: #999; margin-top: 2px; }
-    /* Finance-led price section (when a finance quote was selected) */
-    .lw-bsum-mplabel { font-size: 0.875rem; color: var(--color-body); }
-    .lw-bsum-mpfig { font-size: 1.5rem; font-weight: 800; color: var(--color-primary); line-height: 1.1; margin: 2px 0 10px; }
-    .lw-bsum-tr { font-size: 0.875rem; font-weight: 700; color: var(--color-dark); }
-    .lw-bsum-cash { font-size: 0.875rem; color: #999; }
-    .lw-bsum-finnote { font-size: 0.8rem; color: #999; font-style: italic; margin: 12px 0 0; line-height: 1.5; }
-    .lw-bsum-line + .lw-bsum-line { margin-top: 8px; }
-    .lw-bsum-k2 { font-size: 0.8rem; color: var(--color-body); }
-    .lw-bsum-v2 { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
-    .lw-bsum-v2--red { color: var(--color-primary); }
-    .lw-bsum-cashv { font-size: 1.25rem; font-weight: 700; color: var(--color-dark); }
-    .lw-bsum-cashnote { font-size: 0.8rem; color: #999; margin-top: 4px; }
-    .lw-bsum-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 14px;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--color-body);
-    }
-    .lw-bsum-badges span { display: inline-flex; align-items: center; gap: 4px; }
-    .lw-bsum-vat { margin-top: 14px; font-size: 0.7rem; color: #999; text-align: center; }
-
     @media (max-width: 768px) {
-      .lw-contact-grid { grid-template-columns: 1fr; gap: 28px; }
-      .lw-bsum { position: static; }
-      .lw-next3 { flex-direction: column; gap: 14px; }
+      .lw-wn-cards { flex-direction: column; }
     }
     @media (max-width: 480px) {
       .lw-cd-row { flex-direction: column; gap: 0; }
@@ -2348,9 +2280,9 @@
        CONFIG
        ============================================================ */
     const DEAD_END_PATH = '/sorry-we-cannot-help';
-    // Solar flow has 8 user-facing input steps (Steps 1-6, 8, 9 in the spec;
-    // the upsell modal and post-payment confirmation are not progress steps).
-    const TOTAL_STEPS = 9;
+    // Solar flow has 12 progress steps (Steps 1-12 in the spec; the upsell modal
+    // and micro-commitment are not progress steps). Steps 11-12 are not yet built.
+    const TOTAL_STEPS = 12;
 
     /* ============================================================
        ICONS — rounded line icons in brand red (Section 7 #10)
@@ -4879,224 +4811,136 @@
       );
     }
 
+
     /* ============================================================
-       STEP 8 — Your details + booking summary
+       STEPS 8-10 — Post-quote booking flow
+       Slim system reminder bar shared across all three screens.
        ============================================================ */
-    function ContactDetails({ sel, warrantyAdded, financeChoice, leadFirstName, leadEmail, onSubmit }) {
-      const fin = financeChoice && financeChoice.financeSelected ? financeChoice : null;
-      // Payment preference selected in the finance modal; default 'finance' (modal skipped).
+    function SlimSystemBar({ sel, financeChoice, warrantyAdded }) {
+      // Payment preference from the finance modal; default 'finance' (modal skipped).
       const paymentMethod = financeChoice && financeChoice.financeSelected === false ? 'cash' : 'finance';
-      // Pre-populate from the email-capture gate: if a lead name/email was provided
-      // there, seed the matching field (otherwise blank — e.g. the user skipped).
-      const [firstName, setFirstName] = useState(leadFirstName || '');
-      const [surname, setSurname] = useState('');
-      const [email, setEmail] = useState(leadEmail || '');
-      const [phone, setPhone] = useState('');
-      const [date, setDate] = useState('');
+      const systemPrice = sel.price + (warrantyAdded ? 199 : 0);
+      const monthly = (financeChoice && financeChoice.financeSelected) ? financeChoice.financeMonthly : sel.monthly;
+      return (
+        <div className="lw-slimbar">
+          <span className="lw-slimbar-sys">{sel.tierName || sel.tierTitle} · {sel.solar_panel_number} panels</span>
+          {paymentMethod === 'cash'
+            ? <span className="lw-slimbar-price lw-slimbar-price--cash">{gbp(systemPrice)}</span>
+            : <span className="lw-slimbar-price">£{monthly}/mo</span>}
+        </div>
+      );
+    }
+
+    /* STEP 8 — What happens next (motivation only; no form fields) */
+    function WhatsNextStep({ sel, financeChoice, warrantyAdded, onContinue }) {
+      const STEPS = [
+        { n: 1, label: 'Provisional booking', desc: 'We reserve your preferred slot' },
+        { n: 2, label: 'Remote survey', desc: 'Our experts verify your design using satellite imagery (no home visit needed)' },
+        { n: 3, label: 'Final confirmation', desc: 'We confirm the system fits your needs and lock in the price' },
+      ];
+      return (
+        <div className="lw-wn lw-fade-in">
+          <SlimSystemBar sel={sel} financeChoice={financeChoice} warrantyAdded={warrantyAdded} />
+          <svg className="lw-wn-tick" width="48" height="48" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" /><path d="M8 12l3 3 5-6" />
+          </svg>
+          <h1 className="lw-wn-h">Here's what happens next</h1>
+          <p className="lw-wn-sub">Book a free no-obligation survey. Our engineers will assess your roof, confirm your panel layout, and give you a final fixed price - with no pressure to proceed.</p>
+          <div className="lw-wn-cards">
+            {STEPS.map((s) => (
+              <div key={s.n} className="lw-wn-card">
+                <span className="lw-wn-num">{s.n}</span>
+                <div className="lw-wn-card-label">{s.label}</div>
+                <div className="lw-wn-card-desc">{s.desc}</div>
+              </div>
+            ))}
+          </div>
+          <button type="button" className="lw-cta lw-wn-cta" onClick={onContinue}>
+            Book my free survey →
+          </button>
+        </div>
+      );
+    }
+
+    /* STEP 9 — Your details (contact capture only) */
+    function DetailsStep({ sel, financeChoice, warrantyAdded, defaults, onContinue }) {
+      const [firstName, setFirstName] = useState(defaults.firstName);
+      const [surname, setSurname] = useState(defaults.surname);
+      const [email, setEmail] = useState(defaults.email);
+      const [phone, setPhone] = useState(defaults.phone);
       const [touched, setTouched] = useState(false);
 
       const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
       const phoneValid = /^(?:\+?44|0)\d{9,10}$/.test(phone.replace(/[^0-9+]/g, ''));
-      const allValid = firstName.trim() && surname.trim() && emailValid && phoneValid && !!date;
+      const allValid = firstName.trim() && surname.trim() && emailValid && phoneValid;
 
-      const total = sel.price + (warrantyAdded ? 199 : 0);
-      const monthly = financeMonthly(total, 180);
-
-      const handleBook = () => {
+      const handleContinue = () => {
         setTouched(true);
         if (!allValid) return;
-        onSubmit({
+        onContinue({
+          first_name: firstName.trim(),
+          surname: surname.trim(),
           full_name: (firstName.trim() + ' ' + surname.trim()).trim(),
           email: email.trim(),
           phone: phone.trim(),
-          preferred_date: date,
         });
       };
 
-      const NEXT = [
-        { n: 1, label: 'Survey booked', desc: "We'll confirm your slot within 24 hours" },
-        { n: 2, label: 'Remote design', desc: 'Our engineers review your roof and design your system' },
-        { n: 3, label: 'Installation day', desc: 'Your system is fitted by our MCS-certified team' },
-      ];
-
       return (
-        <div className="lw-contact lw-fade-in">
-          <div className="lw-contact-grid">
-            {/* LEFT — form */}
-            <div className="lw-cd-left">
-              <h1 className="lw-cd-h1">Secure your free survey</h1>
-              <p className="lw-cd-subh">No payment today. Our team will contact you within 24 hours to confirm your installation date.</p>
+        <div className="lw-step-narrow lw-fade-in">
+          <SlimSystemBar sel={sel} financeChoice={financeChoice} warrantyAdded={warrantyAdded} />
+          <h1 className="lw-step-h">Your details</h1>
+          <p className="lw-step-sub">We'll use these to confirm your booking and send your survey report.</p>
 
-              {/* CARD 1 — What happens next? */}
-              <div className="lw-cd-card">
-                <div className="lw-cd-cardhead">
-                  <span className="lw-cd-num">1</span>
-                  <span className="lw-cd-cardlabel">What happens next?</span>
-                </div>
-                <div className="lw-next3">
-                  {NEXT.map((s) => (
-                    <div key={s.n} className="lw-next3-item">
-                      <span className="lw-next3-num">{s.n}</span>
-                      <div className="lw-next3-body">
-                        <div className="lw-next3-label">{s.label}</div>
-                        <div className="lw-next3-desc">{s.desc}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* CARD 2 — Your details */}
-              <div className="lw-cd-card">
-                <div className="lw-cd-cardhead">
-                  <span className="lw-cd-num">2</span>
-                  <span className="lw-cd-cardlabel">Your details</span>
-                </div>
-                <div className="lw-cd-row">
-                  <div className="lw-cd-field">
-                    <label className="lw-cd-label" htmlFor="cd-first">First name</label>
-                    <input id="cd-first" className="lw-cd-input" type="text" value={firstName}
-                           onChange={(e) => setFirstName(e.target.value)} />
-                  </div>
-                  <div className="lw-cd-field">
-                    <label className="lw-cd-label" htmlFor="cd-surname">Surname</label>
-                    <input id="cd-surname" className="lw-cd-input" type="text" value={surname}
-                           onChange={(e) => setSurname(e.target.value)} />
-                  </div>
-                </div>
-                <div className="lw-cd-field">
-                  <label className="lw-cd-label" htmlFor="cd-email">Email address</label>
-                  <input id="cd-email" className="lw-cd-input" type="email" value={email}
-                         onChange={(e) => setEmail(e.target.value)} />
-                </div>
-                <div className="lw-cd-field">
-                  <label className="lw-cd-label" htmlFor="cd-phone">Phone number</label>
-                  <input id="cd-phone" className="lw-cd-input" type="tel" value={phone}
-                         onChange={(e) => setPhone(e.target.value)} />
-                </div>
-              </div>
-
-              {/* CARD 3 — Preferred survey date */}
-              <div className="lw-cd-card">
-                <div className="lw-cd-cardhead">
-                  <span className="lw-cd-num">3</span>
-                  <span className="lw-cd-cardlabel">Preferred survey date</span>
-                </div>
-                <p className="lw-cd-hint">Weekdays only. Our team will confirm availability after your technical review.</p>
-                <CalendarPicker value={date} onSelect={setDate} />
-                {date && <p className="lw-cd-chosen">Selected: {formatIsoLong(date)}</p>}
-              </div>
-
-              <button type="button" className="lw-cta lw-cd-cta" disabled={!allValid} onClick={handleBook}>
-                Book my free survey →
-              </button>
-              {touched && !allValid && (
-                <p className="lw-cd-err">Please complete all fields with a valid email, UK phone number and a chosen date.</p>
-              )}
+          <div className="lw-cd-row">
+            <div className="lw-cd-field">
+              <label className="lw-cd-label" htmlFor="cd-first">First name</label>
+              <input id="cd-first" className="lw-cd-input" type="text" value={firstName}
+                     onChange={(e) => setFirstName(e.target.value)} />
             </div>
-
-            {/* RIGHT — sticky booking summary */}
-            <aside className="lw-cd-right">
-              <div className="lw-bsum">
-                {sel.images && (
-                  <div className="lw-bsum-imgs">
-                    <div className="lw-bsum-cell">
-                      {sel.images.panel && <img src={sel.images.panel} alt=""
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
-                    </div>
-                    <div className="lw-bsum-cell">
-                      {sel.images.inverter && <img src={sel.images.inverter} alt=""
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
-                    </div>
-                    <div className="lw-bsum-cell">
-                      {sel.images.battery
-                        ? <img src={sel.images.battery} alt=""
-                            onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                        : <img src={BATTERY_IMG['5kw']} alt=""
-                            style={{ filter: 'grayscale(100%) opacity(0.25)' }}
-                            onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
-                    </div>
-                  </div>
-                )}
-                <h2 className="lw-bsum-h">Your booking summary</h2>
-
-                <div className="lw-bsum-tier">{sel.tierTitle}</div>
-                <div className="lw-bsum-spec">{sel.panelBatteryLine}</div>
-                {warrantyAdded && (
-                  <div className="lw-bsum-warr">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
-                    5-Year Workmanship Guarantee
-                  </div>
-                )}
-
-                <hr className="lw-bsum-div" />
-
-                {paymentMethod === 'cash' ? (
-                  <React.Fragment>
-                    <div className="lw-bsum-line">
-                      <span className="lw-bsum-k">Cash price</span>
-                      <span className="lw-bsum-cashv">{gbp(total)}</span>
-                    </div>
-                    <div className="lw-bsum-cashnote">or from £{monthly}/mo with finance</div>
-                  </React.Fragment>
-                ) : fin ? (
-                  <React.Fragment>
-                    <div className="lw-bsum-mplabel">Monthly payment</div>
-                    <div className="lw-bsum-mpfig">£{fin.financeMonthly}/mo</div>
-                    <div className="lw-bsum-line">
-                      <span className="lw-bsum-k">Deposit</span>
-                      <span className="lw-bsum-k">{gbp(fin.financeDeposit)} ({fin.financeDepositPct}%)</span>
-                    </div>
-                    <div className="lw-bsum-line">
-                      <span className="lw-bsum-k">Term</span>
-                      <span className="lw-bsum-k">{fin.financeTerm} months ({TERM_YEARS[fin.financeTerm] || (Math.round(fin.financeTerm / 12) + ' years')}) · 9.9% APR</span>
-                    </div>
-                    <div className="lw-bsum-line">
-                      <span className="lw-bsum-k">Total repayable</span>
-                      <span className="lw-bsum-tr">{gbp(fin.financeTotalRepayable)}</span>
-                    </div>
-                    <hr className="lw-bsum-div" />
-                    <div className="lw-bsum-line">
-                      <span className="lw-bsum-cash">Cash price</span>
-                      <span className="lw-bsum-cash">{gbp(total)}</span>
-                    </div>
-                    <p className="lw-bsum-finnote">Your finance application will be submitted after your free survey. Our team will confirm your terms before any commitment is made.</p>
-                  </React.Fragment>
-                ) : (
-                  <React.Fragment>
-                    <div className="lw-bsum-line">
-                      <span className="lw-bsum-k">System price</span>
-                      <span className="lw-bsum-v">{gbp(total)}</span>
-                    </div>
-                    {warrantyAdded && <div className="lw-bsum-item">+£199 warranty</div>}
-                    <div className="lw-bsum-monthly">or £{monthly}/mo</div>
-                    <div className="lw-bsum-apr">at 9.9% APR, 15-year term</div>
-                  </React.Fragment>
-                )}
-
-                <hr className="lw-bsum-div" />
-
-                <div className="lw-bsum-line">
-                  <span className="lw-bsum-k2">Monthly bill reduction</span>
-                  <span className="lw-bsum-v2 lw-bsum-v2--red">{gbp(sel.monthlySaving)} est./mo</span>
-                </div>
-                <div className="lw-bsum-line">
-                  <span className="lw-bsum-k2">20-year saving</span>
-                  <span className="lw-bsum-v2">{gbp(sel.saving20yr)} est.</span>
-                </div>
-
-                <hr className="lw-bsum-div" />
-
-                <div className="lw-bsum-badges">
-                  <span>{ICONS.shield} MCS Certified</span>
-                  <span>{ICONS.star} Trustpilot 4.9</span>
-                  <span>HIES Member</span>
-                </div>
-                <div className="lw-bsum-vat">All prices include VAT</div>
-              </div>
-            </aside>
+            <div className="lw-cd-field">
+              <label className="lw-cd-label" htmlFor="cd-surname">Surname</label>
+              <input id="cd-surname" className="lw-cd-input" type="text" value={surname}
+                     onChange={(e) => setSurname(e.target.value)} />
+            </div>
           </div>
+          <div className="lw-cd-field">
+            <label className="lw-cd-label" htmlFor="cd-email">Email address</label>
+            <input id="cd-email" className="lw-cd-input" type="email" value={email}
+                   onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <div className="lw-cd-field">
+            <label className="lw-cd-label" htmlFor="cd-phone">Phone number</label>
+            <input id="cd-phone" className="lw-cd-input" type="tel" value={phone}
+                   onChange={(e) => setPhone(e.target.value)} />
+          </div>
+
+          <button type="button" className="lw-cta lw-step-cta" disabled={!allValid} onClick={handleContinue}>
+            Continue →
+          </button>
+          {touched && !allValid && (
+            <p className="lw-cd-err">Please complete all fields with a valid email and UK phone number.</p>
+          )}
+        </div>
+      );
+    }
+
+    /* STEP 10 — Preferred survey date (calendar only) */
+    function SurveyDateStep({ sel, financeChoice, warrantyAdded, initialDate, onContinue }) {
+      const [date, setDate] = useState(initialDate || '');
+      return (
+        <div className="lw-step-narrow lw-fade-in">
+          <SlimSystemBar sel={sel} financeChoice={financeChoice} warrantyAdded={warrantyAdded} />
+          <h1 className="lw-step-h">Choose a preferred date</h1>
+          <p className="lw-step-sub">Weekdays only. Our team will confirm your slot within 24 hours - you can reschedule any time.</p>
+          <div style={{ marginTop: '24px' }}>
+            <CalendarPicker value={date} onSelect={setDate} />
+          </div>
+          {date && <p className="lw-cd-chosen">Selected: {formatIsoLong(date)}</p>}
+          <button type="button" className="lw-cta lw-step-cta" disabled={!date} onClick={() => onContinue(date)}>
+            Continue →
+          </button>
         </div>
       );
     }
@@ -5191,6 +5035,12 @@
         if (currentIndex === QUOTE_INDEX && microCommit) {
           setMicroCommit(false);
           setUpsellOpen(false);
+          return;
+        }
+        // From Step 8 (What happens next), back returns to the micro-commitment screen.
+        if (currentIndex === QUOTE_INDEX + 1) {
+          setMicroCommit(true);
+          setCurrentIndex(QUOTE_INDEX);
           return;
         }
         // From the email-capture gate, back returns to Step 6 occupancy.
@@ -5389,15 +5239,25 @@
         setPreparing(true);
       }, []);
 
-      // Step 8 — commit contact details + preferred date, then advance to Step 9.
-      const handleContactContinue = useCallback((data) => {
+      // Step 8 (What happens next) — pure motivation screen; advance to Step 9.
+      const handleWhatsNextContinue = useCallback(() => {
+        setCurrentIndex((i) => i + 1);
+      }, []);
+      // Step 9 (Your details) — commit contact details, then advance to Step 10.
+      const handleDetailsContinue = useCallback((data) => {
         setAnswers((prev) => ({
           ...prev,
+          first_name: data.first_name,
+          surname: data.surname,
           full_name: data.full_name,
           email: data.email,
           phone: data.phone,
-          preferred_date: data.preferred_date,
         }));
+        setCurrentIndex((i) => i + 1);
+      }, []);
+      // Step 10 (Survey date) — commit preferred date, then advance to Step 11 (placeholder).
+      const handleSurveyDateContinue = useCallback((preferredDate) => {
+        setAnswers((prev) => ({ ...prev, preferred_date: preferredDate }));
         setCurrentIndex((i) => i + 1);
       }, []);
 
@@ -5441,9 +5301,11 @@
       const onBattery = currentIndex === BATTERY_INDEX;   // Step 4 battery location
       const onEv = currentIndex === EV_INDEX;             // Step 5 EV details
       const onStep6 = currentIndex === STEP6_INDEX;       // Step 6 address & roof confirmation
-      const onQuote = currentIndex === QUOTE_INDEX;       // Step 7 quote screen
-      const onContact = currentIndex === QUOTE_INDEX + 1; // Step 8 contact details
-      const isComplete = currentIndex > QUOTE_INDEX + 1;  // handover (placeholder for Step 9)
+      const onQuote = currentIndex === QUOTE_INDEX;          // Step 7 quote screen
+      const onWhatsNext = currentIndex === QUOTE_INDEX + 1;  // Step 8 what happens next
+      const onDetails = currentIndex === QUOTE_INDEX + 2;    // Step 9 your details
+      const onSurveyDate = currentIndex === QUOTE_INDEX + 3; // Step 10 preferred survey date
+      const isComplete = currentIndex > QUOTE_INDEX + 3;     // handover (placeholder for Steps 11-12)
       const currentQuestion = inQualifier ? QUESTIONS[currentIndex] : null;
       const step = inQualifier ? { number: 1, name: 'Home Details' }
         : onUsage ? { number: 2, name: 'Electricity Usage' }
@@ -5452,8 +5314,10 @@
         : onEv ? { number: 5, name: 'EV Details' }
         : onStep6 ? { number: 6, name: 'Address & Roof' }
         : onQuote ? { number: 7, name: 'Your Solar Potential' }
-        : onContact ? { number: 8, name: 'Your details' }
-        : { number: 9, name: 'Secure Your Booking' };
+        : onWhatsNext ? { number: 8, name: "What's next" }
+        : onDetails ? { number: 9, name: 'Your details' }
+        : onSurveyDate ? { number: 10, name: 'Survey date' }
+        : { number: 11, name: 'Secure Your Booking' };
 
       // Breadcrumb pills: answers for screens *before* the current one (so the current
       // screen's value shows in-place rather than duplicated as a pill above).
@@ -5523,10 +5387,14 @@
         percent = 5 * segment + (phaseIdx / 4) * segment;
       } else if (onQuote) {
         percent = 6 * segment;                                   // Steps 1–6 done; on the quote screen
-      } else if (onContact) {
-        percent = 7 * segment;                                   // Steps 1–7 done; on contact details
+      } else if (onWhatsNext) {
+        percent = 7 * segment;                                   // Steps 1–7 done; on "what's next"
+      } else if (onDetails) {
+        percent = 8 * segment;                                   // Steps 1–8 done; on "your details"
+      } else if (onSurveyDate) {
+        percent = 9 * segment;                                   // Steps 1–9 done; on "survey date"
       } else {
-        percent = 8 * segment;                                   // Steps 1–8 done
+        percent = 10 * segment;                                  // Steps 1–10 done
       }
 
       return (
@@ -5545,7 +5413,7 @@
                     canGoBack={!isComplete && currentIndex > 0}
                     onBack={handleBack}
                   />
-                  {!isComplete && !onQuote && !onContact && !emailGate && <Breadcrumbs answered={breadcrumbItems} onEdit={handleEdit}
+                  {!isComplete && !onQuote && !onWhatsNext && !onDetails && !onSurveyDate && !emailGate && <Breadcrumbs answered={breadcrumbItems} onEdit={handleEdit}
                     expanded={bcExpanded} onToggle={handleToggleBreadcrumbs} />}
                   {inQualifier && (
                     <Question
@@ -5631,14 +5499,35 @@
                       onEdit={handleMicroEdit}
                     />
                   )}
-                  {onContact && quoteSel && (
-                    <ContactDetails
+                  {onWhatsNext && quoteSel && (
+                    <WhatsNextStep
                       sel={quoteSel}
-                      warrantyAdded={!!answers.warrantyAdded}
                       financeChoice={financeChoice}
-                      leadFirstName={answers.lead_first_name}
-                      leadEmail={answers.lead_email}
-                      onSubmit={handleContactContinue}
+                      warrantyAdded={!!answers.warrantyAdded}
+                      onContinue={handleWhatsNextContinue}
+                    />
+                  )}
+                  {onDetails && quoteSel && (
+                    <DetailsStep
+                      sel={quoteSel}
+                      financeChoice={financeChoice}
+                      warrantyAdded={!!answers.warrantyAdded}
+                      defaults={{
+                        firstName: answers.first_name || (answers.quote_email_captured ? (answers.lead_first_name || '') : ''),
+                        surname: answers.surname || '',
+                        email: answers.email || (answers.quote_email_captured ? (answers.lead_email || '') : ''),
+                        phone: answers.phone || '',
+                      }}
+                      onContinue={handleDetailsContinue}
+                    />
+                  )}
+                  {onSurveyDate && quoteSel && (
+                    <SurveyDateStep
+                      sel={quoteSel}
+                      financeChoice={financeChoice}
+                      warrantyAdded={!!answers.warrantyAdded}
+                      initialDate={answers.preferred_date}
+                      onContinue={handleSurveyDateContinue}
                     />
                   )}
                   {isComplete && <StepComplete answers={answers} onRestart={handleRestart} />}
