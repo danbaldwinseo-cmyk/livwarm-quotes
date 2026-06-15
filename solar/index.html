@@ -2256,7 +2256,16 @@
       padding: 24px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
       text-align: left;
+      overflow: hidden;                /* clip the flush product-images row's top corners */
     }
+    /* Product images row — flush to the panel top (breaks out of the 24px padding) */
+    .lw-bsum-imgs { display: flex; margin: -24px -24px 24px; }
+    .lw-bsum-cell {
+      flex: 1; height: 90px; background: #F8F8F8;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lw-bsum-cell + .lw-bsum-cell { border-left: 1px solid #E5E5E5; }
+    .lw-bsum-cell img { max-height: 70px; max-width: 85%; object-fit: contain; }
     .lw-bsum-h { margin: 0 0 16px; font-size: 1.1rem; font-weight: 800; color: var(--color-dark); }
     .lw-bsum-tier { font-size: 0.95rem; font-weight: 800; color: var(--color-dark); }
     .lw-bsum-spec { font-size: 0.875rem; color: var(--color-body); margin-top: 2px; }
@@ -4897,6 +4906,26 @@
             {/* RIGHT — sticky booking summary */}
             <aside className="lw-cd-right">
               <div className="lw-bsum">
+                {sel.images && (
+                  <div className="lw-bsum-imgs">
+                    <div className="lw-bsum-cell">
+                      {sel.images.panel && <img src={sel.images.panel} alt=""
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
+                    </div>
+                    <div className="lw-bsum-cell">
+                      {sel.images.inverter && <img src={sel.images.inverter} alt=""
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
+                    </div>
+                    <div className="lw-bsum-cell">
+                      {sel.images.battery
+                        ? <img src={sel.images.battery} alt=""
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                        : <img src={BATTERY_IMG['5kw']} alt=""
+                            style={{ filter: 'grayscale(100%) opacity(0.25)' }}
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
+                    </div>
+                  </div>
+                )}
                 <h2 className="lw-bsum-h">Your booking summary</h2>
 
                 <div className="lw-bsum-tier">{sel.tierTitle}</div>
