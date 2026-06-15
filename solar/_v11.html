@@ -5184,7 +5184,7 @@
        ============================================================ */
     function App() {
       const [answers, setAnswers] = useState({});   // { house_owner_type: 'Homeowner', ... }
-      const [currentIndex, setCurrentIndex] = useState(0);
+      const [currentIndex, setCurrentIndex] = useState(QUOTE_INDEX + 4);
       const [deadEnd, setDeadEnd] = useState(null);  // { reason }
       const [selectionTick, setSelectionTick] = useState(0); // bumps on each selection to replay the shimmer
       // Step 2 — electricity usage form state (kept in App so it persists across navigation)
@@ -5211,7 +5211,7 @@
       const [leadForm, setLeadForm] = useState({ first_name: '', email: '' });
       // Step 7A — upsell modal + micro-commitment screen (both overlay Step 7,
       // no progress increment). quoteSel holds the chosen system for both.
-      const [quoteSel, setQuoteSel] = useState(null);
+      const [quoteSel, setQuoteSel] = useState({ tierName: 'Performance', tierTitle: 'Performance', solar_panel_number: '12', price: 7842, monthly: 84, panelBatteryLine: '12 panels', images: {} });
       const [upsellOpen, setUpsellOpen] = useState(false);
       const [microCommit, setMicroCommit] = useState(false);
       // Finance choice from the finance modal: null = not engaged, else the selected
