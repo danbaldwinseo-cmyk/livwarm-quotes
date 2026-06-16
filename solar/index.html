@@ -4040,17 +4040,18 @@
       };
       const head = { title: TIER_TITLES[data.id] || data.name, sub: subs[data.id] || '' };
 
+      // Savings banner reflects the selected finance term (if any), else 20 years.
+      const displayTermYrs = (financeChoice && financeChoice.financeSelected)
+        ? Math.round(financeChoice.financeTerm / 12)
+        : 20;
+      const displaySaving = Math.max(0, data.annualSaving * displayTermYrs - data.price);
+      const displayLabel = (financeChoice && financeChoice.financeSelected)
+        ? 'Estimated over ' + displayTermYrs + ' years'
+        : 'Estimated over 20 years';
+
       return (
         <div className={cardCls}>
           {data.badge && <div className="lw-show-ribbon">★ Top Pick</div>}
-          <div className="lw-card-price-top">
-            <div className="lw-card-price-cash">{gbp(data.price)}</div>
-            <div className="lw-card-price-or">or</div>
-            <div className="lw-card-price-monthly">£{monthlyFor(data)}/mo</div>
-            <div className="lw-card-price-survey">
-              Subject to survey and final system confirmation
-            </div>
-          </div>
           {/* header */}
           <div className="lw-show-head">
             <div className="lw-show-title">{head.title}</div>
@@ -4092,6 +4093,15 @@
 
           <hr className="lw-show-div" />
 
+          <div className="lw-card-price-top">
+            <div className="lw-card-price-cash">{gbp(data.price)}</div>
+            <div className="lw-card-price-or">or</div>
+            <div className="lw-card-price-monthly">£{monthlyFor(data)}/mo</div>
+            <div className="lw-card-price-survey">
+              Subject to survey and final system confirmation
+            </div>
+          </div>
+
           {/* FIX 3 — branded savings bar (Essential & Performance only; Custom shows dropdowns) */}
           {data.id !== 'custom' && (
             <div style={{
@@ -4132,10 +4142,10 @@
                 <div style={{ width: '1px', background: 'rgba(255,255,255,0.25)', flexShrink: 0, margin: '4px 0' }} />
                 <div style={{ flex: 1, textAlign: 'center', padding: '0 8px' }}>
                   <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>
-                    {gbp(data.saving20yr)} <span style={{ fontSize: '0.75rem', fontWeight: 400, opacity: 0.85 }}>est.</span>
+                    {gbp(displaySaving)} <span style={{ fontSize: '0.75rem', fontWeight: 400, opacity: 0.85 }}>est.</span>
                   </div>
                   <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.85)', marginTop: '4px' }}>
-                    Estimated over 20 years
+                    {displayLabel}
                   </div>
                 </div>
                 <div style={{ width: '1px', background: 'rgba(255,255,255,0.25)', flexShrink: 0, margin: '4px 0' }} />
