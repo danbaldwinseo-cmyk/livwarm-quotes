@@ -567,13 +567,8 @@
        ============================================================ */
     .lw-rooftile-h { margin: 0 0 10px; font-size: 2rem; font-weight: 800; color: var(--color-dark); text-align: center; line-height: 1.2; }
     .lw-rooftile-sub { margin: 0 0 32px; font-size: 1rem; color: var(--color-body); text-align: center; line-height: 1.5; }
-    /* Compact answer cards (130px) matching the battery-location sub-question proportions.
-       Scoped to .lw-rooftile only - the shared .lw-card is unchanged. Pin height AND keep
-       the min-height override: dropping min-height would let the base .lw-card min-height:200px
-       resurface, and min-height beats height in CSS, so the cards would snap back to 200px. */
-    .lw-rooftile .lw-card { height: 130px; min-height: 130px; padding: 16px 12px; gap: 8px; }
-    .lw-rooftile .lw-card-label { font-size: 0.9375rem; color: var(--color-dark); }
-    .lw-rooftile .lw-card-icon svg { width: 44px; height: 44px; }
+    /* Tile cards use the base .lw-card values (200px, padding 40px 32px, gap 16px,
+       64px icon) - identical to the battery-location sub-question cards. */
     /* "Not sure which type you have?" help link — grey text, red info icon, underline on hover */
     .lw-rooftile-help {
       display: flex; align-items: center; gap: 6px;
