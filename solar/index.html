@@ -599,12 +599,6 @@
     .lw-tilehelp-intro { margin: 0 0 20px; font-size: 0.875rem; color: var(--color-body); line-height: 1.5; }
     .lw-tilehelp-sec { border: 1px solid var(--color-border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
     .lw-tilehelp-secname { font-size: 0.9375rem; font-weight: 800; color: var(--color-dark); }
-    .lw-tilehelp-imgs { display: flex; gap: 10px; margin-top: 10px; }
-    .lw-tilehelp-img {
-      flex: 1; height: 120px; background: var(--color-border);
-      border-radius: 8px; display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; color: #9E9E9E;
-    }
     .lw-tilehelp-bullets { margin: 10px 0 0; padding-left: 18px; }
     .lw-tilehelp-bullets li { font-size: 0.875rem; color: var(--color-body); line-height: 1.5; }
     .lw-tilehelp-foot { margin-top: 4px; background: var(--color-card-bg); border-radius: 8px; padding: 14px 16px; font-size: 0.875rem; color: var(--color-body); line-height: 1.5; }
@@ -2871,17 +2865,17 @@
     // Informational "how to identify your roof tiles" modal. No data collected.
     function RoofTileHelpModal({ onClose }) {
       const SECTIONS = [
-        { name: 'Standard tiles', bullets: [
+        { name: 'Standard tiles', img: 'https://livwarm.co.uk/wp-content/uploads/2026/06/standard-roof-tiles-demo.webp', bullets: [
           'Large concrete or clay tiles with a gentle curve or flat profile, interlocking in even rows.',
           'Very common on homes built from the 1970s onwards - semis, detached houses and new builds.',
           'Often look uniform from the street with a consistent colour across the whole roof.',
         ] },
-        { name: 'Rosemary tiles', bullets: [
+        { name: 'Rosemary tiles', img: 'https://livwarm.co.uk/wp-content/uploads/2026/06/rosemary-roof-tiles-demo.webp', bullets: [
           'Small, flat clay tiles with a narrow profile and a slightly textured surface.',
           'Typical on 1930s-1960s semis and terraces, especially across southern and central England.',
           'From ground level they look like neat, narrow rectangles rather than big overlapping slabs.',
         ] },
-        { name: 'Slate tiles', bullets: [
+        { name: 'Slate tiles', img: 'https://livwarm.co.uk/wp-content/uploads/2026/06/slate-roof-tiles-demo.webp', bullets: [
           'Thin, flat slates laid in staggered courses - often grey, blue-grey or purple in tone.',
           'Common on Victorian and Edwardian terraces, older village properties and homes in slate-rich regions.',
           'The roof often has a finer, more textured appearance than modern concrete tiles.',
@@ -2900,10 +2894,9 @@
             {SECTIONS.map((s) => (
               <div key={s.name} className="lw-tilehelp-sec">
                 <div className="lw-tilehelp-secname">{s.name}</div>
-                <div className="lw-tilehelp-imgs">
-                  <div className="lw-tilehelp-img">Close-up</div>
-                  <div className="lw-tilehelp-img">From street level</div>
-                </div>
+                <img src={s.img} alt={s.name}
+                     style={{ width: '100%', height: '160px', objectFit: 'cover',
+                              borderRadius: '8px', marginTop: '10px', display: 'block' }} />
                 <ul className="lw-tilehelp-bullets">
                   {s.bullets.map((b, i) => <li key={i}>{b}</li>)}
                 </ul>
