@@ -3566,7 +3566,7 @@
       return (
         <div className="lw-fade-in">
           <h1 className="lw-question">Is this your roof?</h1>
-          <p className="lw-question-sub">Maps don't always pin the exact property. Click or tap your roof to move the pin onto the right one.</p>
+          <p className="lw-question-sub">Click or tap directly on your roof in the map to confirm your property.</p>
           <div className="lw-map-wrap">
             {status === 'error'
               ? <div className="lw-map lw-map-fallback">Map preview isn't available here — it will load on the live site. You can still continue.</div>
@@ -3810,7 +3810,8 @@
       return (
         <div className="lw-fade-in">
           <h1 className="lw-question">If you look out of your front door, which direction are you facing?</h1>
-          <p className="lw-question-sub">Your roof's orientation affects how much energy your panels will generate.</p>
+          <p className="lw-question-sub">Tap the closest direction on the compass to confirm the direction your front door faces.</p>
+          <p className="lw-question-sub" style={{fontSize:'0.875rem', marginTop:'-20px'}}>Your roof's orientation affects how much energy your panels will generate.</p>
           <div className="lw-map-wrap">
             {status === 'error'
               ? <div className="lw-map lw-map-fallback">Map preview isn't available here — it will load on the live site.</div>
@@ -3819,8 +3820,6 @@
             <CompassDial value={value} onChange={onChange} />
             {/* Instruction as a frosted overlay label at the map's lower edge */}
             <div className="lw-map-label">
-              <span className="lw-instr-wide">Tap your direction on the compass to the right</span>
-              <span className="lw-instr-narrow">Tap your direction on the compass below</span>
             </div>
           </div>
           {value && <p className="lw-orient-facing">Facing: {DIR_WORDS[value]}</p>}
