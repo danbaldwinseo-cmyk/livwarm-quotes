@@ -1260,14 +1260,6 @@
     .lw-show-payback { font-size: 0.8rem; color: var(--color-body); margin-top: 4px; }
     .lw-quote-sep { border: none; border-top: 1px solid var(--color-border); width: 100%; margin: 24px 0; }
     /* Quote top — compact centred price/summary block */
-    .lw-quote-top { max-width: 680px; margin: 0 auto; text-align: center; }
-    .lw-qt-heading { font-size: 0.875rem; font-weight: 500; color: var(--color-body); margin: 0 0 4px; }
-    .lw-qt-priceline { display: flex; justify-content: center; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-    .lw-qt-cash { font-size: 2.5rem; font-weight: 800; color: var(--color-dark); line-height: 1.05; }
-    .lw-qt-monthly { font-size: 2.5rem; font-weight: 700; color: var(--color-primary); line-height: 1.05; }
-    .lw-qt-or { font-size: 1rem; font-weight: 500; }
-    .lw-qt-summary { font-size: 0.875rem; color: var(--color-body); margin: 8px 0 0; }
-    .lw-qt-survey { font-size: 0.75rem; color: #999; font-style: italic; margin: 4px 0 0; }
     /* section heading above the tier cards */
     .lw-tier-heading-wrap { text-align: center; margin: 16px 0 12px; }
     .lw-tier-heading { font-size: 1.5rem; font-weight: 700; color: var(--color-dark); margin: 0; }
@@ -1433,6 +1425,38 @@
        Keeps the standard raised drop shadow so the centre card doesn't read flat. */
     .lw-show-card--performance.is-active { background: #ffffff; border: 1.5px solid rgba(232, 50, 58, 0.55); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13), 0 2px 6px rgba(0, 0, 0, 0.09), inset 0 2px 8px rgba(0, 0, 0, 0.13), inset 0 0 18px 8px rgba(232, 50, 58, 0.06); }
     /* header (left-aligned) */
+    .lw-card-price-top {
+      text-align: center;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 16px;
+    }
+    .lw-card-price-cash {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--color-dark);
+      line-height: 1.05;
+      display: inline;
+    }
+    .lw-card-price-or {
+      font-size: 1rem;
+      color: var(--color-body);
+      display: inline;
+      margin: 0 8px;
+    }
+    .lw-card-price-monthly {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      line-height: 1.05;
+      display: inline;
+    }
+    .lw-card-price-survey {
+      font-size: 0.75rem;
+      color: var(--color-body);
+      margin-top: 6px;
+      font-style: italic;
+    }
     .lw-show-head { text-align: left; }
     .lw-show-title { font-size: 1.4rem; font-weight: 700; color: var(--color-dark); line-height: 1.2; }
     .lw-show-sub { font-size: 0.9rem; color: var(--color-body); margin-top: 2px; }
@@ -3980,7 +4004,7 @@
 
     // A single product-showcase card for the carousel. The active card shows the full
     // layout; inactive (peek) cards render the same markup, clipped + faded by the carousel.
-    function CarouselCard({ data, products, custom, onCustomChange, isActive, currentBill, financeChoice, onExploreFinance }) {
+    function CarouselCard({ data, products, custom, onCustomChange, isActive, currentBill, financeChoice, monthlyFor, onExploreFinance }) {
       const isCustom = data.id === 'custom';
       const hasBattery = data.battery !== 'none';
       const hideImg = (e) => { e.currentTarget.style.display = 'none'; };
@@ -4019,6 +4043,14 @@
       return (
         <div className={cardCls}>
           {data.badge && <div className="lw-show-ribbon">★ Top Pick</div>}
+          <div className="lw-card-price-top">
+            <div className="lw-card-price-cash">{gbp(data.price)}</div>
+            <div className="lw-card-price-or">or</div>
+            <div className="lw-card-price-monthly">£{monthlyFor(data)}/mo</div>
+            <div className="lw-card-price-survey">
+              Subject to survey and final system confirmation
+            </div>
+          </div>
           {/* header */}
           <div className="lw-show-head">
             <div className="lw-show-title">{head.title}</div>
@@ -4063,7 +4095,7 @@
           {/* FIX 3 — branded savings bar (Essential & Performance only; Custom shows dropdowns) */}
           {data.id !== 'custom' && (
             <div style={{
-              background: 'linear-gradient(115deg, #E8323A 45%, #d44a2a 100%)',
+              background: 'linear-gradient(115deg, #3d9e47 0%, #4CAF50 100%)',
               borderRadius: '8px',
               padding: '12px 20px',
               position: 'relative',
@@ -4080,7 +4112,7 @@
                 pointerEvents: 'none'
               }} />
               <div style={{
-                fontSize: '0.95rem', fontWeight: 700, color: '#fff',
+                fontSize: '1.05rem', fontWeight: 800, color: '#fff',
                 textAlign: 'center', marginBottom: '10px',
                 position: 'relative', zIndex: 1
               }}>
@@ -4548,19 +4580,6 @@
 
       return (
         <div className="lw-quote">
-          {/* Compact price/summary block (savings moved into the tier cards below) */}
-          <Reveal delay={0}>
-            <div className="lw-quote-top">
-              <div className="lw-qt-heading">Your instant quote</div>
-              <div className="lw-qt-priceline">
-                <span className="lw-qt-cash">{gbp(active.price)}</span>
-                <span className="lw-qt-monthly"><span className="lw-qt-or">or</span> £{monthlyFor(active)}/mo</span>
-              </div>
-              <p className="lw-qt-summary">{summaryLine}</p>
-              <p className="lw-qt-survey">Subject to survey and final system confirmation</p>
-            </div>
-          </Reveal>
-
           {/* Section heading above tier cards */}
           <Reveal delay={400}>
             <div className="lw-tier-heading-wrap">
@@ -4589,7 +4608,7 @@
                          onClick={() => { if (i !== activeCard) setActiveCard(i); }}>
                       <CarouselCard data={tiers[id]} products={products} currentBill={currentBill}
                         custom={custom} onCustomChange={onCustomChange} isActive={i === activeCard}
-                        financeChoice={financeChoice} onExploreFinance={setFinanceData} />
+                        financeChoice={financeChoice} monthlyFor={monthlyFor} onExploreFinance={setFinanceData} />
                     </div>
                   ))}
                 </div>
