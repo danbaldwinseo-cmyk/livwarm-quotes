@@ -567,9 +567,11 @@
        ============================================================ */
     .lw-rooftile-h { margin: 0 0 10px; font-size: 2rem; font-weight: 800; color: var(--color-dark); text-align: center; line-height: 1.2; }
     .lw-rooftile-sub { margin: 0 0 32px; font-size: 1rem; color: var(--color-body); text-align: center; line-height: 1.5; }
-    /* Compact answer cards (~130px) matching the battery-location sub-question proportions.
-       Scoped to .lw-rooftile only - the shared .lw-card is unchanged. */
-    .lw-rooftile .lw-card { min-height: 130px; padding: 16px 12px; gap: 8px; }
+    /* Compact answer cards (130px) matching the battery-location sub-question proportions.
+       Scoped to .lw-rooftile only - the shared .lw-card is unchanged. Pin height AND keep
+       the min-height override: dropping min-height would let the base .lw-card min-height:200px
+       resurface, and min-height beats height in CSS, so the cards would snap back to 200px. */
+    .lw-rooftile .lw-card { height: 130px; min-height: 130px; padding: 16px 12px; gap: 8px; }
     .lw-rooftile .lw-card-label { font-size: 0.9375rem; color: var(--color-dark); }
     .lw-rooftile .lw-card-icon svg { width: 44px; height: 44px; }
     /* "Not sure which type you have?" help link — grey text, red info icon, underline on hover */
@@ -2447,14 +2449,14 @@
       flatroof: <Svg><path d="M4 8h16v3H4z" /><path d="M6 11v8h12v-8" /><path d="M10 19v-4h4v4" /></Svg>,
       // Step 2 - roof tile type icons (44px viewBox, inherit brand-red via currentColor)
       tileStandard: (
-        <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 14 C7 14 7 10 10 10 C13 10 13 14 16 14 C19 14 19 10 22 10 C25 10 25 14 28 14 C31 14 31 10 34 10 C37 10 37 14 40 14" />
           <path d="M4 22 C7 22 7 18 10 18 C13 18 13 22 16 22 C19 22 19 18 22 18 C25 18 25 22 28 22 C31 22 31 18 34 18 C37 18 37 22 40 22" />
           <path d="M4 30 C7 30 7 26 10 26 C13 26 13 30 16 30 C19 30 19 26 22 26 C25 26 25 30 28 30 C31 30 31 26 34 26 C37 26 37 30 40 30" />
         </svg>
       ),
       tileRosemary: (
-        <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <rect x="4" y="6" width="10" height="14" rx="1" />
           <rect x="17" y="6" width="10" height="14" rx="1" />
           <rect x="30" y="6" width="10" height="14" rx="1" />
@@ -2465,7 +2467,7 @@
         </svg>
       ),
       tileSlate: (
-        <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 16 L4 10 L21 9 L21 16 Z" />
           <path d="M22 16 L22 9 L40 10 L40 16 Z" />
           <path d="M4 25 L4 19 L14 18 L14 25 Z" />
@@ -2476,7 +2478,7 @@
         </svg>
       ),
       tileUnknown: (
-        <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="22" cy="22" r="16" />
           <path d="M17 18 C17 15 19.5 13 22 13 C24.8 13 27 15.2 27 18 C27 20.5 25 21.5 22 23 L22 26" />
           <circle cx="22" cy="30" r="1" fill="currentColor" />
