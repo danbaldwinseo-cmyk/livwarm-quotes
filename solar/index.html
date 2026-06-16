@@ -5107,9 +5107,9 @@
     /* STEP 8 — What happens next (motivation only; no form fields) */
     function WhatsNextStep({ sel, financeChoice, warrantyAdded, onContinue }) {
       const STEPS = [
-        { n: 1, label: 'Provisional booking', desc: 'We reserve your preferred slot' },
-        { n: 2, label: 'Remote survey', desc: 'Our experts verify your design using satellite imagery (no home visit needed)' },
-        { n: 3, label: 'Final confirmation', desc: 'We confirm your installation date and lock in the final price' },
+        { n: 1, label: 'You pick a date', desc: 'Choose your preferred installation date in the next step' },
+        { n: 2, label: 'Remote survey', desc: 'Our team verifies your roof and system design remotely - no home visit needed' },
+        { n: 3, label: 'Installation confirmed', desc: 'We confirm your date and lock in the final price' },
       ];
       return (
         <div className="lw-wn lw-fade-in">
@@ -5118,7 +5118,7 @@
             <circle cx="12" cy="12" r="10" /><path d="M8 12l3 3 5-6" />
           </svg>
           <h1 className="lw-wn-h">Here's what happens next</h1>
-          <p className="lw-wn-sub">Book a free no-obligation survey. Our engineers will assess your roof, confirm your panel layout, and give you a final fixed price - with no pressure to proceed.</p>
+          <p className="lw-wn-sub">Book your preferred installation date below. We'll carry out a quick remote survey first to make sure everything lines up - then your date is confirmed.</p>
           <div className="lw-wn-cards">
             {STEPS.map((s) => (
               <div key={s.n} className="lw-wn-card">
@@ -5130,7 +5130,7 @@
             ))}
           </div>
           <button type="button" className="lw-cta lw-wn-cta" onClick={onContinue}>
-            Book my free survey →
+            Choose my installation date →
           </button>
         </div>
       );
@@ -5204,7 +5204,7 @@
       return (
         <div className="lw-step-narrow lw-fade-in">
           <h1 className="lw-step-h">When would you like your panels installed?</h1>
-          <p className="lw-step-sub">Pick your ideal installation date and we'll pencil it in. We'll carry out a quick remote survey first to confirm your system is right for your home - if anything needs adjusting, we'll agree a revised date with you before anything is confirmed.</p>
+          <p className="lw-step-sub">Pick your preferred date and we'll hold it provisionally. After your remote survey we'll confirm everything is good to go.</p>
           <div style={{ marginTop: '24px' }}>
             <CalendarPicker value={date} onSelect={setDate} />
           </div>
