@@ -4044,10 +4044,10 @@
       const displayTermYrs = (financeChoice && financeChoice.financeSelected)
         ? Math.round(financeChoice.financeTerm / 12)
         : 20;
-      const displaySaving = Math.max(0, data.annualSaving * displayTermYrs - data.price);
+      const displaySaving = data.annualSaving * displayTermYrs;
       const displayLabel = (financeChoice && financeChoice.financeSelected)
-        ? 'Estimated over ' + displayTermYrs + ' years'
-        : 'Estimated over 20 years';
+        ? 'Bill savings over ' + displayTermYrs + ' years'
+        : 'Bill savings over 20 years';
 
       return (
         <div className={cardCls}>
