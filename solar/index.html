@@ -1459,7 +1459,7 @@
     }
     .lw-show-head { text-align: left; }
     .lw-show-title { font-size: 1.4rem; font-weight: 700; color: var(--color-dark); line-height: 1.2; }
-    .lw-show-sub { font-size: 0.9rem; color: var(--color-body); margin-top: 2px; }
+    .lw-show-sub { font-size: 0.9rem; color: var(--color-body); margin-top: 2px; text-align: center; }
     .lw-show-bestmatch { font-size: 0.8rem; color: var(--color-primary); font-weight: 500; margin-top: 4px; }
     /* component row — three equal columns, image over text, vertical dividers between */
     .lw-comp-row { display: flex; flex-direction: row; align-items: stretch; }
@@ -4055,7 +4055,6 @@
           {/* header */}
           <div className="lw-show-head">
             <div className="lw-show-title">{head.title}</div>
-            <div className="lw-show-sub">{head.sub}</div>
           </div>
 
           {/* three components — image left, text right */}
@@ -4093,6 +4092,7 @@
 
           <hr className="lw-show-div" />
 
+          <div className="lw-show-sub">{head.sub}</div>
           <div className="lw-card-price-top">
             <div className="lw-card-price-cash">{gbp(data.price)}</div>
             <div className="lw-card-price-or">or</div>
