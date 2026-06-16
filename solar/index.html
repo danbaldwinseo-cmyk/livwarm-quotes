@@ -562,6 +562,9 @@
       width: 64px;
       height: 64px;
     }
+    /* Roof tile step (Step 2): the "I don't know" card (4th) uses a grey question
+       mark; the three tile cards keep the default brand-red icon colour. */
+    .lw-rooftile .lw-card:nth-child(4) .lw-card-icon { color: var(--color-body); }
     /* On hover the icon brightens/saturates with a very tight glow that hugs the
        outline (and the numeral on bedroom cards). Transition is on .lw-card-icon above. */
     .lw-card:hover .lw-card-icon {
@@ -2371,9 +2374,9 @@
        CONFIG
        ============================================================ */
     const DEAD_END_PATH = '/sorry-we-cannot-help';
-    // Solar flow has 12 progress steps (Steps 1-12 in the spec; the upsell modal
-    // and micro-commitment are not progress steps). Steps 11-12 are not yet built.
-    const TOTAL_STEPS = 12;
+    // Solar flow has 13 progress steps (Steps 1-13 in the spec; the upsell modal
+    // and micro-commitment are not progress steps). Steps 12-13 are not yet built.
+    const TOTAL_STEPS = 13;
 
     /* ============================================================
        ICONS — rounded line icons in brand red (Section 7 #10)
@@ -2395,6 +2398,8 @@
       flat: <Svg><rect x="6" y="3" width="12" height="18" rx="1" /><path d="M9 7h0M12 7h0M15 7h0M9 11h0M12 11h0M15 11h0M9 15h0M15 15h0" /><path d="M11 21v-3h2v3" /></Svg>,
       pitched: <Svg><path d="M3 13 12 5l9 8" /><path d="M5 13v6h14v-6" /></Svg>,
       flatroof: <Svg><path d="M4 8h16v3H4z" /><path d="M6 11v8h12v-8" /><path d="M10 19v-4h4v4" /></Svg>,
+      // Step 2 — roof tile type (tiled roof: peak + tile grid lines)
+      rooftile: <Svg><path d="M3 11 12 4l9 7" /><path d="M5 10v9h14v-9" /><path d="M5 13.5h14M5 16.5h14M9.5 10v9M14.5 10v9" /></Svg>,
       bed: <Svg size={28}><path d="M3 17v-5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2" /><path d="M3 17h18v3" /><path d="M21 20v-7a2 2 0 0 0-2-2" /><path d="M7 10V8a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2" /></Svg>,
       sad: <Svg size={56}><circle cx="12" cy="12" r="9" /><path d="M8 15s1.5-2 4-2 4 2 4 2" /><path d="M9 9h.01M15 9h.01" /></Svg>,
       check: <Svg size={18}><path d="m20 6-11 11-5-5" /></Svg>,
@@ -2475,13 +2480,14 @@
     ];
 
     // Step 1 (qualifier) occupies question indices 0..QUESTIONS.length-1.
-    // Step 2 = annual usage (kWh); Step 3 = electricity tariff (rate).
-    const USAGE_INDEX = QUESTIONS.length;        // 4
-    const TARIFF_INDEX = QUESTIONS.length + 1;   // 5
-    const BATTERY_INDEX = QUESTIONS.length + 2;  // 6
-    const EV_INDEX = QUESTIONS.length + 3;       // 7
-    const STEP6_INDEX = QUESTIONS.length + 4;    // 8 — Address & Roof Confirmation (4 internal phases)
-    const QUOTE_INDEX = QUESTIONS.length + 5;    // 9 — Step 7 quote screen (Your Solar Potential)
+    // Step 2 = roof tile type; Step 3 = annual usage (kWh); Step 4 = electricity tariff.
+    const ROOFTILE_INDEX = QUESTIONS.length;     // 4 — Step 2 roof tile type
+    const USAGE_INDEX = QUESTIONS.length + 1;    // 5
+    const TARIFF_INDEX = QUESTIONS.length + 2;   // 6
+    const BATTERY_INDEX = QUESTIONS.length + 3;  // 7
+    const EV_INDEX = QUESTIONS.length + 4;       // 8
+    const STEP6_INDEX = QUESTIONS.length + 5;    // 9 — Address & Roof Confirmation (4 internal phases)
+    const QUOTE_INDEX = QUESTIONS.length + 6;    // 10 — Step 8 quote screen (Your Solar Potential)
 
     // Card interaction timings (Section 7 #9): minimum press hold, then settle.
     const PRESS_MS = 80;
@@ -2778,7 +2784,39 @@
       );
     }
 
-    // Step 2 — Annual electricity usage (kWh only)
+    // Step 2 — Roof tile type. Standalone step (not a qualifier); reuses the shared
+    // OptionCard interaction. 4 cards in a 2x2 grid via the cols-2 (2-column) layout.
+    const ROOF_TILE_OPTIONS = [
+      { value: 'standard', label: 'Standard', icon: 'rooftile' },
+      { value: 'rosemary', label: 'Rosemary', icon: 'rooftile' },
+      { value: 'slate', label: 'Slate', icon: 'rooftile' },
+      { value: 'unknown', label: "I don't know", icon: 'unsure' },
+    ];
+    // Short, readable values for the breadcrumb pill.
+    const ROOF_TILE_LABELS = { standard: 'Standard', rosemary: 'Rosemary', slate: 'Slate', unknown: 'Not sure' };
+    function RoofTileStep({ currentValue, selectionTick, onSelect }) {
+      const lock = useRef(false);   // one press sequence at a time across this grid
+      return (
+        <div className="lw-fade-in lw-rooftile">
+          <h1 className="lw-question">What type of roof tiles do you have?</h1>
+          <p className="lw-question-sub">This affects the fixings and mountings we use during installation.</p>
+          <div className={'lw-card-grid cols-2' + (currentValue ? ' has-selection' : '')}>
+            {ROOF_TILE_OPTIONS.map((opt) => (
+              <OptionCard
+                key={opt.value}
+                option={opt}
+                selected={currentValue === opt.value}
+                selectionTick={selectionTick}
+                onPress={onSelect}
+                lock={lock}
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Step 3 — Annual electricity usage (kWh only)
     function UsageStep({ data, onChange, onUseAverages, onContinue, onShowHelp }) {
       const patch = (p) => onChange({ ...data, ...p });
       const cleanInt = (v) => v.replace(/[^0-9,]/g, '');
@@ -5307,6 +5345,13 @@
         setCurrentIndex((i) => i + 1);
       }, [currentIndex]);
 
+      // Step 2 — roof tile type. Stores roof_tile_type and auto-advances (no dead-ends).
+      const handleRoofTileSelect = useCallback((option) => {
+        setAnswers((prev) => ({ ...prev, roof_tile_type: option.value }));
+        setSelectionTick((t) => t + 1);
+        setCurrentIndex((i) => i + 1);
+      }, []);
+
       const handleEdit = useCallback((index) => {
         // Step 6 pills jump back into the address phase of Step 6.
         if (index === STEP6_INDEX) {
@@ -5601,37 +5646,45 @@
       }, []);
 
       // Screen routing across steps.
-      const inQualifier = currentIndex < USAGE_INDEX;     // Step 1 question screens
-      const onUsage = currentIndex === USAGE_INDEX;       // Step 2 annual usage (kWh)
-      const onTariff = currentIndex === TARIFF_INDEX;     // Step 3 electricity tariff (rate)
-      const onBattery = currentIndex === BATTERY_INDEX;   // Step 4 battery location
-      const onEv = currentIndex === EV_INDEX;             // Step 5 EV details
-      const onStep6 = currentIndex === STEP6_INDEX;       // Step 6 address & roof confirmation
-      const onQuote = currentIndex === QUOTE_INDEX;          // Step 7 quote screen
-      const onWhatsNext = currentIndex === QUOTE_INDEX + 1;  // Step 8 what happens next
-      const onDetails = currentIndex === QUOTE_INDEX + 2;    // Step 9 your details
-      const onSurveyDate = currentIndex === QUOTE_INDEX + 3; // Step 10 preferred survey date
-      const onPayment = currentIndex === QUOTE_INDEX + 4;    // Step 11 payment options
-      const isComplete = currentIndex > QUOTE_INDEX + 4;     // handover (placeholder for Step 12)
+      const inQualifier = currentIndex < ROOFTILE_INDEX;  // Step 1 question screens
+      const onRoofTile = currentIndex === ROOFTILE_INDEX; // Step 2 roof tile type
+      const onUsage = currentIndex === USAGE_INDEX;       // Step 3 annual usage (kWh)
+      const onTariff = currentIndex === TARIFF_INDEX;     // Step 4 electricity tariff (rate)
+      const onBattery = currentIndex === BATTERY_INDEX;   // Step 5 battery location
+      const onEv = currentIndex === EV_INDEX;             // Step 6 EV details
+      const onStep6 = currentIndex === STEP6_INDEX;       // Step 7 address & roof confirmation
+      const onQuote = currentIndex === QUOTE_INDEX;          // Step 8 quote screen
+      const onWhatsNext = currentIndex === QUOTE_INDEX + 1;  // Step 9 what happens next
+      const onDetails = currentIndex === QUOTE_INDEX + 2;    // Step 10 your details
+      const onSurveyDate = currentIndex === QUOTE_INDEX + 3; // Step 11 preferred survey date
+      const onPayment = currentIndex === QUOTE_INDEX + 4;    // Step 12 payment options
+      const isComplete = currentIndex > QUOTE_INDEX + 4;     // handover (placeholder for Step 13)
       const currentQuestion = inQualifier ? QUESTIONS[currentIndex] : null;
       const step = inQualifier ? { number: 1, name: 'Home Details' }
-        : onUsage ? { number: 2, name: 'Electricity Usage' }
-        : onTariff ? { number: 3, name: 'Electricity Tariff' }
-        : onBattery ? { number: 4, name: 'Battery Details' }
-        : onEv ? { number: 5, name: 'EV Details' }
-        : onStep6 ? { number: 6, name: 'Address & Roof' }
-        : onQuote ? { number: 7, name: 'Your Solar Potential' }
-        : onWhatsNext ? { number: 8, name: "What's next" }
-        : onDetails ? { number: 9, name: 'Your details' }
-        : onSurveyDate ? { number: 10, name: 'Survey date' }
-        : onPayment ? { number: 11, name: 'Secure your slot' }
-        : { number: 12, name: 'Confirmation' };
+        : onRoofTile ? { number: 2, name: 'Roof type' }
+        : onUsage ? { number: 3, name: 'Electricity Usage' }
+        : onTariff ? { number: 4, name: 'Electricity Tariff' }
+        : onBattery ? { number: 5, name: 'Battery Details' }
+        : onEv ? { number: 6, name: 'EV Details' }
+        : onStep6 ? { number: 7, name: 'Address & Roof' }
+        : onQuote ? { number: 8, name: 'Your Solar Potential' }
+        : onWhatsNext ? { number: 9, name: "What's next" }
+        : onDetails ? { number: 10, name: 'Your details' }
+        : onSurveyDate ? { number: 11, name: 'Survey date' }
+        : onPayment ? { number: 12, name: 'Secure your slot' }
+        : { number: 13, name: 'Confirmation' };
 
       // Breadcrumb pills: answers for screens *before* the current one (so the current
       // screen's value shows in-place rather than duplicated as a pill above).
       const breadcrumbItems = QUESTIONS
         .map((q, index) => ({ key: q.key, index, shortLabel: shortLabel(q.key), value: answers[q.key] }))
         .filter((a) => a.value != null && a.index < currentIndex);
+      if (answers.roof_tile_type && ROOFTILE_INDEX < currentIndex) {
+        breadcrumbItems.push({
+          key: 'roof_tile_type', index: ROOFTILE_INDEX, shortLabel: 'Roof tiles',
+          value: ROOF_TILE_LABELS[answers.roof_tile_type] || answers.roof_tile_type,
+        });
+      }
       if (answers.electricity_usage && USAGE_INDEX < currentIndex) {
         breadcrumbItems.push({
           key: 'electricity_usage', index: USAGE_INDEX,
@@ -5677,34 +5730,36 @@
 
       // Progress: each step fills one segment (1/TOTAL_STEPS).
       const segment = 100 / TOTAL_STEPS;
-      const qualifierAnswered = breadcrumbItems.filter((a) => a.index < USAGE_INDEX).length;
+      const qualifierAnswered = breadcrumbItems.filter((a) => a.index < ROOFTILE_INDEX).length;
       let percent;
       if (inQualifier) {
-        percent = (qualifierAnswered / USAGE_INDEX) * segment;   // Step 1 fills as qualifiers are answered
+        percent = (qualifierAnswered / ROOFTILE_INDEX) * segment; // Step 1 fills as qualifiers are answered
+      } else if (onRoofTile) {
+        percent = segment;                                       // Step 1 done; on roof tile (Step 2)
       } else if (onUsage) {
-        percent = segment;                                       // Step 1 done
-      } else if (onTariff) {
         percent = 2 * segment;                                   // Steps 1–2 done
-      } else if (onBattery) {
+      } else if (onTariff) {
         percent = 3 * segment;                                   // Steps 1–3 done
-      } else if (onEv) {
+      } else if (onBattery) {
         percent = 4 * segment;                                   // Steps 1–4 done
+      } else if (onEv) {
+        percent = 5 * segment;                                   // Steps 1–5 done
       } else if (onStep6) {
-        // Steps 1–5 done; fill within Step 6 as its four phases complete
+        // Steps 1–6 done; fill within Step 7 as its four phases complete
         const phaseIdx = { address: 0, map: 1, orientation: 2, occupancy: 3 }[step6.phase] || 0;
-        percent = 5 * segment + (phaseIdx / 4) * segment;
+        percent = 6 * segment + (phaseIdx / 4) * segment;
       } else if (onQuote) {
-        percent = 6 * segment;                                   // Steps 1–6 done; on the quote screen
+        percent = 7 * segment;                                   // Steps 1–7 done; on the quote screen
       } else if (onWhatsNext) {
-        percent = 7 * segment;                                   // Steps 1–7 done; on "what's next"
+        percent = 8 * segment;                                   // Steps 1–8 done; on "what's next"
       } else if (onDetails) {
-        percent = 8 * segment;                                   // Steps 1–8 done; on "your details"
+        percent = 9 * segment;                                   // Steps 1–9 done; on "your details"
       } else if (onSurveyDate) {
-        percent = 9 * segment;                                   // Steps 1–9 done; on "survey date"
+        percent = 10 * segment;                                  // Steps 1–10 done; on "survey date"
       } else if (onPayment) {
-        percent = 10 * segment;                                  // Steps 1–10 done; on payment options
+        percent = 11 * segment;                                  // Steps 1–11 done; on payment options
       } else {
-        percent = 11 * segment;                                  // Steps 1–11 done
+        percent = 12 * segment;                                  // Steps 1–12 done
       }
 
       return (
@@ -5731,6 +5786,13 @@
                       currentValue={answers[currentQuestion.key]}
                       selectionTick={selectionTick}
                       onSelect={handleSelect}
+                    />
+                  )}
+                  {onRoofTile && (
+                    <RoofTileStep
+                      currentValue={answers.roof_tile_type}
+                      selectionTick={selectionTick}
+                      onSelect={handleRoofTileSelect}
                     />
                   )}
                   {onUsage && (
