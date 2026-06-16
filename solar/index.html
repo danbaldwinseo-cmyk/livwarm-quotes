@@ -1512,7 +1512,7 @@
     /* summary (left) + monthly-price hero (right), bottom-aligned */
     .lw-show-foot { display: flex; gap: 24px; align-items: flex-end; margin-top: 20px; }
     .lw-show-summary { flex: 1 1 60%; text-align: left; }
-    .lw-show-summary-label { font-size: 0.85rem; font-weight: 600; color: var(--color-primary); margin-bottom: 6px; }
+    .lw-show-summary-label { font-size: 0.85rem; font-weight: 600; color: var(--color-dark); margin-bottom: 6px; }
     .lw-show-summary-text { font-size: 0.9rem; color: var(--color-body); line-height: 1.6; margin: 0; }
     .lw-show-datasheets { font-size: 0.8rem; color: var(--color-body); margin-top: 10px; }
     .lw-show-ds-label { font-weight: 600; color: var(--color-body); }
@@ -4045,8 +4045,8 @@
         : 20;
       const displaySaving = data.annualSaving * displayTermYrs;
       const displayLabel = (financeChoice && financeChoice.financeSelected)
-        ? 'Bill savings over ' + displayTermYrs + ' years'
-        : 'Bill savings over 20 years';
+        ? 'Bill savings over ' + displayTermYrs + ' yrs'
+        : 'Bill savings over 20 yrs';
 
       return (
         <div className={cardCls}>
@@ -4100,10 +4100,14 @@
 
           {/* FIX 3 — branded savings bar (Essential & Performance only; Custom shows dropdowns) */}
           {data.id !== 'custom' && (
+            <React.Fragment>
+            <div className="lw-show-incl-head" style={{marginBottom: '8px', marginTop: '4px'}}>
+              Your estimated savings
+            </div>
             <div style={{
               background: 'linear-gradient(115deg, #3d9e47 0%, #4CAF50 100%)',
               borderRadius: '8px',
-              padding: '12px 20px',
+              padding: '14px 20px',
               position: 'relative',
               overflow: 'hidden',
               marginBottom: '4px'
@@ -4117,13 +4121,6 @@
                 maskImage: 'radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.5) 0%, transparent 100%)',
                 pointerEvents: 'none'
               }} />
-              <div style={{
-                fontSize: '1.05rem', fontWeight: 800, color: '#fff',
-                textAlign: 'center', marginBottom: '10px',
-                position: 'relative', zIndex: 1
-              }}>
-                Your estimated savings
-              </div>
               <div style={{
                 display: 'flex', gap: '0', position: 'relative', zIndex: 1
               }}>
@@ -4155,6 +4152,7 @@
                 </div>
               </div>
             </div>
+            </React.Fragment>
           )}
 
           {/* custom dropdowns */}
