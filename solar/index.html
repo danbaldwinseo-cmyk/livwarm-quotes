@@ -2362,20 +2362,29 @@
     .lw-pay-warr { font-size: 0.875rem; color: var(--color-body); margin-top: 4px; }
     .lw-pay-vat { font-size: 0.75rem; color: #999; margin-top: 8px; text-align: center; }
     .lw-pay-div { border: none; border-top: 1px solid var(--color-border); margin: 16px 0; }
-    /* Stripe payment element placeholder (Cards 1 & 2) — swap contents for the real
-       Stripe Payment Element at integration time. */
+    /* Stripe payment element container (Cards 1 & 2) — holds the live Stripe
+       Payment Element, pay CTA and any inline error. */
     .lw-pay-stripe-box {
       border: 1px solid var(--color-border);
       border-radius: 8px;
       padding: 20px;
-      min-height: 80px;
       background: var(--color-white);
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
     .lw-pay-stripe-wm { flex-shrink: 0; }
     .lw-pay-stripe-txt { font-size: 0.8rem; color: #999; margin-left: 8px; }
+    /* Live Stripe Payment Element states */
+    .lw-stripe-el { width: 100%; }
+    .lw-stripe-shimmer {
+      width: 100%; height: 40px; border-radius: 6px;
+      background: linear-gradient(90deg, #ececec 25%, #f5f5f5 37%, #ececec 63%);
+      background-size: 400% 100%;
+      animation: lw-stripe-shimmer 1.4s ease infinite;
+    }
+    @keyframes lw-stripe-shimmer {
+      0% { background-position: 100% 0; }
+      100% { background-position: 0 0; }
+    }
+    .lw-stripe-err { margin-top: 10px; font-size: 0.875rem; color: var(--color-primary); text-align: center; }
     .lw-pay-finlabel {
       font-size: 0.75rem; font-weight: 600; color: var(--color-body);
       text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
@@ -2593,6 +2602,11 @@
     // back to a "map unavailable" panel and the flow still works.
     const GMAPS_KEY = 'AIzaSyBNkXCoi3mCSo8qSXj-S47cQKDZjzzEP54';
 
+    // Stripe (Step 12 Cards 1 & 2). STRIPE_PUBLISHABLE_KEY — swap to pk_live_... before launch.
+    // The secret key lives only in the WordPress PHP snippet, never in this file.
+    const STRIPE_PUBLISHABLE_KEY = 'pk_test_51Tiy5mHpCSTpuCHH3Iy5TGdItnffvauCQlyw0divXfQpwWAhI5Y8IrjVEaVBh393tLjwN53cef8s9CYGvRGpdxcy00BTJdWMlS';
+    const PAYMENT_INTENT_ENDPOINT = 'https://deals.livwarm.co.uk/wp-admin/admin-ajax.php?action=livwarm_create_payment_intent';
+
     const DIR_WORDS = {
       N: 'North', NE: 'North-East', E: 'East', SE: 'South-East',
       S: 'South', SW: 'South-West', W: 'West', NW: 'North-West',
@@ -2669,6 +2683,33 @@
         document.head.appendChild(s);
       });
       return _gmapsPromise;
+    }
+
+    // Singleton loader for Stripe.js. Injects the script into document.head once
+    // and resolves with window.Stripe.
+    let _stripePromise = null;
+    function loadStripeJs() {
+      if (window.Stripe) return Promise.resolve(window.Stripe);
+      if (_stripePromise) return _stripePromise;
+      _stripePromise = new Promise((resolve, reject) => {
+        const finish = () => window.Stripe
+          ? resolve(window.Stripe)
+          : reject(new Error('Stripe.js loaded but window.Stripe missing'));
+        const existing = document.querySelector('script[src="https://js.stripe.com/v3/"]');
+        if (existing) {
+          if (window.Stripe) return resolve(window.Stripe);
+          existing.addEventListener('load', finish);
+          existing.addEventListener('error', () => reject(new Error('Stripe.js failed to load')));
+          return;
+        }
+        const s = document.createElement('script');
+        s.src = 'https://js.stripe.com/v3/';
+        s.async = true;
+        s.onload = finish;
+        s.onerror = () => reject(new Error('Stripe.js failed to load'));
+        document.head.appendChild(s);
+      });
+      return _stripePromise;
     }
 
     /* ============================================================
@@ -5283,6 +5324,98 @@
       );
     }
 
+    // Reusable Stripe Payment Element + pay CTA for Step 12 Cards 1 (deposit) & 2 (full).
+    // Fetches a Payment Intent clientSecret from the WordPress AJAX endpoint, mounts a
+    // Payment Element, and confirms the payment on CTA click. Re-initialises whenever
+    // amountPence changes (slider moves), tearing down the previous Elements instance.
+    function StripePaymentForm({ amountPence, onSuccess, onError, ctaLabel }) {
+      const elRef = useRef(null);
+      const stripeRef = useRef(null);
+      const elementsRef = useRef(null);
+      const [status, setStatus] = useState('loading');   // 'loading' | 'ready' | 'error'
+      const [submitting, setSubmitting] = useState(false);
+      const [loadErr, setLoadErr] = useState('');
+
+      React.useEffect(() => {
+        let cancelled = false;
+        setStatus('loading');
+        setLoadErr('');
+        // Drop any previous Elements/Stripe instance before building a new one.
+        elementsRef.current = null;
+        stripeRef.current = null;
+        if (elRef.current) elRef.current.innerHTML = '';
+
+        (async () => {
+          try {
+            const Stripe = await loadStripeJs();
+            if (cancelled) return;
+
+            const res = await fetch(PAYMENT_INTENT_ENDPOINT, {
+              method: 'POST',
+              mode: 'cors',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams({ amount: String(amountPence) }),
+            });
+            if (!res.ok) throw new Error('Payment Intent request failed: ' + res.status);
+            const data = await res.json();
+            if (!data || !data.clientSecret) throw new Error('Response missing clientSecret');
+            if (cancelled) return;
+
+            const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+            const elements = stripe.elements({ clientSecret: data.clientSecret });
+            const paymentElement = elements.create('payment');
+            stripeRef.current = stripe;
+            elementsRef.current = elements;
+            if (elRef.current) {
+              elRef.current.innerHTML = '';
+              paymentElement.mount(elRef.current);
+            }
+            setStatus('ready');
+          } catch (e) {
+            if (cancelled) return;
+            console.warn('Stripe: Payment Intent fetch failed - check PHP snippet is active on deals.livwarm.co.uk');
+            setStatus('error');
+            setLoadErr('Payment unavailable - please try again or contact us on 0800 222 9494');
+          }
+        })();
+
+        return () => { cancelled = true; };
+      }, [amountPence]);
+
+      const handleSubmit = async () => {
+        if (status !== 'ready' || !stripeRef.current || !elementsRef.current) return;
+        setSubmitting(true);
+        try {
+          const { error } = await stripeRef.current.confirmPayment({
+            elements: elementsRef.current,
+            confirmParams: { return_url: window.location.href },
+          });
+          if (error) {
+            onError(error.message || 'Payment failed - please try again');
+            setSubmitting(false);
+          } else {
+            onSuccess();
+          }
+        } catch (e) {
+          onError((e && e.message) || 'Payment failed - please try again');
+          setSubmitting(false);
+        }
+      };
+
+      return (
+        <React.Fragment>
+          {status === 'loading' && <div className="lw-stripe-shimmer" />}
+          <div ref={elRef} className="lw-stripe-el" style={{ display: status === 'ready' ? 'block' : 'none' }} />
+          {status === 'error' && <p className="lw-stripe-err">{loadErr}</p>}
+          <button type="button" className="lw-cta lw-pay-cta"
+                  disabled={status !== 'ready' || submitting}
+                  onClick={handleSubmit}>
+            {submitting ? 'Processing…' : ctaLabel}
+          </button>
+        </React.Fragment>
+      );
+    }
+
     function PaymentOptionsStep({ sel, financeChoice, warrantyAdded, onSelectFinance, onSubmit }) {
       const systemPrice = sel.price + (warrantyAdded ? 199 : 0);
       const paymentMethod = financeChoice && financeChoice.financeSelected === false ? 'cash' : 'finance';
@@ -5290,6 +5423,8 @@
       const [selected, setSelected] = useState(null);   // 'deposit'|'full'|'finance'|'provisional'
       const [editFin, setEditFin] = useState(false);
       const [finModal, setFinModal] = useState(false);  // "Finance coming soon" placeholder modal
+      const [depositError, setDepositError] = useState('');  // Card 1 confirmPayment failure
+      const [fullError, setFullError] = useState('');         // Card 2 confirmPayment failure
 
       // Card 1 — Stripe deposit (min £199, max 50% of system price, £50 steps).
       const depMax = Math.floor(systemPrice * 0.5 / 50) * 50;
@@ -5329,21 +5464,17 @@
                      aria-label="Deposit amount" />
               <div className="lw-pay-balance">Balance of {gbp(remainder)} due on installation day after survey</div>
               <hr className="lw-pay-div" />
-              {/* STRIPE_INTEGRATION_POINT
-                  Replace this div's contents with:
-                  <StripePaymentElement /> after loading Stripe.js with publishable key
-                  pk_test_... (replace with pk_live_... before launch) */}
+              {/* STRIPE_INTEGRATION_POINT — live Stripe Payment Element (deposit). */}
               <div id="stripe-payment-element-deposit" className="lw-pay-stripe-box">
-                <svg className="lw-pay-stripe-wm" width="60" height="24" viewBox="0 0 60 24" aria-label="Stripe">
-                  <rect width="60" height="24" rx="6" fill="#635BFF" />
-                  <text x="30" y="16" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="700" fontFamily="inherit">stripe</text>
-                </svg>
-                <span className="lw-pay-stripe-txt">Secure payment · Card, Klarna, Revolut Pay</span>
+                <StripePaymentForm
+                  amountPence={deposit * 100}
+                  onSuccess={() => onSubmit('deposit', deposit)}
+                  onError={(msg) => setDepositError(msg)}
+                  ctaLabel={'Pay ' + gbp(deposit) + ' deposit →'}
+                />
               </div>
+              {depositError && <p className="lw-stripe-err">{depositError}</p>}
               <div className="lw-pay-vat">All prices include VAT</div>
-              <button type="button" className="lw-cta lw-pay-cta" onClick={() => onSubmit('deposit', deposit)}>
-                Pay {gbp(deposit)} deposit →
-              </button>
               <p className="lw-pay-stripe-note">Payments are securely processed by Stripe. No card details are stored by LivWarm.</p>
             </PaymentCard>
 
@@ -5356,20 +5487,16 @@
               {warrantyAdded && <div className="lw-pay-warr">+ £199 extended warranty</div>}
               <div className="lw-pay-vat" style={{ textAlign: 'left' }}>All prices include VAT</div>
               <hr className="lw-pay-div" />
-              {/* STRIPE_INTEGRATION_POINT
-                  Replace this div's contents with:
-                  <StripePaymentElement /> after loading Stripe.js with publishable key
-                  pk_test_... (replace with pk_live_... before launch) */}
+              {/* STRIPE_INTEGRATION_POINT — live Stripe Payment Element (full payment). */}
               <div id="stripe-payment-element-full" className="lw-pay-stripe-box">
-                <svg className="lw-pay-stripe-wm" width="60" height="24" viewBox="0 0 60 24" aria-label="Stripe">
-                  <rect width="60" height="24" rx="6" fill="#635BFF" />
-                  <text x="30" y="16" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="700" fontFamily="inherit">stripe</text>
-                </svg>
-                <span className="lw-pay-stripe-txt">Secure payment · Card, Klarna, Revolut Pay</span>
+                <StripePaymentForm
+                  amountPence={systemPrice * 100}
+                  onSuccess={() => onSubmit('full', systemPrice)}
+                  onError={(msg) => setFullError(msg)}
+                  ctaLabel={'Pay ' + gbp(systemPrice) + ' →'}
+                />
               </div>
-              <button type="button" className="lw-cta lw-pay-cta" onClick={() => onSubmit('full', systemPrice)}>
-                Pay {gbp(systemPrice)} →
-              </button>
+              {fullError && <p className="lw-stripe-err">{fullError}</p>}
               <p className="lw-pay-stripe-note">Payments are securely processed by Stripe. No card details are stored by LivWarm.</p>
             </PaymentCard>
 
@@ -5480,6 +5607,9 @@
         }
       }, [currentIndex]);
       const handleToggleBreadcrumbs = useCallback(() => setBcExpanded((x) => !x), []);
+
+      // Load Stripe.js once on mount so the Step 12 payment cards can initialise quickly.
+      React.useEffect(() => { loadStripeJs().catch(() => {}); }, []);
 
       // OptionCard drives the entire press → settle sequence via DOM classes (no
       // re-render during the animation). This fires only AFTER that sequence is visually
